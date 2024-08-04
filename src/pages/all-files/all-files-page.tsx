@@ -40,7 +40,7 @@ export const AllFilesPage = () => {
         <Button
           disabled={isScanning || isFetchingFiles || !config}
           onClick={() => {
-            scanFiles();
+            scanFiles({});
           }}
         >
           <Loaders.circular size="small" loading={isScanning} />

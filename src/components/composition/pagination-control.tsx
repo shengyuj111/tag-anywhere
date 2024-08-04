@@ -56,8 +56,6 @@ const PaginationComponent = ({
   const handlePageClick = (page: number) => {
     setPageNumber(page);
   };
-  console.log("itemsPerPage", itemsPerPage);
-  console.log("itemsPerPageOptions", itemsPerPageOptions);
 
   return (
     <div
