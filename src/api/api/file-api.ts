@@ -101,11 +101,11 @@ export const getFileDisplayType = (file: FileCommon): string => {
 };
 
 export interface FileCommon extends FileDetails {
-  tags: string[];
+  tagIds: number[];
 }
 
 export interface GetFilesDatabaseResponse extends FileDetails {
-  tags: string;
+  tagIds: string;
 }
 
 export interface GetFilesRequest {
@@ -267,11 +267,11 @@ export const fileApi = apiSlice.injectEndpoints({
           // Main query to fetch files
           let query = `
             SELECT FileData.*, COALESCE((
-              SELECT GROUP_CONCAT(Tag.name)
+              SELECT GROUP_CONCAT(Tag.id)
               FROM Tag
               JOIN FileTag ON Tag.id = FileTag.tag_id
               WHERE FileTag.file_id = FileData.id
-            ), '') as tags
+            ), '') as tagIds
             ${baseQuery}
             GROUP BY FileData.id
           `;
@@ -288,7 +288,7 @@ export const fileApi = apiSlice.injectEndpoints({
           );
           const result: FileCommon[] = files.map((file) => ({
             ...file,
-            tags: file.tags ? file.tags.split(",") : [],
+            tagIds: file.tagIds ? file.tagIds.split(",").map(Number) : [],
           }));
 
           return {
@@ -323,14 +323,14 @@ export const fileApi = apiSlice.injectEndpoints({
 
           const db = await DatabaseManager.getInstance().getDbInstance();
 
-          const [file]: (FileCommon & { tagsStr: string })[] = await db.select(
+          const [file]: (FileCommon & { tagIdsStr: string })[] = await db.select(
             `
             SELECT FileData.*, COALESCE((
-              SELECT GROUP_CONCAT(Tag.name)
+              SELECT GROUP_CONCAT(Tag.id)
               FROM Tag
               JOIN FileTag ON Tag.id = FileTag.tag_id
               WHERE FileTag.file_id = FileData.id
-            ), '') as tagsStr
+            ), '') as tagIdsStr
             FROM FileData
             WHERE FileData.id = ?
             `,
@@ -343,20 +343,20 @@ export const fileApi = apiSlice.injectEndpoints({
 
           const result: FileCommon = {
             ...file,
-            tags: file.tagsStr ? file.tagsStr.split(",") : [],
+            tagIds: file.tagIdsStr ? file.tagIdsStr.split(",").map(Number) : [],
           };
 
           let children: FileCommon[] = [];
           if (result.type.startsWith("Composition")) {
-            const childFiles: (FileCommon & { tagsStr: string })[] =
+            const childFiles: (FileCommon & { tagIdsStr: string })[] =
               await db.select(
                 `
               SELECT FileData.*, COALESCE((
-                SELECT GROUP_CONCAT(Tag.name)
+                SELECT GROUP_CONCAT(Tag.id)
                 FROM Tag
                 JOIN FileTag ON Tag.id = FileTag.tag_id
                 WHERE FileTag.file_id = FileData.id
-              ), '') as tagsStr
+              ), '') as tagIdsStr
               FROM FileData
               JOIN FileComposition ON FileData.id = FileComposition.file_id
               WHERE FileComposition.composite_file_id = ?
@@ -365,7 +365,7 @@ export const fileApi = apiSlice.injectEndpoints({
               );
             children = childFiles.map((child) => ({
               ...child,
-              tags: child.tagsStr ? child.tagsStr.split(",") : [],
+              tagIds: child.tagIdsStr ? child.tagIdsStr.split(",").map(Number) : [],
             }));
           }
 
@@ -676,10 +676,6 @@ export const fileApi = apiSlice.injectEndpoints({
           }
 
           const tags = removeDuplicates(tempTags);
-
-          if (tags.length === 0) {
-            throw new Error("No valid tags provided");
-          }
 
           for (const fileId of fileIds) {
             const currentTags: { tag_id: number }[] = await db.select(

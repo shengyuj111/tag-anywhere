@@ -148,7 +148,6 @@ export const tagApi = apiSlice.injectEndpoints({
         try {
           const { id, name, type, color, coverPath, description } = request;
           const db = await DatabaseManager.getInstance().getDbInstance();
-
           await db.execute(
             `
               UPDATE Tag

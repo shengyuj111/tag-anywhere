@@ -9,23 +9,23 @@ import {
 } from "../ui/context-menu";
 import { useToast } from "../ui/use-toast";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { useGetTagByNameQuery } from "@/api/api/tag-api";
+import { useGetTagByIdQuery } from "@/api/api/tag-api";
 import { Large, Small } from "../ui/typography";
 import Image from "../ui/image";
 import { ScrollArea } from "../ui/scroll-area";
 import { pathToUrl } from "@/api/api/helper";
 
 interface TagBadgeProps extends React.HTMLAttributes<HTMLDivElement> {
-  tagName: string;
+  tagId: number;
 }
 
-export const TagBadge = ({ tagName, ...props }: TagBadgeProps) => {
+export const TagBadge = ({ tagId, ...props }: TagBadgeProps) => {
   const { toast } = useToast();
-  const { data: tag } = useGetTagByNameQuery({ name: tagName });
+  const { data: tag } = useGetTagByIdQuery({ id: tagId });
   const [tooltipVisible, setTooltipVisible] = useState(false);
 
   const copyTagName = () => {
-    copyToClipboard(tagName, (success: boolean) => {
+    copyToClipboard(tag?.name || "", (success: boolean) => {
       if (success) {
         toast({
           description: "The tag name has been copied",
@@ -56,7 +56,7 @@ export const TagBadge = ({ tagName, ...props }: TagBadgeProps) => {
             }}
           >
             <Badge {...props} className="cursor-pointer">
-              {tagName}
+              {tag?.name}
             </Badge>
           </TooltipTrigger>
           <TooltipContent

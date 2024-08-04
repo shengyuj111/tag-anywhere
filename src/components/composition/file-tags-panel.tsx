@@ -1,4 +1,4 @@
-import { FileCommon, useUpdateTagsToFilesMutation } from "@/api/api/file-api";
+import { FileCommon, UpdateTagsRequest, useUpdateTagsToFilesMutation } from "@/api/api/file-api";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { EditIcon, SaveIcon } from "lucide-react";
@@ -27,14 +27,17 @@ export const FileTagsPanel = ({ mainFile }: FileDetailProps) => {
   const handleSaveChanges = async () => {
     await updateTagsToFiles({
       fileIds: [mainFile.id],
-      tagNames: updatedTags.map((tag) => tag.value),
-    });
+      tagIds: updatedTags.map((tag) => Number(tag.value)),
+    } as UpdateTagsRequest);
     setIsEditing(false);
   };
 
   const handleStartEditing = () => {
     setUpdatedTags(
-      mainFile.tags.map((tagName) => ({ label: tagName, value: tagName })),
+      mainFile.tagIds.map((tagId) => {
+        const tag = tags.find((tag) => tag.id === tagId);
+        return { label: tag?.name ?? "", value: tag?.id.toString() ?? "" };
+      }),
     );
     setIsEditing(true);
   };
@@ -90,8 +93,8 @@ export const FileTagsPanel = ({ mainFile }: FileDetailProps) => {
           <div className="w-full flex-grow">
             <Visibility isVisible={!isEditing}>
               <div className="flex w-full flex-wrap items-start justify-start gap-1">
-                {mainFile.tags.map((tag) => (
-                  <TagBadge key={tag} tagName={tag} />
+                {mainFile.tagIds.map((tagId) => (
+                  <TagBadge key={tagId} tagId={tagId} />
                 ))}
               </div>
             </Visibility>
@@ -100,7 +103,7 @@ export const FileTagsPanel = ({ mainFile }: FileDetailProps) => {
                 value={updatedTags}
                 defaultOptions={tags.map((tag) => ({
                   label: tag.name,
-                  value: tag.name,
+                  value: tag.id.toString(),
                 }))}
                 onChange={(selected) => setUpdatedTags(selected)}
               />

@@ -41,8 +41,8 @@ export const FileDisplay = ({
         <H4 className="truncate">{fileCommon.name}</H4>
         <ScrollArea className="w-full whitespace-nowrap rounded-md">
           <div className="flex w-max space-x-1 py-2">
-            {fileCommon.tags.map((tagName) => (
-              <TagBadge key={tagName} tagName={tagName} />
+            {fileCommon.tagIds.map((tagId) => (
+              <TagBadge key={tagId} tagId={tagId} />
             ))}
           </div>
           <ScrollBar orientation="horizontal" />
