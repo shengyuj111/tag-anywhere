@@ -7,6 +7,7 @@ import {
   getFilesAndTypes,
 } from "./rust-api";
 import {
+  getCoverAndStoreSetUp,
   getCoverPath,
   getCoverPathBySetUp,
   getExistingFilePaths,
@@ -319,7 +320,6 @@ export const fileApi = apiSlice.injectEndpoints({
       queryFn: async (request: GetFileByIdRequest) => {
         try {
           const { fileId } = request;
-          console.log("get file by id ", fileId);
 
           const db = await DatabaseManager.getInstance().getDbInstance();
 
@@ -395,15 +395,15 @@ export const fileApi = apiSlice.injectEndpoints({
     scanFiles: builder.mutation<ScanFilesResponse, ScanFilesRequest>({
       queryFn: async () => {
         try {
-          const setUp = await getStorePathConfig();
-          const cover_dir_path = getCoverPathBySetUp(setUp);
-          const scan_dir_path = setUp.storehousePath;
-
           const db = await DatabaseManager.getInstance().getDbInstance();
 
+          // Get store path
+          const { coverPath: cover_dir_path, storehousePaths: scan_dir_path } = await getCoverAndStoreSetUp();
+
+          // Get existing file paths
           const skipPaths = await getExistingFilePaths(db);
-          const filesAndTypes: FileAndTypeInfo[] =
-            await getFilesAndTypes(scan_dir_path);
+
+          const filesAndTypes = await getFilesAndTypes(scan_dir_path);
 
           const newFiles = filesAndTypes.filter(
             (file) => !skipPaths.includes(file.path),
@@ -433,7 +433,7 @@ export const fileApi = apiSlice.injectEndpoints({
                 1,
                 null,
               );
-
+              
               newFileData.push({
                 id: 0,
                 name: file.name,

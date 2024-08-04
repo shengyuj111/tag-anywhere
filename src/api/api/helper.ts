@@ -16,10 +16,24 @@ export const getCoverPathBySetUp = (setup: StoreSetUpRequest) => {
   return `${setup.indexPath}\\cover`;
 };
 
+export const getStorePathBySetUp = (setup: StoreSetUpRequest) => {
+  return setup.storehousePath;
+}
+
 export const getCoverPath = async () => {
   const setup = await getStorePathConfig();
   return getCoverPathBySetUp(setup);
 };
+
+export const getStorePath = async () => {
+  const setup = await getStorePathConfig();
+  return getStorePathBySetUp(setup);
+}
+
+export const getCoverAndStoreSetUp = async () => {
+  const setup = await getStorePathConfig();
+  return { coverPath: getCoverPathBySetUp(setup), storehousePaths: getStorePathBySetUp(setup) };
+}
 
 export const isFileCoverNameUnique = async (
   db: Database,
@@ -55,3 +69,12 @@ export const pathToUrl = (
   if (!path) return undefined;
   return convertFileSrc(path);
 };
+
+export const replacePathWithIndex = (path: string, folderPaths: string[]): string => {
+  for (let i = 0; i < folderPaths.length; i++) {
+      if (path.startsWith(folderPaths[i])) {
+          return path.replace(folderPaths[i], `[[${i}]]`);
+      }
+  }
+  return path;
+}
