@@ -1,4 +1,8 @@
-import { UpdateTagRequest, useGetTagByIdQuery, useUpdateTagMutation } from "@/api/api/tag-api";
+import {
+  UpdateTagRequest,
+  useGetTagByIdQuery,
+  useUpdateTagMutation,
+} from "@/api/api/tag-api";
 import { BackableHeader } from "@/components/composition/backable-header";
 import { FilesSection } from "@/components/composition/files-section";
 import { Card } from "@/components/ui/card";
@@ -83,7 +87,13 @@ export const TagDetailsPage = () => {
     }
   };
 
-  const updateTagText = async ({ name, description }: { name?: string, description?: string }) => {
+  const updateTagText = async ({
+    name,
+    description,
+  }: {
+    name?: string;
+    description?: string;
+  }) => {
     try {
       await updateTag({
         id: tag!.id,
@@ -109,22 +119,40 @@ export const TagDetailsPage = () => {
   return (
     <div className="w-full h-full flex justify-center">
       <div className="w-[80%] flex flex-col items-center gap-4 ">
-        <BackableHeader title={tag?.name} onEditSubmit={(value) => {updateTagText({ name: value })}} />
+        <BackableHeader
+          title={tag?.name}
+          onEditSubmit={(value) => {
+            updateTagText({ name: value });
+          }}
+        />
         <div className="w-full h-full gap-4 grid grid-cols-[30%_1fr] grid-rows-[30%_1fr]">
           <Card className="h-full overflow-hidden">
             <ImageViewer src={pathToUrl(tag?.coverPath)} />
           </Card>
           <Card className="w-full h-full p-4 flex flex-col gap-4">
-            <EditableText text={tag?.name} onEditSubmit={(value) => {updateTagText({ name: value })}} renderText={(text) => {
-              return <H3>{text}</H3>;
-            }} />
-            <EditableText text={tag?.description} onEditSubmit={(value) => {updateTagText({ description: value })}} renderText={(text) => {
-              return (
-                <Large className="text-muted-foreground">
-                  {text || "No description"}
-                </Large>
-              );
-            }} useTextField />
+            <EditableText
+              text={tag?.name}
+              onEditSubmit={(value) => {
+                updateTagText({ name: value });
+              }}
+              renderText={(text) => {
+                return <H3>{text}</H3>;
+              }}
+            />
+            <EditableText
+              text={tag?.description}
+              onEditSubmit={(value) => {
+                updateTagText({ description: value });
+              }}
+              renderText={(text) => {
+                return (
+                  <Large className="text-muted-foreground">
+                    {text || "No description"}
+                  </Large>
+                );
+              }}
+              useTextField
+            />
           </Card>
           <Card className="col-span-2 flex flex-col gap-6 h-full p-8">
             <div className="w-full flex items-center justify-between gap-2">
