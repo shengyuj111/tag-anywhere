@@ -17,7 +17,7 @@ import VideoPlayer from "@/components/ui/video-player";
 import { formatFileName } from "@/lib/format-utils";
 import { pathToUrl } from "@/api/api/helper";
 
-export const VideoDetails = ({ fileData }: FileDetailProps) => {
+export const VideoDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
   const mainFile = useMemo(() => fileData?.file, [fileData]);
   const video_path = useMemo(() => mainFile?.path, [mainFile?.path]);
   const [videoFrameRate, setVideoFrameRate] = useState<number | undefined>(
@@ -48,7 +48,7 @@ export const VideoDetails = ({ fileData }: FileDetailProps) => {
   return (
     <div className="w-full h-full flex justify-center">
       <div className="w-[80%] flex flex-col items-center gap-4 ">
-        <BackableHeader title={formatFileName(mainFile?.name)} />
+        <BackableHeader title={formatFileName(mainFile?.name)} onEditSubmit={onUpdateName}/>
         <div className="w-full h-full gap-4 grid grid-cols-[70%_1fr] grid-rows-[72%_1fr]">
           <Card className="h-full p-1">
             <ContextMenu>

@@ -8,13 +8,13 @@ import { FileDetailProps } from "./file-details-type";
 import { ImageViewer } from "@/components/composition/image-viewer";
 import { pathToUrl } from "@/api/api/helper";
 
-export const ImageDetails = ({ fileData }: FileDetailProps) => {
+export const ImageDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
   const mainFile = useMemo(() => fileData?.file, [fileData]);
 
   return (
     <div className="w-full h-full flex justify-center">
       <div className="w-[80%] flex flex-col items-center gap-4 ">
-        <BackableHeader title={formatFileName(mainFile?.name)} />
+        <BackableHeader title={formatFileName(mainFile?.name)} onEditSubmit={onUpdateName}/>
         <div className="w-full h-full gap-4 grid grid-cols-[70%_1fr] grid-rows-[72%_1fr]">
           <Card className="h-full overflow-hidden">
             <ImageViewer src={pathToUrl(mainFile?.path)} />

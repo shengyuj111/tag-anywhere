@@ -67,7 +67,7 @@ const NavMenu = () => {
   ];
 
   return (
-    <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+    <nav className="grid items-start p-2 text-sm font-medium lg:p-4">
       {menuItemsData.map((item) => {
         const Icon = item.icon;
         const label = item.text;
