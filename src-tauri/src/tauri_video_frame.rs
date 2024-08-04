@@ -4,7 +4,7 @@ use crate::error::AppError;
 
 
 pub fn get_frame_rate(file_path: &String) -> Result<f64, AppError> {
-    let ffprobe_path = "bin/ffprobe-win.exe";
+    let ffprobe_path = "bin/ffmpeg/ffprobe-win.exe";
     let ffprobe_output = Command::new(ffprobe_path)
         .args(&[
             "-v", "error",
