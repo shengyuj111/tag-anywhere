@@ -9,18 +9,18 @@ import Database from "tauri-plugin-sql-api";
 import { DatabaseManager } from "../../../api/database/database-manager";
 import { PathSetUp } from "@/api/schema/setup";
 
-type StorageData = {
+interface StorageData {
   currentDatabase: Database | null;
   config: PathSetUp | null;
   setConfig: (config: PathSetUp) => void;
-};
+}
 
 // Create a context with undefined as initial value
 const StorageContext = createContext<StorageData | undefined>(undefined);
 
-type DatabaseProviderProps = {
+interface DatabaseProviderProps {
   children: ReactNode;
-};
+}
 
 export const StorageProvider: React.FC<DatabaseProviderProps> = ({
   children,

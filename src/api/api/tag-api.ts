@@ -6,32 +6,33 @@ import { getCoverPathBySetUp, getStorePathConfig } from "./helper";
 export const tagTypes = ["default", "composite"] as const;
 export type TagType = (typeof tagTypes)[number];
 
-export type TagCommon = {
+export interface TagCommon {
   id: number;
   name: string;
   type: TagType;
   color: string | null;
   description: string;
   coverPath: string;
-};
+}
 
-export type GetTagsRequest = object;
+export interface GetTagsRequest {}
 
-export type GetTagByIdRequest = {
+export interface GetTagByIdRequest {
   id: number;
-};
+}
 
-export type GetTagByNameRequest = {
+export interface GetTagByNameRequest {
   name: string;
-};
+}
 
-export type CreateTagRequest = Omit<TagCommon, "id">;
+export interface CreateTagRequest extends Omit<TagCommon, "id"> {}
 
-export type UpdateTagRequest = TagCommon;
+export interface UpdateTagRequest extends TagCommon {}
 
-export type DeleteTagRequest = {
+export interface DeleteTagRequest {
   id: number;
-};
+}
+
 
 export const tagApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

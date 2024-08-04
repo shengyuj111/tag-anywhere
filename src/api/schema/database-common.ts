@@ -1,5 +1,5 @@
 import Database from "tauri-plugin-sql-api";
 
-export type DatabaseRequest = {
+export interface DatabaseRequest {
   db: Database;
-};
+}

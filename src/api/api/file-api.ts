@@ -73,7 +73,7 @@ export const fileTypeMap = {
   },
 };
 
-type FileDetails = {
+interface FileDetails {
   id: number;
   name: string;
   path: string;
@@ -81,7 +81,7 @@ type FileDetails = {
   rsa: string | null;
   description: string;
   coverPath: string | null;
-};
+}
 
 export const isFileComposition = (file: FileCommon): boolean => {
   return file.type.startsWith("Composition");
@@ -99,15 +99,15 @@ export const getFileDisplayType = (file: FileCommon): string => {
   }
 };
 
-export type FileCommon = {
+export interface FileCommon extends FileDetails {
   tags: string[];
-} & FileDetails;
+}
 
-export type GetFilesDatabaseResponse = {
+export interface GetFilesDatabaseResponse extends FileDetails {
   tags: string;
-} & FileDetails;
+}
 
-export type GetFilesRequest = {
+export interface GetFilesRequest {
   nameRegex?: string;
   includeTags?: string[];
   excludeTags?: string[];
@@ -115,74 +115,74 @@ export type GetFilesRequest = {
   excludeFileIds?: number[];
   pageSize?: number;
   page?: number;
-};
+}
 
-export type GetFilesResponse = {
+export interface GetFilesResponse {
   files: FileCommon[];
   totalPages: number;
   timeStamp: number;
-};
+}
 
-export type UpdateFileRequest = object & FileDetails;
+export interface UpdateFileRequest extends FileDetails {}
 
-export type UpdateCoverRequest = {
+export interface UpdateCoverRequest {
   time: number;
   id: number;
   coverPath: string;
   filePath: string;
-};
+}
 
-export type DeleteFileRequest = {
+export interface DeleteFileRequest {
   id: number;
-};
+}
 
-export type AddTagsToFileRequest = {
+export interface AddTagsToFileRequest {
   fileId: number;
   tagIds?: number[];
   tagNames?: string[];
-};
+}
 
-export type RemoveTagsFromFileRequest = {
+export interface RemoveTagsFromFileRequest {
   fileId: number;
   tagIds?: number[];
   tagNames?: string[];
-};
+}
 
-export type UpdateTagsRequest = {
+export interface UpdateTagsRequest {
   fileIds: number[];
   tagIds?: number[];
   tagNames?: string[];
-};
+}
 
-export type ScanFilesRequest = void;
+export interface ScanFilesRequest {}
 
-export type ScanFilesResponse = {
+export interface ScanFilesResponse {
   results: FileCommon[];
   failedCount: number;
-};
+}
 
-export type CreateCompositeFileRequest = {
+export interface CreateCompositeFileRequest {
   name: string;
   type: string;
   description: string;
   coverPath: string;
   childFilePaths: string[];
-};
+}
 
-export type GetFileByIdRequest = {
+export interface GetFileByIdRequest {
   fileId: number;
-};
+}
 
-export type CreateFileResponse = {
+export interface CreateFileResponse {
   file: FileCommon;
   fileChildren: FileCommon[];
   timeStamp: number;
-};
+}
 
-export type TagFileRequest = {
+export interface TagFileRequest {
   tagName: string;
   filePaths: string[];
-};
+}
 
 export const fileApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
