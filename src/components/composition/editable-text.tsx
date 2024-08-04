@@ -15,7 +15,14 @@ interface EditableTextProps {
   editable?: boolean;
 }
 
-export const EditableText = ({ className, onEditSubmit, renderText, text, useTextField = false, editable = true }: EditableTextProps) => {
+export const EditableText = ({
+  className,
+  onEditSubmit,
+  renderText,
+  text,
+  useTextField = false,
+  editable = true,
+}: EditableTextProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(text ?? "");
 
@@ -34,8 +41,10 @@ export const EditableText = ({ className, onEditSubmit, renderText, text, useTex
     setValue(text ?? "");
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (e.key === 'Enter') {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    if (e.key === "Enter") {
       e.preventDefault();
       handleEditSubmit();
     }
@@ -43,16 +52,28 @@ export const EditableText = ({ className, onEditSubmit, renderText, text, useTex
 
   return (
     <div className={className} onDoubleClick={handleDoubleClick}>
-      <Visibility isVisible={!isEditing}>
-        {renderText(text)}
-      </Visibility>
+      <Visibility isVisible={!isEditing}>{renderText(text)}</Visibility>
       <Visibility isVisible={isEditing}>
-        <div className={cn("flex gap-2", useTextField ? "flex-col items-end" : "items-center")}>
+        <div
+          className={cn(
+            "flex gap-2",
+            useTextField ? "flex-col items-end" : "items-center",
+          )}
+        >
           <Visibility isVisible={!useTextField}>
-            <Input value={value} onChange={(e) => setValue(e.target.value)} onKeyDown={handleKeyDown} />
+            <Input
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
           </Visibility>
           <Visibility isVisible={useTextField}>
-            <Textarea className="h-full" value={value} onChange={(e) => setValue(e.target.value)} onKeyDown={handleKeyDown} />
+            <Textarea
+              className="h-full"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
           </Visibility>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleEditSubmit}>

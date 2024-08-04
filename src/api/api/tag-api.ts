@@ -33,7 +33,6 @@ export interface DeleteTagRequest {
   id: number;
 }
 
-
 export const tagApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAllTags: builder.query<TagCommon[], GetTagsRequest>({

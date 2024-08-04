@@ -93,11 +93,7 @@ export const isFileChild = (file: FileCommon): boolean => {
 };
 
 export const getFileDisplayType = (file: FileCommon): string => {
-  if (isFileComposition(file)) {
-    return "Composition";
-  } else {
-    return fileTypeMap[file.type].displayType;
-  }
+  return fileTypeMap[file.type].displayType;
 };
 
 export interface FileCommon extends FileDetails {
@@ -323,8 +319,9 @@ export const fileApi = apiSlice.injectEndpoints({
 
           const db = await DatabaseManager.getInstance().getDbInstance();
 
-          const [file]: (FileCommon & { tagIdsStr: string })[] = await db.select(
-            `
+          const [file]: (FileCommon & { tagIdsStr: string })[] =
+            await db.select(
+              `
             SELECT FileData.*, COALESCE((
               SELECT GROUP_CONCAT(Tag.id)
               FROM Tag
@@ -334,8 +331,8 @@ export const fileApi = apiSlice.injectEndpoints({
             FROM FileData
             WHERE FileData.id = ?
             `,
-            [fileId],
-          );
+              [fileId],
+            );
 
           if (!file) {
             return Promise.reject({ message: "File not found" });
@@ -365,7 +362,9 @@ export const fileApi = apiSlice.injectEndpoints({
               );
             children = childFiles.map((child) => ({
               ...child,
-              tagIds: child.tagIdsStr ? child.tagIdsStr.split(",").map(Number) : [],
+              tagIds: child.tagIdsStr
+                ? child.tagIdsStr.split(",").map(Number)
+                : [],
             }));
           }
 
@@ -398,7 +397,8 @@ export const fileApi = apiSlice.injectEndpoints({
           const db = await DatabaseManager.getInstance().getDbInstance();
 
           // Get store path
-          const { coverPath: cover_dir_path, storehousePaths: scan_dir_path } = await getCoverAndStoreSetUp();
+          const { coverPath: cover_dir_path, storehousePaths: scan_dir_path } =
+            await getCoverAndStoreSetUp();
 
           // Get existing file paths
           const skipPaths = await getExistingFilePaths(db);
@@ -433,7 +433,7 @@ export const fileApi = apiSlice.injectEndpoints({
                 1,
                 null,
               );
-              
+
               newFileData.push({
                 id: 0,
                 name: file.name,
