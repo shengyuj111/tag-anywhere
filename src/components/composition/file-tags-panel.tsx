@@ -1,5 +1,8 @@
-import { FileCommon, UpdateTagsRequest, useUpdateTagsToFilesMutation } from "@/api/api/file-api";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
+import {
+  FileCommon,
+  UpdateTagsRequest,
+  useUpdateTagsToFilesMutation,
+} from "@/api/api/file-api";
 import { CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { EditIcon, SaveIcon } from "lucide-react";
 import { Button } from "../ui/button";
@@ -49,68 +52,66 @@ export const FileTagsPanel = ({ mainFile }: FileDetailProps) => {
 
   return (
     <div className="w-full h-full">
-      <ScrollArea className="flex-1">
-        <div className="w-full h-full flex flex-col p-6 gap-4">
-          <CardHeader className="flex flex-row items-center p-0">
-            <div className="grid gap-2">
-              <CardTitle>Tags</CardTitle>
-              <CardDescription>
-                Info Pieces that are used to categorize the file
-              </CardDescription>
-            </div>
-            <Visibility isVisible={!isEditing}>
-              <Button
-                size="sm"
-                className="ml-auto gap-1"
-                onClick={handleStartEditing}
-              >
-                Edit
-                <EditIcon className="h-4 w-4" />
-              </Button>
-            </Visibility>
-            <Visibility isVisible={isEditing}>
-              <Button
-                variant="secondary"
-                size="sm"
-                className="ml-auto gap-1"
-                disabled={isUpdating}
-                onClick={handleCancelEditing}
-              >
-                Cancel
-              </Button>
-              <Button
-                size="sm"
-                className="ml-2 gap-1"
-                onClick={handleSaveChanges}
-                disabled={isUpdating}
-              >
-                Save Changes
-                <SaveIcon className="h-4 w-4" />
-              </Button>
-            </Visibility>
-          </CardHeader>
-          <Separator className="w-full" />
-          <div className="w-full flex-grow">
-            <Visibility isVisible={!isEditing}>
-              <div className="flex w-full flex-wrap items-start justify-start gap-1">
-                {mainFile.tagIds.map((tagId) => (
-                  <TagBadge key={tagId} tagId={tagId} />
-                ))}
-              </div>
-            </Visibility>
-            <Visibility isVisible={isEditing}>
-              <MultipleSelector
-                value={updatedTags}
-                defaultOptions={tags.map((tag) => ({
-                  label: tag.name,
-                  value: tag.id.toString(),
-                }))}
-                onChange={(selected) => setUpdatedTags(selected)}
-              />
-            </Visibility>
+      <div className="flex flex-col p-6 gap-4 overflow-auto">
+        <CardHeader className="flex-row items-center p-0">
+          <div className="grid gap-2">
+            <CardTitle>Tags</CardTitle>
+            <CardDescription>
+              Info Pieces that are used to categorize the file
+            </CardDescription>
           </div>
+          <Visibility isVisible={!isEditing}>
+            <Button
+              size="sm"
+              className="ml-auto gap-1"
+              onClick={handleStartEditing}
+            >
+              Edit
+              <EditIcon className="h-4 w-4" />
+            </Button>
+          </Visibility>
+          <Visibility isVisible={isEditing}>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="ml-auto gap-1"
+              disabled={isUpdating}
+              onClick={handleCancelEditing}
+            >
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              className="ml-2 gap-1"
+              onClick={handleSaveChanges}
+              disabled={isUpdating}
+            >
+              Save Changes
+              <SaveIcon className="h-4 w-4" />
+            </Button>
+          </Visibility>
+        </CardHeader>
+        <Separator className="w-full" />
+        <div className="w-full h-[70%] flex-grow">
+          <Visibility isVisible={!isEditing}>
+            <div className="flex w-full flex-wrap items-start justify-start gap-1">
+              {mainFile.tagIds.map((tagId) => (
+                <TagBadge key={tagId} tagId={tagId} />
+              ))}
+            </div>
+          </Visibility>
+          <Visibility isVisible={isEditing}>
+            <MultipleSelector
+              value={updatedTags}
+              defaultOptions={tags.map((tag) => ({
+                label: tag.name,
+                value: tag.id.toString(),
+              }))}
+              onChange={(selected) => setUpdatedTags(selected)}
+            />
+          </Visibility>
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 };

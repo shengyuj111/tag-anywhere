@@ -3,7 +3,6 @@ import { fileStatsResult, getFileStats } from "@/api/api/rust-api";
 import { useEffect, useMemo, useState } from "react";
 import { Visibility } from "../ui/visibility";
 import { Loaders } from "../ui/loaders";
-import { ScrollArea } from "../ui/scroll-area";
 import { H4, Muted, Small } from "../ui/typography";
 import { Separator } from "../ui/separator";
 import { IconType } from "@/lib/type-utils";
@@ -90,23 +89,21 @@ export const FileStatsPanel = ({
   ];
 
   return (
-    <div className="w-full h-full flex flex-col">
-      <ScrollArea className="flex-1">
-        <div className="flex-1 p-2 xl:p-4 pr-4 xl:pr-6 overflow-auto">
-          <Loaders.circular size="large" layout="area" loading={!stats} />
-          <Visibility isVisible={!!stats}>
-            <div className="flex flex-col gap-4">
-              <H4>Cover</H4>
-              <Image src={`${coverPath}?${timeStamp}`} alt="Image" />
-              <Separator className="w-full mt-4" />
-              <H4>File Stats</H4>
-              {statsData.map(({ label, value, icon }) => (
-                <StatsRow key={label} icon={icon} label={label} value={value} />
-              ))}
-            </div>
-          </Visibility>
-        </div>
-      </ScrollArea>
+    <div className="w-full h-full flex">
+      <div className="flex-1 p-2 xl:p-4 pr-4 xl:pr-6 overflow-auto">
+        <Loaders.circular size="large" layout="area" loading={!stats} />
+        <Visibility isVisible={!!stats}>
+          <div className="flex flex-col gap-4">
+            <H4>Cover</H4>
+            <Image src={`${coverPath}?${timeStamp}`} alt="Image" />
+            <Separator className="w-full mt-4" />
+            <H4>File Stats</H4>
+            {statsData.map(({ label, value, icon }) => (
+              <StatsRow key={label} icon={icon} label={label} value={value} />
+            ))}
+          </div>
+        </Visibility>
+      </div>
     </div>
   );
 };

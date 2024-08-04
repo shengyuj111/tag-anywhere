@@ -16,6 +16,7 @@ import { toast } from "@/components/ui/use-toast";
 import VideoPlayer from "@/components/ui/video-player";
 import { formatFileName } from "@/lib/format-utils";
 import { pathToUrl } from "@/api/api/helper";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const VideoDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
   const mainFile = useMemo(() => fileData?.file, [fileData]);
@@ -47,16 +48,19 @@ export const VideoDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
 
   return (
     <div className="w-full h-full flex justify-center">
-      <div className="w-[80%] flex flex-col items-center gap-4 ">
-        <BackableHeader title={formatFileName(mainFile?.name)} onEditSubmit={onUpdateName}/>
-        <div className="w-full h-full gap-4 grid grid-cols-[70%_1fr] grid-rows-[72%_1fr]">
-          <Card className="h-full p-1">
+      <div className="w-[80%] h-full flex flex-col items-center gap-4 ">
+        <BackableHeader
+          title={formatFileName(mainFile?.name)}
+          onEditSubmit={onUpdateName}
+        />
+        <div className="w-full h-[calc(100%-56px)] gap-4 grid grid-cols-[70%_1fr] grid-rows-[72%_1fr]">
+          <Card className="p-1">
             <ContextMenu>
               <ContextMenuTrigger>
                 <VideoPlayer
                   src={pathToUrl(mainFile?.path)!}
                   frameRate={videoFrameRate}
-                  className="rounded-sm"
+                  className="rounded-md"
                   onSetTime={setVideoCurrentTime}
                 />
               </ContextMenuTrigger>
@@ -68,13 +72,17 @@ export const VideoDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
             </ContextMenu>
           </Card>
           <Card className="row-span-2">
-            <FileStatsPanel
-              fileCommon={fileData.file}
-              timeStamp={fileData.timeStamp}
-            />
+            <ScrollArea className="h-full">
+              <FileStatsPanel
+                fileCommon={fileData.file}
+                timeStamp={fileData.timeStamp}
+              />
+            </ScrollArea>
           </Card>
-          <Card className="flex-grow h-full">
-            <FileTagsPanel mainFile={mainFile} />
+          <Card className="overflow-auto">
+            <ScrollArea className="h-full">
+              <FileTagsPanel mainFile={mainFile} />
+            </ScrollArea>
           </Card>
         </div>
       </div>

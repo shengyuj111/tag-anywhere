@@ -7,6 +7,7 @@ import { useMemo } from "react";
 import { FileDetailProps } from "./file-details-type";
 import { ImageViewer } from "@/components/composition/image-viewer";
 import { pathToUrl } from "@/api/api/helper";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const ImageDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
   const mainFile = useMemo(() => fileData?.file, [fileData]);
@@ -14,19 +15,26 @@ export const ImageDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
   return (
     <div className="w-full h-full flex justify-center">
       <div className="w-[80%] flex flex-col items-center gap-4 ">
-        <BackableHeader title={formatFileName(mainFile?.name)} onEditSubmit={onUpdateName}/>
-        <div className="w-full h-full gap-4 grid grid-cols-[70%_1fr] grid-rows-[72%_1fr]">
-          <Card className="h-full overflow-hidden">
+        <BackableHeader
+          title={formatFileName(mainFile?.name)}
+          onEditSubmit={onUpdateName}
+        />
+        <div className="w-full h-[calc(100%-56px)] gap-4 grid grid-cols-[70%_1fr] grid-rows-[72%_1fr]">
+          <Card className="p-1">
             <ImageViewer src={pathToUrl(mainFile?.path)} />
           </Card>
           <Card className="row-span-2">
-            <FileStatsPanel
-              fileCommon={fileData.file}
-              timeStamp={fileData.timeStamp}
-            />
+            <ScrollArea className="h-full">
+              <FileStatsPanel
+                fileCommon={fileData.file}
+                timeStamp={fileData.timeStamp}
+              />
+            </ScrollArea>
           </Card>
-          <Card className="flex-grow h-full">
-            <FileTagsPanel mainFile={mainFile} />
+          <Card className="overflow-auto">
+            <ScrollArea className="h-full">
+              <FileTagsPanel mainFile={mainFile} />
+            </ScrollArea>
           </Card>
         </div>
       </div>
