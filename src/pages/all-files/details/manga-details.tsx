@@ -12,5 +12,5 @@ export const ManageDetails = ({ fileData }: FileDetailProps) => {
         <div key={file.id}>{file.name}</div>
       ))}
     </>
-  )
+  );
 };
