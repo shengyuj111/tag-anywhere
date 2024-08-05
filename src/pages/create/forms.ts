@@ -67,14 +67,15 @@ export const createBookForm = z.object({
     ),
 });
 
+const OptionSchema = z.object({
+  value: z.string(),
+  label: z.string(),
+});
+
 export const createLibraryForm = z.object({
   name: z.string().min(2).max(50),
-  type: z.enum(fileTypes),
-  description: z.string(),
-  coverPath: z.string(),
-  childFilePaths: z
-    .array(z.string())
-    .refine((paths) => paths.length > 0 && hasDuplicates(paths) === false, {
-      message: "Duplicate file paths found",
-    }),
+  coverPath: z.string().min(1),
+  nameRegex: z.string().optional(),
+  includeTags: z.array(OptionSchema).optional(),
+  excludeTags: z.array(OptionSchema).optional(),
 });
