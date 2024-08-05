@@ -12,9 +12,8 @@ import {
   getCoverPathBySetUp,
   getExistingFilePaths,
   getStorePathConfig,
-  isFileCoverNameUnique,
+  getUniqueNamesInFolder,
 } from "./helper";
-import { v4 as uuidv4 } from "uuid";
 import { removeDuplicates } from "@/lib/collection-utils";
 import { extractFilenameAndExtension } from "@/lib/path-utils";
 import { selectOne, selectOneOrNull } from "./database-helper";
@@ -411,21 +410,12 @@ export const fileApi = apiSlice.injectEndpoints({
 
           const failedFiles: FileAndTypeInfo[] = [];
           const newFileData: FileDetails[] = [];
+          const uniqueNames = await getUniqueNamesInFolder(cover_dir_path, newFiles.length);
+          let i = 0;
 
           for (const file of newFiles) {
             try {
-              let isUnique = false;
-              let uniqueName = "";
-
-              while (!isUnique) {
-                uniqueName = `${uuidv4()}`;
-                isUnique = await isFileCoverNameUnique(
-                  db,
-                  uniqueName,
-                  cover_dir_path,
-                );
-              }
-
+              const uniqueName = uniqueNames[i++];
               const thumbnailPath = await createThumbnail(
                 uniqueName,
                 file.path,

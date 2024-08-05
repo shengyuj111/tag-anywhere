@@ -1,5 +1,7 @@
 import { DatabaseManager } from "../database/database-manager";
 import apiSlice from "../api-slice";
+import { getCoverAndStoreSetUp, getUniqueNameInFolder } from "./helper";
+import { createThumbnail } from "./rust-api";
 
 export interface Library {
   id: number;
@@ -277,13 +279,24 @@ export const libraryApi = apiSlice.injectEndpoints({
         try {
           const { name, coverPath, nameRegx, includeTagIds, excludeTagIds, includeFileIds, excludeFileIds } = request;
           const db = await DatabaseManager.getInstance().getDbInstance();
+          const { coverPath: cover_dir_path } =
+            await getCoverAndStoreSetUp();
+
+          const uniqueName = await getUniqueNameInFolder(cover_dir_path);
+            const thumbnailPath = await createThumbnail(
+                uniqueName,
+                coverPath,
+                cover_dir_path,
+                1,
+                null,
+            );
 
           const result = await db.execute(
             `
               INSERT INTO Library (name, coverPath, nameRegx)
               VALUES (?, ?, ?)
             `,
-            [name, coverPath, nameRegx]
+            [name, thumbnailPath, nameRegx]
           );
 
           const libraryId = result.lastInsertId;

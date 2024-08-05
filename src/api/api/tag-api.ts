@@ -1,7 +1,7 @@
 import { DatabaseManager } from "../database/database-manager";
 import apiSlice from "../api-slice";
-import { copyFileToDir } from "./rust-api";
-import { getCoverPathBySetUp, getStorePathConfig } from "./helper";
+import { createThumbnail } from "./rust-api";
+import { getCoverAndStoreSetUp, getUniqueNameInFolder } from "./helper";
 
 export const tagTypes = ["default", "composite"] as const;
 export type TagType = (typeof tagTypes)[number];
@@ -116,16 +116,24 @@ export const tagApi = apiSlice.injectEndpoints({
         try {
           const { name, type, description, color, coverPath } = request;
           const db = await DatabaseManager.getInstance().getDbInstance();
-          const setup = await getStorePathConfig();
-          const coverDirPath = getCoverPathBySetUp(setup);
-          const newCoverPath = await copyFileToDir(coverPath, coverDirPath);
+          const { coverPath: cover_dir_path } =
+            await getCoverAndStoreSetUp();
+
+          const uniqueName = await getUniqueNameInFolder(cover_dir_path);
+            const thumbnailPath = await createThumbnail(
+                uniqueName,
+                coverPath,
+                cover_dir_path,
+                1,
+                null,
+            );
 
           await db.execute(
             `
               INSERT INTO Tag (name, type, description, color, coverPath)
               VALUES (?, ?, ?, ?, ?)
             `,
-            [name, type, description, color, newCoverPath],
+            [name, type, description, color, thumbnailPath],
           );
           return { data: null };
         } catch (error: unknown) {
