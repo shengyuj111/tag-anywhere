@@ -76,6 +76,7 @@ interface MultipleSelectorProps {
   >;
   /** hide the clear all button. */
   hideClearAllButton?: boolean;
+  badgeWrapper?: React.FC<{ option: Option, children: React.ReactNode }>;
 }
 
 export interface MultipleSelectorRef {
@@ -182,6 +183,7 @@ const MultipleSelector = React.forwardRef<
       onSearch,
       loadingIndicator,
       emptyIndicator,
+      badgeWrapper,
       maxSelected = Number.MAX_SAFE_INTEGER,
       onMaxSelected,
       hidePlaceholderWhenSelected,
@@ -405,37 +407,41 @@ const MultipleSelector = React.forwardRef<
         >
           <div className="relative flex flex-wrap gap-1">
             {selected.map((option) => {
+              const BadgeWrapper = badgeWrapper || React.Fragment;
               return (
-                <Badge
-                  key={option.value}
-                  className={cn(
-                    "data-[disabled='true']:bg-muted-foreground data-[disabled='true']:text-muted data-[disabled='true']:hover:bg-muted-foreground",
-                    "data-[fixed]:bg-muted-foreground data-[fixed]:text-muted data-[fixed]:hover:bg-muted-foreground",
-                    badgeClassName,
-                  )}
-                  data-fixed={option.fixed}
-                  data-disabled={disabled || undefined}
-                >
-                  {option.label}
-                  <button
+                <BadgeWrapper option={option}>
+                  <Badge
+                    key={option.value}
                     className={cn(
-                      "ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2",
-                      (disabled || option.fixed) && "hidden",
+                      "data-[disabled='true']:bg-muted-foreground data-[disabled='true']:text-muted data-[disabled='true']:hover:bg-muted-foreground",
+                      "data-[fixed]:bg-muted-foreground data-[fixed]:text-muted data-[fixed]:hover:bg-muted-foreground",
+                      badgeClassName,
                     )}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleUnselect(option);
-                      }
-                    }}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    onClick={() => handleUnselect(option)}
+                    data-fixed={option.fixed}
+                    data-disabled={disabled || undefined}
                   >
-                    <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                  </button>
-                </Badge>
+                    {option.label}
+                    <button
+                      className={cn(
+                        "ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                        (disabled || option.fixed) && "hidden",
+                      )}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleUnselect(option);
+                        }
+                      }}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      onClick={() => handleUnselect(option)}
+                    >
+                      <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                    </button>
+                  </Badge>
+                </BadgeWrapper>
+                
               );
             })}
             {/* Avoid having the "Search" Icon */}
