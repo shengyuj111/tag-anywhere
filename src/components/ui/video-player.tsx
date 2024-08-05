@@ -111,7 +111,8 @@ const VideoPlayer = ({
       }
     } else {
       const player = playerRef.current;
-      player.autoplay(false);
+      player.pause();
+      player.currentTime(0);
       player.src({ src });
     }
   }, [src, onReady, onSetTime]);
