@@ -1,7 +1,6 @@
 import { DatabaseManager } from "../database/database-manager";
 import apiSlice from "../api-slice";
 import {
-  copyFileToDir,
   createThumbnail,
   FileAndTypeInfo,
   getFilesAndTypes,
@@ -9,9 +8,8 @@ import {
 import {
   getCoverAndStoreSetUp,
   getCoverPath,
-  getCoverPathBySetUp,
   getExistingFilePaths,
-  getStorePathConfig,
+  getUniqueNameInFolder,
   getUniqueNamesInFolder,
 } from "./helper";
 import { removeDuplicates } from "@/lib/collection-utils";
@@ -717,9 +715,17 @@ export const fileApi = apiSlice.injectEndpoints({
             request;
           const db = await DatabaseManager.getInstance().getDbInstance();
 
-          const setUp = await getStorePathConfig();
-          const cover_dir_path = getCoverPathBySetUp(setUp);
-          const newCoverPath = await copyFileToDir(coverPath, cover_dir_path);
+          const { coverPath: cover_dir_path } =
+            await getCoverAndStoreSetUp();
+
+          const uniqueName = await getUniqueNameInFolder(cover_dir_path);
+            const thumbnailPath = await createThumbnail(
+                uniqueName,
+                coverPath,
+                cover_dir_path,
+                1,
+                null,
+            );
 
           // Create composite file
           const queryResult = await db.execute(
@@ -727,7 +733,7 @@ export const fileApi = apiSlice.injectEndpoints({
               INSERT INTO FileData (name, type, description, coverPath, rsa, path)
               VALUES (?, ?, ?, ?, ?, NULL)
             `,
-            [name, type, description, newCoverPath, "~"],
+            [name, type, description, thumbnailPath, "~"],
           );
 
           const compositeFileId = queryResult.lastInsertId;
