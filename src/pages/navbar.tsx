@@ -1,4 +1,5 @@
 import { ModeToggle } from "@/components/composition/mode-toggle";
+import { RefreshButton } from "@/components/composition/refresh-button";
 import { Link } from "@/components/ui/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { IconType } from "@/lib/type-utils";
@@ -6,6 +7,7 @@ import {
   BriefcaseIcon,
   BugIcon,
   FilesIcon,
+  HomeIcon,
   Package2Icon,
   TagsIcon,
 } from "lucide-react";
@@ -44,6 +46,11 @@ const NavMenu = () => {
   const currentPath = location.pathname;
 
   const menuItemsData: { icon: IconType; text: string; href: string }[] = [
+    {
+      icon: HomeIcon,
+      text: "Browse",
+      href: "/home",
+    },
     {
       icon: BriefcaseIcon,
       text: "Create",
@@ -95,7 +102,9 @@ const NavMenu = () => {
 const Header = () => {
   return (
     <header className="flex items-center gap-4 border-b bg-background px-4 lg:px-6">
-      <div className="w-full">
+      <div className="w-full flex gap-2">
+        <div className="flex-grow" />
+        <RefreshButton />
         <ModeToggle />
       </div>
     </header>

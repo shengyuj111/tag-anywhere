@@ -22,6 +22,7 @@ import { FileDetailsPage } from "./pages/all-files/details/file-details-page.tsx
 import { LibraryDetailsPage } from "./pages/all-files/library/library-details-page.tsx";
 import { TooltipProvider } from "./components/ui/tooltip.tsx";
 import { TagDetailsPage } from "./pages/tags-management/details/tag-details-page.tsx";
+import { HomePage } from "./pages/home/home-page.tsx";
 
 const router = createBrowserRouter([
   {
@@ -34,7 +35,11 @@ const router = createBrowserRouter([
         children: [
           {
             path: "",
-            element: <Navigate to="/test" />,
+            element: <Navigate to="/home" />,
+          },
+          {
+            path: "home",
+            element: <HomePage />,
           },
           {
             path: "all-files",
