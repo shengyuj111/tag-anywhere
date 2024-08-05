@@ -118,6 +118,15 @@ const BookCreateForm = () => {
     });
   };
 
+  const getExtensionForBook = (type: string) => {
+    if (type === "Composition_Manga") {
+      return ["png", "jpeg", "jpg"];
+    } else if (type === "Composition_TvSeries") {
+      return ["mp4", "mkv", "avi", "webm", "mov", "flv", "wmv"];
+    }
+    return [];
+  }
+
   return (
     <Form {...form}>
       <form
@@ -228,18 +237,7 @@ const BookCreateForm = () => {
                       filters: [
                         {
                           name: "Image & Video",
-                          extensions: [
-                            "png",
-                            "jpeg",
-                            "jpg",
-                            "mp4",
-                            "mkv",
-                            "avi",
-                            "webm",
-                            "mov",
-                            "flv",
-                            "wmv",
-                          ],
+                          extensions: getExtensionForBook(form.getValues().type),
                         },
                       ],
                     });
