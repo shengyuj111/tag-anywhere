@@ -22,7 +22,12 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Image from "@/components/ui/image";
 import { H3, Small } from "@/components/ui/typography";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 
 export const TVSeriesDetails = ({
@@ -96,12 +101,12 @@ export const TVSeriesDetails = ({
                     <AccordionTrigger>Cover</AccordionTrigger>
                     <AccordionContent>
                       <div className="w-full flex items-center justify-center overflow-hidden rounded-md">
-                          <Image
-                              src={pathToUrl(mainFile.coverPath)}
-                              variant="static"
-                              alt="Image"
-                              className="object-contain"
-                          />
+                        <Image
+                          src={pathToUrl(mainFile.coverPath)}
+                          variant="static"
+                          alt="Image"
+                          className="object-contain"
+                        />
                       </div>
                     </AccordionContent>
                   </AccordionItem>
@@ -117,12 +122,11 @@ export const TVSeriesDetails = ({
                   />
                 ))}
               </div>
-              
             </ScrollArea>
           </Card>
           <Card className="overflow-auto">
             <ScrollArea className="h-full">
-            <FileTagsPanel mainFile={mainFile} />
+              <FileTagsPanel mainFile={mainFile} />
             </ScrollArea>
           </Card>
         </div>
@@ -145,7 +149,10 @@ const EpisodeButton = ({
 }: EpisodeButtonProps) => {
   return (
     <div
-      className={cn("w-full flex justify-start items-center gap-4 px-4 bg-background hover:bg-accent hover:text-accent-foreground cursor-pointer text-sm font-medium", selected ? "bg-muted" : "")}
+      className={cn(
+        "w-full flex justify-start items-center gap-4 px-4 bg-background hover:bg-accent hover:text-accent-foreground cursor-pointer text-sm font-medium",
+        selected ? "bg-muted" : "",
+      )}
       {...props}
     >
       <div className="w-[50px] h-[50px]">

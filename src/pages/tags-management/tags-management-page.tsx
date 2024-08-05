@@ -14,7 +14,7 @@ import { useData } from "@/components/provider/data-provider/data-context";
 type TagsManagementData = {
   searchName: string;
   setSearchName: (name: string) => void;
-}
+};
 
 export const TagsManagementPage = () => {
   const [db, setDb] = useState<Database | null>(null);
@@ -29,10 +29,15 @@ export const TagsManagementPage = () => {
   }, [currentDatabase]);
 
   return (
-    <DataProvider data={{
-      searchName,
-      setSearchName
-    } as TagsManagementData} id="tags-management">
+    <DataProvider
+      data={
+        {
+          searchName,
+          setSearchName,
+        } as TagsManagementData
+      }
+      id="tags-management"
+    >
       <div className="flex-1 flex flex-col gap-4 lg:gap-6">
         <div className="flex items-center justify-between pt-4 px-4 lg:px-6 lg:pt-6">
           <h1 className="text-lg font-semibold md:text-2xl">Tags</h1>
@@ -48,9 +53,11 @@ export const TagsManagementPage = () => {
           />
           <Visibility isVisible={!isFetchingTags}>
             <div className="flex flex-wrap w-full flex-1 gap-4">
-              {tags?.filter((tag) => tag.name.includes(searchName)).map((tag, index) => (
-                <TagDisplay key={index} tagCommon={tag} />
-              ))}
+              {tags
+                ?.filter((tag) => tag.name.includes(searchName))
+                .map((tag, index) => (
+                  <TagDisplay key={index} tagCommon={tag} />
+                ))}
             </div>
           </Visibility>
         </div>
@@ -60,7 +67,8 @@ export const TagsManagementPage = () => {
 };
 
 export const SearchInput = () => {
-  const { searchName, setSearchName } = useData<TagsManagementData>("tags-management")!;
+  const { searchName, setSearchName } =
+    useData<TagsManagementData>("tags-management")!;
 
   return (
     <div className="flex relative">

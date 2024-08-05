@@ -125,7 +125,7 @@ const BookCreateForm = () => {
       return ["mp4", "mkv", "avi", "webm", "mov", "flv", "wmv"];
     }
     return [];
-  }
+  };
 
   return (
     <Form {...form}>
@@ -237,7 +237,9 @@ const BookCreateForm = () => {
                       filters: [
                         {
                           name: "Image & Video",
-                          extensions: getExtensionForBook(form.getValues().type),
+                          extensions: getExtensionForBook(
+                            form.getValues().type,
+                          ),
                         },
                       ],
                     });

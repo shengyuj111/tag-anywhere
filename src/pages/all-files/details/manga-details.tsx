@@ -6,8 +6,12 @@ import Image from "@/components/ui/image";
 import { pathToUrl } from "@/api/api/helper";
 import { Card } from "@/components/ui/card";
 import { FileTagsPanel } from "@/components/composition/file-tags-panel";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export const ManageDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
   const mainFile = useMemo(() => fileData?.file, [fileData]);
@@ -25,12 +29,12 @@ export const ManageDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
             <AccordionTrigger>Cover</AccordionTrigger>
             <AccordionContent>
               <div className="w-full flex items-center justify-center overflow-hidden rounded-md">
-                  <Image
-                      src={pathToUrl(mainFile.coverPath)}
-                      variant="static"
-                      alt="Image"
-                      className="object-contain"
-                  />
+                <Image
+                  src={pathToUrl(mainFile.coverPath)}
+                  variant="static"
+                  alt="Image"
+                  className="object-contain"
+                />
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -40,7 +44,12 @@ export const ManageDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
         </Card>
         <div className="w-full flex flex-col gap-1">
           {fileChildren.map((file) => (
-            <Image key={file.id} variant="static" src={pathToUrl(file.path)} alt={file.name} />
+            <Image
+              key={file.id}
+              variant="static"
+              src={pathToUrl(file.path)}
+              alt={file.name}
+            />
           ))}
         </div>
       </div>
