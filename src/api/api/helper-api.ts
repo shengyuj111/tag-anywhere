@@ -27,14 +27,21 @@ export const helperApi = apiSlice.injectEndpoints({
 
           // Fetch all fileData
           const fileData: { coverPath: string | null }[] = await db.select(`
-            SELECT id, name, path, rsa, description, type, coverPath
+            SELECT coverPath
             FROM FileData
+          `);
+
+          // Fetch all library
+          const library: { coverPath: string | null }[] = await db.select(`
+            SELECT coverPath
+            FROM Library
           `);
 
           // Collect all cover paths from tags and fileData
           const coverPaths = [
             ...tags.map((tag) => tag.coverPath).filter(Boolean),
             ...fileData.map((file) => file.coverPath).filter(Boolean),
+            ...library.map((lib) => lib.coverPath).filter(Boolean),
           ] as string[];
 
           // Define the folder path (adjust as needed)

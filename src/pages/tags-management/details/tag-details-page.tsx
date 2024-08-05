@@ -36,7 +36,7 @@ import { ImageViewer } from "@/components/composition/image-viewer";
 import { pathToUrl } from "@/api/api/helper";
 import { EditableText } from "@/components/composition/editable-text";
 
-type TagFileContextMenuData = {
+export type TagFileContextMenuData = {
   tagName: string;
 };
 
@@ -194,7 +194,7 @@ export const TagDetailsPage = () => {
   );
 };
 
-const TagPageFileContext = ({
+export const TagPageFileContext = ({
   children,
   fileId,
 }: {

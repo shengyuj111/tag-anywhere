@@ -75,7 +75,7 @@ export const TagBadge = ({ tagId, ...props }: TagBadgeProps) => {
                 <Large>{tag?.name}</Large>
                 <Small className="text-muted-foreground whitespace-normal overflow-hidden">
                   {tag?.description ||
-                    "The color property sets the color of the foreground. but can, but can also include a couple of other things, such as an underline or overline placed on text using the text-decoration property."}
+                    "No Description"}
                 </Small>
               </div>
             </ScrollArea>
