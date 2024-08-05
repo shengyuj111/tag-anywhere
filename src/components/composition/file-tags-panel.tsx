@@ -12,6 +12,7 @@ import { useGetAllTagsQuery } from "@/api/api/tag-api";
 import MultipleSelector from "../ui/multi-selector";
 import { Separator } from "../ui/separator";
 import { TagBadge } from "./tag-badge";
+import { TagContext } from "./tag-context";
 
 interface FileDetailProps {
   mainFile: FileCommon;
@@ -102,6 +103,7 @@ export const FileTagsPanel = ({ mainFile }: FileDetailProps) => {
           </Visibility>
           <Visibility isVisible={isEditing}>
             <MultipleSelector
+              badgeWrapper={TagContext}
               value={updatedTags}
               defaultOptions={tags.map((tag) => ({
                 label: tag.name,

@@ -22,8 +22,8 @@ export interface FilesSectionProps
   extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
   fileCoverAspectRatio: FileCoverAspectRatio;
-  includeTags?: string[];
-  excludeTags?: string[];
+  includeTagIds?: number[];
+  excludeTagIds?: number[];
   includeFileIds?: number[];
   excludeFileIds?: number[];
   contextMenuWrapper?: (props: {
@@ -35,8 +35,8 @@ export interface FilesSectionProps
 export const FilesSection = ({
   className,
   fileCoverAspectRatio,
-  includeTags,
-  excludeTags,
+  includeTagIds,
+  excludeTagIds,
   includeFileIds,
   excludeFileIds,
   contextMenuWrapper: ContextMenuWrapper,
@@ -44,8 +44,8 @@ export const FilesSection = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(pageSizeOptions[0]);
   const { data: filesDate, isLoading: isFetchingFiles } = useGetAllFilesQuery({
-    includeTags,
-    excludeTags,
+    includeTagIds,
+    excludeTagIds,
     includeFileIds,
     excludeFileIds,
     pageSize,
