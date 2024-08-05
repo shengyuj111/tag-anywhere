@@ -76,7 +76,7 @@ interface MultipleSelectorProps {
   >;
   /** hide the clear all button. */
   hideClearAllButton?: boolean;
-  badgeWrapper?: React.FC<{ option: Option, children: React.ReactNode }>;
+  badgeWrapper?: React.FC<{ option: Option; children: React.ReactNode }>;
 }
 
 export interface MultipleSelectorRef {
@@ -441,7 +441,6 @@ const MultipleSelector = React.forwardRef<
                     </button>
                   </Badge>
                 </BadgeWrapper>
-                
               );
             })}
             {/* Avoid having the "Search" Icon */}

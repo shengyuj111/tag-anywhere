@@ -92,9 +92,12 @@ export const getUniqueNameInFolder = async (dirPath: string) => {
   const existingFileNames = await getFileNamesInFolder(dirPath);
   console.log("existingFileNames", existingFileNames);
   return getUniqueNameNotInList(existingFileNames);
-}
+};
 
-export const getUniqueNamesInFolder = async (dirPath: string, count: number) => {
+export const getUniqueNamesInFolder = async (
+  dirPath: string,
+  count: number,
+) => {
   const existingFileNames = await getFileNamesInFolder(dirPath);
   const uniqueNames: string[] = [];
   for (let i = 0; i < count; i++) {
@@ -103,12 +106,12 @@ export const getUniqueNamesInFolder = async (dirPath: string, count: number) => 
     existingFileNames.push(uniqueName);
   }
   return uniqueNames;
-}
+};
 
 export const getFileNamesInFolder = async (dirPath: string) => {
   const filesInfo = await getFilesAndTypes(dirPath);
   return filesInfo.map((file) => formatFileName(file.name)!);
-}
+};
 
 export const getUniqueNameNotInList = async (existingNames: string[]) => {
   let uniqueName = "";
@@ -116,4 +119,4 @@ export const getUniqueNameNotInList = async (existingNames: string[]) => {
     uniqueName = `${uuidv4()}`;
   }
   return uniqueName;
-}
+};

@@ -134,10 +134,10 @@ export const FilesSection = ({
         </Visibility>
       </div>
       <Visibility isVisible={files.length === 0}>
-          <div className="flex-1">
-            <H1 className="text-muted-foreground">Nothing</H1>
-          </div>
-        </Visibility>
+        <div className="flex-1">
+          <H1 className="text-muted-foreground">Nothing</H1>
+        </div>
+      </Visibility>
     </div>
   );
 };

@@ -27,7 +27,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TagCommon, tagTypes, useCreateTagMutation, useGetAllTagsQuery } from "@/api/api/tag-api";
+import {
+  TagCommon,
+  tagTypes,
+  useCreateTagMutation,
+  useGetAllTagsQuery,
+} from "@/api/api/tag-api";
 import { capitalize } from "lodash";
 import { Textarea } from "@/components/ui/textarea";
 import { open } from "@tauri-apps/api/dialog";
@@ -48,7 +53,10 @@ import {
 import { useStorage } from "@/components/provider/storage-provider/storage-provider";
 import MultipleSelector from "@/components/ui/multi-selector";
 import { TagContext } from "@/components/composition/tag-context";
-import { CreateLibraryRequest, useCreateLibraryMutation } from "@/api/api/library-api";
+import {
+  CreateLibraryRequest,
+  useCreateLibraryMutation,
+} from "@/api/api/library-api";
 import { FilesSection } from "@/components/composition/files-section";
 import { FileCoverAspectRatio } from "@/lib/file-enum";
 
@@ -61,7 +69,8 @@ type CreatePageData = {
 
 export const CreatePage = () => {
   const [previewTag, setPreviewTag] = useState<TagCommon | null>(null);
-  const [createLibrary, setCreateLibrary] = useState<CreateLibraryRequest | null>(null)
+  const [createLibrary, setCreateLibrary] =
+    useState<CreateLibraryRequest | null>(null);
 
   return (
     <DataProvider
@@ -338,8 +347,10 @@ const LibraryCreateForm = () => {
         name: values.name,
         nameRegx: values.nameRegex === "" ? null : values.nameRegex,
         coverPath: values.coverPath,
-        includeTagIds: values.includeTags?.map((tag) => Number(tag.value)) ?? [],
-        excludeTagIds: values.excludeTags?.map((tag) => Number(tag.value)) ?? [],
+        includeTagIds:
+          values.includeTags?.map((tag) => Number(tag.value)) ?? [],
+        excludeTagIds:
+          values.excludeTags?.map((tag) => Number(tag.value)) ?? [],
         includeFileIds: [],
         excludeFileIds: [],
       } as CreateLibraryRequest);
@@ -357,8 +368,10 @@ const LibraryCreateForm = () => {
         name: values.name,
         nameRegx: values.nameRegex === "" ? null : values.nameRegex,
         coverPath: values.coverPath,
-        includeTagIds: values.includeTags?.map((tag) => Number(tag.value)) ?? [],
-        excludeTagIds: values.excludeTags?.map((tag) => Number(tag.value)) ?? [],
+        includeTagIds:
+          values.includeTags?.map((tag) => Number(tag.value)) ?? [],
+        excludeTagIds:
+          values.excludeTags?.map((tag) => Number(tag.value)) ?? [],
         includeFileIds: [],
         excludeFileIds: [],
       } as CreateLibraryRequest);
@@ -401,7 +414,10 @@ const LibraryCreateForm = () => {
             <FormItem>
               <FormLabel>Name Regex</FormLabel>
               <FormControl>
-                <Input placeholder="e.g. '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$'" {...field} />
+                <Input
+                  placeholder="e.g. '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$'"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -685,15 +701,15 @@ const LibraryPreview = () => {
   return (
     createLibrary && (
       <FilesSection
-      fileCoverAspectRatio={FileCoverAspectRatio.Book}
-      includeTagIds={createLibrary?.includeTagIds ?? []}
-      excludeTagIds={createLibrary?.excludeTagIds ?? []}
-      includeFileIds={createLibrary?.includeFileIds ?? []}
-      excludeFileIds={createLibrary?.excludeFileIds ?? []}
-    />
+        fileCoverAspectRatio={FileCoverAspectRatio.Book}
+        includeTagIds={createLibrary?.includeTagIds ?? []}
+        excludeTagIds={createLibrary?.excludeTagIds ?? []}
+        includeFileIds={createLibrary?.includeFileIds ?? []}
+        excludeFileIds={createLibrary?.excludeFileIds ?? []}
+      />
     )
   );
-}
+};
 
 const TabsField = () => {
   return (

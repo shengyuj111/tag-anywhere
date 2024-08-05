@@ -1,10 +1,6 @@
 import { DatabaseManager } from "../database/database-manager";
 import apiSlice from "../api-slice";
-import {
-  createThumbnail,
-  FileAndTypeInfo,
-  getFilesAndTypes,
-} from "./rust-api";
+import { createThumbnail, FileAndTypeInfo, getFilesAndTypes } from "./rust-api";
 import {
   getCoverAndStoreSetUp,
   getCoverPath,
@@ -408,7 +404,10 @@ export const fileApi = apiSlice.injectEndpoints({
 
           const failedFiles: FileAndTypeInfo[] = [];
           const newFileData: FileDetails[] = [];
-          const uniqueNames = await getUniqueNamesInFolder(cover_dir_path, newFiles.length);
+          const uniqueNames = await getUniqueNamesInFolder(
+            cover_dir_path,
+            newFiles.length,
+          );
           let i = 0;
 
           for (const file of newFiles) {
@@ -526,8 +525,12 @@ export const fileApi = apiSlice.injectEndpoints({
           const { id } = request;
           const db = await DatabaseManager.getInstance().getDbInstance();
 
-          await db.execute(`DELETE FROM LibraryIncludeFile WHERE file_id = ?`, [id]);
-          await db.execute(`DELETE FROM LibraryExcludeFile WHERE file_id = ?`, [id]);
+          await db.execute(`DELETE FROM LibraryIncludeFile WHERE file_id = ?`, [
+            id,
+          ]);
+          await db.execute(`DELETE FROM LibraryExcludeFile WHERE file_id = ?`, [
+            id,
+          ]);
           await db.execute(`DELETE FROM FileTag WHERE file_id = ?`, [id]);
           await db.execute(
             `DELETE FROM FileComposition WHERE composite_file_id = ?`,
@@ -542,7 +545,10 @@ export const fileApi = apiSlice.injectEndpoints({
           });
         }
       },
-      invalidatesTags: (_result, _error, { id }) => [{ type: "FILE", id }, { type: "FILE", id: "LIST" }],
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "FILE", id },
+        { type: "FILE", id: "LIST" },
+      ],
     }),
     deleteAllFiles: builder.mutation<null, void>({
       queryFn: async () => {
@@ -715,17 +721,16 @@ export const fileApi = apiSlice.injectEndpoints({
             request;
           const db = await DatabaseManager.getInstance().getDbInstance();
 
-          const { coverPath: cover_dir_path } =
-            await getCoverAndStoreSetUp();
+          const { coverPath: cover_dir_path } = await getCoverAndStoreSetUp();
 
           const uniqueName = await getUniqueNameInFolder(cover_dir_path);
-            const thumbnailPath = await createThumbnail(
-                uniqueName,
-                coverPath,
-                cover_dir_path,
-                1,
-                null,
-            );
+          const thumbnailPath = await createThumbnail(
+            uniqueName,
+            coverPath,
+            cover_dir_path,
+            1,
+            null,
+          );
 
           // Create composite file
           const queryResult = await db.execute(

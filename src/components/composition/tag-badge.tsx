@@ -74,8 +74,7 @@ export const TagBadge = ({ tagId, ...props }: TagBadgeProps) => {
               <div className="w-full h-full p-4">
                 <Large>{tag?.name}</Large>
                 <Small className="text-muted-foreground whitespace-normal overflow-hidden">
-                  {tag?.description ||
-                    "No Description"}
+                  {tag?.description || "No Description"}
                 </Small>
               </div>
             </ScrollArea>

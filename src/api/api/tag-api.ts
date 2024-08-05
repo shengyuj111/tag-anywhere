@@ -116,17 +116,16 @@ export const tagApi = apiSlice.injectEndpoints({
         try {
           const { name, type, description, color, coverPath } = request;
           const db = await DatabaseManager.getInstance().getDbInstance();
-          const { coverPath: cover_dir_path } =
-            await getCoverAndStoreSetUp();
+          const { coverPath: cover_dir_path } = await getCoverAndStoreSetUp();
 
           const uniqueName = await getUniqueNameInFolder(cover_dir_path);
-            const thumbnailPath = await createThumbnail(
-                uniqueName,
-                coverPath,
-                cover_dir_path,
-                1,
-                null,
-            );
+          const thumbnailPath = await createThumbnail(
+            uniqueName,
+            coverPath,
+            cover_dir_path,
+            1,
+            null,
+          );
 
           await db.execute(
             `
@@ -215,7 +214,10 @@ export const tagApi = apiSlice.injectEndpoints({
           });
         }
       },
-      invalidatesTags: (_result, _error, { id }) => [{ type: "TAG", id }, {type: "TAG", id: "LIST"}],
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "TAG", id },
+        { type: "TAG", id: "LIST" },
+      ],
     }),
   }),
 });
