@@ -106,8 +106,8 @@ export interface GetFilesDatabaseResponse extends FileDetails {
 
 export interface GetFilesRequest {
   nameRegex?: string;
-  includeTags?: string[];
-  excludeTags?: string[];
+  includeTagIds?: number[];
+  excludeTagIds?: number[];
   includeFileIds?: number[];
   excludeFileIds?: number[];
   pageSize?: number;
@@ -188,8 +188,8 @@ export const fileApi = apiSlice.injectEndpoints({
         try {
           const {
             nameRegex,
-            includeTags,
-            excludeTags,
+            includeTagIds,
+            excludeTagIds,
             includeFileIds,
             excludeFileIds,
             pageSize,
@@ -209,26 +209,26 @@ export const fileApi = apiSlice.injectEndpoints({
             params.push(nameRegex);
           }
 
-          if (includeTags && includeTags.length > 0) {
+          if (includeTagIds && includeTagIds.length > 0) {
             conditions.push(
               `FileData.id IN (
                 SELECT file_id FROM FileTag
                 JOIN Tag ON FileTag.tag_id = Tag.id
-                WHERE Tag.name IN (${includeTags.map(() => "?").join(", ")})
+                WHERE Tag.id IN (${includeTagIds.map(() => "?").join(", ")})
               )`,
             );
-            params.push(...includeTags);
+            params.push(...includeTagIds);
           }
 
-          if (excludeTags && excludeTags.length > 0) {
+          if (excludeTagIds && excludeTagIds.length > 0) {
             conditions.push(
               `FileData.id NOT IN (
                 SELECT file_id FROM FileTag
                 JOIN Tag ON FileTag.tag_id = Tag.id
-                WHERE Tag.name IN (${excludeTags.map(() => "?").join(", ")})
+                WHERE Tag.id IN (${excludeTagIds.map(() => "?").join(", ")})
               )`,
             );
-            params.push(...excludeTags);
+            params.push(...excludeTagIds);
           }
 
           if (includeFileIds && includeFileIds.length > 0) {
@@ -304,11 +304,11 @@ export const fileApi = apiSlice.injectEndpoints({
         result
           ? [
               ...result.files.map(({ id }) => ({ type: "FILE", id }) as const),
-              { type: "FILE_LIST", id: "LIST" },
+              { type: "FILE", id: "LIST" },
               { type: "TAG", id: "LIST" },
             ]
           : [
-              { type: "FILE_LIST", id: "LIST" },
+              { type: "FILE", id: "LIST" },
               { type: "TAG", id: "LIST" },
             ],
     }),
@@ -485,7 +485,7 @@ export const fileApi = apiSlice.injectEndpoints({
           });
         }
       },
-      invalidatesTags: [{ type: "FILE_LIST", id: "LIST" }],
+      invalidatesTags: [{ type: "FILE", id: "LIST" }],
     }),
     updateFile: builder.mutation<null, UpdateFileRequest>({
       queryFn: async (request) => {
@@ -538,6 +538,8 @@ export const fileApi = apiSlice.injectEndpoints({
           const { id } = request;
           const db = await DatabaseManager.getInstance().getDbInstance();
 
+          await db.execute(`DELETE FROM LibraryIncludeFile WHERE file_id = ?`, [id]);
+          await db.execute(`DELETE FROM LibraryExcludeFile WHERE file_id = ?`, [id]);
           await db.execute(`DELETE FROM FileTag WHERE file_id = ?`, [id]);
           await db.execute(
             `DELETE FROM FileComposition WHERE composite_file_id = ?`,
@@ -552,12 +554,14 @@ export const fileApi = apiSlice.injectEndpoints({
           });
         }
       },
-      invalidatesTags: (_result, _error, { id }) => [{ type: "FILE", id }],
+      invalidatesTags: (_result, _error, { id }) => [{ type: "FILE", id }, { type: "FILE", id: "LIST" }],
     }),
     deleteAllFiles: builder.mutation<null, void>({
       queryFn: async () => {
         try {
           const db = await DatabaseManager.getInstance().getDbInstance();
+          await db.execute(`DELETE FROM LibraryIncludeFile`);
+          await db.execute(`DELETE FROM LibraryExcludeFile`);
           await db.execute(`DELETE FROM FileTag`);
           await db.execute(`DELETE FROM FileComposition`);
           await db.execute(`DELETE FROM FileData`);
@@ -569,7 +573,7 @@ export const fileApi = apiSlice.injectEndpoints({
           });
         }
       },
-      invalidatesTags: () => [{ type: "FILE_LIST" }],
+      invalidatesTags: () => [{ type: "FILE", id: "LIST" }],
     }),
     addTagToFile: builder.mutation<null, AddTagsToFileRequest>({
       queryFn: async (request) => {
@@ -775,7 +779,7 @@ export const fileApi = apiSlice.injectEndpoints({
           });
         }
       },
-      invalidatesTags: [{ type: "FILE_LIST", id: "LIST" }],
+      invalidatesTags: [{ type: "FILE", id: "LIST" }],
     }),
     tagFiles: builder.mutation<null, TagFileRequest>({
       queryFn: async (request) => {
@@ -830,7 +834,7 @@ export const fileApi = apiSlice.injectEndpoints({
           });
         }
       },
-      invalidatesTags: () => [{ type: "FILE_LIST", id: "LIST" }],
+      invalidatesTags: () => [{ type: "FILE", id: "LIST" }],
     }),
   }),
 });

@@ -57,9 +57,9 @@ export const tagApi = apiSlice.injectEndpoints({
         result
           ? [
               ...result.map(({ id }) => ({ type: "TAG", id }) as const),
-              { type: "TAG_LIST", id: "LIST" },
+              { type: "TAG", id: "LIST" },
             ]
-          : [{ type: "TAG_LIST", id: "LIST" }],
+          : [{ type: "TAG", id: "LIST" }],
     }),
     getTagById: builder.query<TagCommon, GetTagByIdRequest>({
       queryFn: async (request) => {
@@ -140,7 +140,7 @@ export const tagApi = apiSlice.injectEndpoints({
           });
         }
       },
-      invalidatesTags: [{ type: "TAG_LIST", id: "LIST" }],
+      invalidatesTags: [{ type: "TAG", id: "LIST" }],
     }),
     updateTag: builder.mutation<null, UpdateTagRequest>({
       queryFn: async (request) => {
@@ -207,7 +207,7 @@ export const tagApi = apiSlice.injectEndpoints({
           });
         }
       },
-      invalidatesTags: (_result, _error, { id }) => [{ type: "TAG", id }],
+      invalidatesTags: (_result, _error, { id }) => [{ type: "TAG", id }, {type: "TAG", id: "LIST"}],
     }),
   }),
 });

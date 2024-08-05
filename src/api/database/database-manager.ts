@@ -110,6 +110,55 @@ async function createDatabase(dbPath: string) {
       );
   `);
 
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS Library (
+      id INTEGER PRIMARY KEY,
+      name TEXT NOT NULL,
+      coverPath TEXT NOT NULL,
+      nameRegx TEXT
+    );
+  `);
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS LibraryIncludeTag (
+      library_id INTEGER NOT NULL,
+      tag_id INTEGER NOT NULL,
+      FOREIGN KEY (library_id) REFERENCES Library (id),
+      FOREIGN KEY (tag_id) REFERENCES Tag (id),
+      PRIMARY KEY (library_id, tag_id)
+    );
+  `);
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS LibraryExcludeTag (
+      library_id INTEGER NOT NULL,
+      tag_id INTEGER NOT NULL,
+      FOREIGN KEY (library_id) REFERENCES Library (id),
+      FOREIGN KEY (tag_id) REFERENCES Tag (id),
+      PRIMARY KEY (library_id, tag_id)
+    );
+  `);
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS LibraryIncludeFile (
+      library_id INTEGER NOT NULL,
+      file_id INTEGER NOT NULL,
+      FOREIGN KEY (library_id) REFERENCES Library (id),
+      FOREIGN KEY (file_id) REFERENCES FileData (id),
+      PRIMARY KEY (library_id, file_id)
+    );
+  `);
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS LibraryExcludeFile (
+      library_id INTEGER NOT NULL,
+      file_id INTEGER NOT NULL,
+      FOREIGN KEY (library_id) REFERENCES Library (id),
+      FOREIGN KEY (file_id) REFERENCES FileData (id),
+      PRIMARY KEY (library_id, file_id)
+    );
+  `);
+
   return db;
 }
 

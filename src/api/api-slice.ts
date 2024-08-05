@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 
-export const tags = ["SETUP", "TAG", "TAG_LIST", "FILE", "FILE_LIST"];
+export const tags = ["SETUP", "TAG", "FILE", "LIBRARY"];
 
 export const apiSlice = createApi({
   baseQuery: async () => {
