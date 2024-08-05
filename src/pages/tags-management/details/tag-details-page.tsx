@@ -48,7 +48,7 @@ export const TagDetailsPage = () => {
   );
   const [tagFiles, { isLoading }] = useTagFilesMutation();
   const [updateTag] = useUpdateTagMutation();
-  const includeTags = useMemo(() => (tag ? [tag.name] : []), [tag]);
+  const includeTagIds = useMemo(() => (tag ? [tag.id] : []), [tag]);
 
   const addTagToFiles = async () => {
     // Open file picker
@@ -183,7 +183,7 @@ export const TagDetailsPage = () => {
             >
               <FilesSection
                 fileCoverAspectRatio={FileCoverAspectRatio.Book}
-                includeTags={includeTags}
+                includeTagIds={includeTagIds}
                 contextMenuWrapper={TagPageFileContext}
               />
             </DataProvider>
