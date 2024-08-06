@@ -29,9 +29,12 @@ interface TagDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
 export const TagDisplay = ({ tagCommon, numOfFiles }: TagDisplayProps) => {
   const [deleteTag] = useDeleteTagMutation();
   const { toast } = useToast();
-  const { data: tagResponse } = useGetTagByIdQuery(numOfFiles ? skipToken : { id: tagCommon.id });
+  const { data: tagResponse } = useGetTagByIdQuery(
+    numOfFiles ? skipToken : { id: tagCommon.id },
+  );
   const fileNumber = useMemo(
-    () => (numOfFiles ? numOfFiles : tagResponse ? tagResponse!.fileIds.length : 0),
+    () =>
+      numOfFiles ? numOfFiles : tagResponse ? tagResponse!.fileIds.length : 0,
     [tagResponse, numOfFiles],
   );
   const navigate = useNavigate();

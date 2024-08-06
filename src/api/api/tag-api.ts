@@ -61,50 +61,53 @@ export const tagApi = apiSlice.injectEndpoints({
             sortOn,
             isAscending = true,
             pageSize,
-            page
+            page,
           } = request;
-          
+
           const db = await DatabaseManager.getInstance().getDbInstance();
           let baseQuery = `FROM Tag`;
           const conditions: string[] = [];
           const params: (string | number)[] = [];
-          
+
           if (includeInName) {
             conditions.push("Tag.name LIKE ?");
             params.push(`%${includeInName}%`);
           }
-    
+
           if (conditions.length > 0) {
             baseQuery += " WHERE " + conditions.join(" AND ");
           }
-    
+
           // Query to count total tags
           const countQuery = `SELECT COUNT(*) as total ${baseQuery}`;
-          const countResult: { total: number }[] = await db.select(countQuery, params);
+          const countResult: { total: number }[] = await db.select(
+            countQuery,
+            params,
+          );
           const totalTags = countResult[0]?.total || 0;
-    
+
           // Calculate total pages
           const totalPages = pageSize ? Math.ceil(totalTags / pageSize) : 1;
-    
+
           // Main query to fetch tags
           let query = `
             SELECT id, name, type, color, coverPath, description
             ${baseQuery}
           `;
-    
+
           if (sortOn) {
-            query += ` ORDER BY ${sortOn} ${isAscending ? 'ASC' : 'DESC'}`;
+            query += ` ORDER BY ${sortOn} ${isAscending ? "ASC" : "DESC"}`;
           }
-    
+
           if (pageSize && page) {
             const offset = (page - 1) * pageSize;
             query += " LIMIT ? OFFSET ?";
             params.push(pageSize, offset);
           }
-    
+
           const tags: TagCommon[] = await db.select(query, params);
-          
-          return { 
+
+          return {
             data: {
               tags,
               totalPages: totalPages,
@@ -125,7 +128,7 @@ export const tagApi = apiSlice.injectEndpoints({
               { type: "TAG", id: "LIST" },
             ]
           : [{ type: "TAG", id: "LIST" }],
-    }),    
+    }),
     getTagById: builder.query<GetTagByIdResponse, GetTagByIdRequest>({
       queryFn: async (request) => {
         try {

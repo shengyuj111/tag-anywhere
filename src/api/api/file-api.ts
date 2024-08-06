@@ -192,24 +192,24 @@ export const fileApi = apiSlice.injectEndpoints({
             sortOn,
             isAscending = true,
           } = request;
-    
+
           const db = await DatabaseManager.getInstance().getDbInstance();
-    
+
           let baseQuery = `
             FROM FileData
           `;
           const conditions: string[] = [];
           const params: (string | number)[] = [];
-    
+
           if (includeInName) {
             conditions.push("FileData.name LIKE ?");
             params.push(`%${includeInName}%`);
           }
-    
+
           if (ignoreChildren) {
             conditions.push("FileData.type NOT LIKE 'Child_%'");
           }
-    
+
           if (includeTagIds && includeTagIds.length > 0) {
             conditions.push(
               `FileData.id IN (
@@ -220,7 +220,7 @@ export const fileApi = apiSlice.injectEndpoints({
             );
             params.push(...includeTagIds);
           }
-    
+
           if (excludeTagIds && excludeTagIds.length > 0) {
             conditions.push(
               `FileData.id NOT IN (
@@ -231,25 +231,25 @@ export const fileApi = apiSlice.injectEndpoints({
             );
             params.push(...excludeTagIds);
           }
-    
+
           if (includeFileIds && includeFileIds.length > 0) {
             conditions.push(
               `FileData.id IN (${includeFileIds.map(() => "?").join(", ")})`,
             );
             params.push(...includeFileIds);
           }
-    
+
           if (excludeFileIds && excludeFileIds.length > 0) {
             conditions.push(
               `FileData.id NOT IN (${excludeFileIds.map(() => "?").join(", ")})`,
             );
             params.push(...excludeFileIds);
           }
-    
+
           if (conditions.length > 0) {
             baseQuery += " WHERE " + conditions.join(" AND ");
           }
-    
+
           // Query to count total files
           const countQuery = `SELECT COUNT(*) as total ${baseQuery}`;
           const countResult: { total: number }[] = await db.select(
@@ -257,10 +257,10 @@ export const fileApi = apiSlice.injectEndpoints({
             params,
           );
           const totalFiles = countResult[0]?.total || 0;
-    
+
           // Calculate total pages
           const totalPages = pageSize ? Math.ceil(totalFiles / pageSize) : 1;
-    
+
           // Main query to fetch files
           let query = `
             SELECT FileData.*, COALESCE((
@@ -272,17 +272,17 @@ export const fileApi = apiSlice.injectEndpoints({
             ${baseQuery}
             GROUP BY FileData.id
           `;
-    
+
           if (sortOn) {
-            query += ` ORDER BY FileData.${sortOn} ${isAscending ? 'ASC' : 'DESC'}`;
+            query += ` ORDER BY FileData.${sortOn} ${isAscending ? "ASC" : "DESC"}`;
           }
-    
+
           if (pageSize && page) {
             const offset = (page - 1) * pageSize;
             query += " LIMIT ? OFFSET ?";
             params.push(pageSize, offset);
           }
-    
+
           const files: GetFilesDatabaseResponse[] = await db.select(
             query,
             params,
@@ -291,9 +291,9 @@ export const fileApi = apiSlice.injectEndpoints({
             ...file,
             tagIds: file.tagIds ? file.tagIds.split(",").map(Number) : [],
           }));
-    
+
           console.log("result", result);
-    
+
           return {
             data: {
               files: result,

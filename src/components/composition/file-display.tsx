@@ -34,7 +34,9 @@ export const FileDisplay = ({
           <Image src={pathToUrl(fileCommon.coverPath)} alt="Image" />
         </AspectRatio>
         <div className="absolute top-2 right-2">
-          <Badge className="bg-blue-600 text-white">{getFileDisplayType(fileCommon)}</Badge>
+          <Badge className="bg-blue-600 text-white">
+            {getFileDisplayType(fileCommon)}
+          </Badge>
         </div>
       </div>
       <div>

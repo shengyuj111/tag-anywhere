@@ -5,7 +5,10 @@ import { Card } from "@/components/ui/card";
 import { Loaders } from "@/components/ui/loaders";
 import { BookAIcon, ScanTextIcon } from "lucide-react";
 import { LibraryForm } from "../create/library-form";
-import { CreateLibraryRequest, useCreateLibraryMutation } from "@/api/api/library-api";
+import {
+  CreateLibraryRequest,
+  useCreateLibraryMutation,
+} from "@/api/api/library-api";
 import { libraryForm } from "../create/forms";
 import { z } from "zod";
 import { toast } from "@/components/ui/use-toast";
@@ -20,7 +23,8 @@ import CreateBookDialog from "./create-book-dialog";
 
 export const AllFilesPage = () => {
   const dialogManager = useContext(DialogContext).manager;
-  const [createLibrary, { isLoading: isCreatingLibrary }] = useCreateLibraryMutation();
+  const [createLibrary, { isLoading: isCreatingLibrary }] =
+    useCreateLibraryMutation();
   const { config } = useStorage()!;
   const [scanFiles, { isLoading: isScanning }] = useScanFilesMutation();
   const form = useForm<z.infer<typeof libraryForm>>({
@@ -35,12 +39,12 @@ export const AllFilesPage = () => {
     },
   });
 
-
   const onSubmit = async (values: z.infer<typeof libraryForm>) => {
     try {
       await createLibrary({
         name: values.name,
-        includeInName: values.includeInName === "" ? null : values.includeInName,
+        includeInName:
+          values.includeInName === "" ? null : values.includeInName,
         coverPath: values.coverPath,
         includeTagIds:
           values.includeTags?.map((tag) => Number(tag.value)) ?? [],
@@ -68,58 +72,61 @@ export const AllFilesPage = () => {
     dialogManager.openDialog({
       child: <CreateBookDialog />,
     });
-  }
+  };
 
   return (
     <>
       <div className="w-full h-full flex justify-center">
-      <div className="w-[80%] h-full flex flex-col items-center gap-4 ">
-        <H3 className="w-full flex">
-          Files Library
-        </H3>
-        <div className="flex gap-4 w-full flex-grow">
-          <Card className="w-[20%] h-full p-6">
-            <LibraryForm 
-              form={form}
-              onSubmit={onSubmit} 
-              isSubmitting={isCreatingLibrary} 
-              onCancel={() => {}}
-              submitButtonText="Create Library"
-            />
-          </Card>
-          <Card className="w-[calc(80%-1rem)] h-full p-6 flex flex-col gap-8">
-            <div className="w-full flex items-center gap-4">
-              <div className="flex-1" />
-              <Button
-                disabled={isScanning || !config}
-                onClick={openCreateBookDialog}>
-                <BookAIcon className="w-4 h-4 mr-2" />
-                Create Book
-              </Button>
-              <Button
-                disabled={isScanning || !config}
-                onClick={() => {
-                  scanFiles({});
-                }}
-              >
-                <Loaders.circular size="small" loading={isScanning} />
-                <ScanTextIcon className="w-4 h-4 mr-2" />
-                Scan
-              </Button>
-            </div>
-            <div className="w-full flex-1">
-              <FilesSection 
-                fileCoverAspectRatio={FileCoverAspectRatio.Book}
-                includeInName={form.getValues().includeInName}
-                ignoreChildren={form.getValues().ignoreChildren}
-                includeTagIds={(form.getValues().includeTags || []).map((tag) => Number(tag.value))}
-                excludeTagIds={(form.getValues().excludeTags || []).map((tag) => Number(tag.value))}
+        <div className="w-[80%] h-full flex flex-col items-center gap-4 ">
+          <H3 className="w-full flex">Files Library</H3>
+          <div className="flex gap-4 w-full flex-grow">
+            <Card className="w-[20%] h-full p-6">
+              <LibraryForm
+                form={form}
+                onSubmit={onSubmit}
+                isSubmitting={isCreatingLibrary}
+                onCancel={() => {}}
+                submitButtonText="Create Library"
               />
-            </div>
-          </Card>
+            </Card>
+            <Card className="w-[calc(80%-1rem)] h-full p-6 flex flex-col gap-8">
+              <div className="w-full flex items-center gap-4">
+                <div className="flex-1" />
+                <Button
+                  disabled={isScanning || !config}
+                  onClick={openCreateBookDialog}
+                >
+                  <BookAIcon className="w-4 h-4 mr-2" />
+                  Create Book
+                </Button>
+                <Button
+                  disabled={isScanning || !config}
+                  onClick={() => {
+                    scanFiles({});
+                  }}
+                >
+                  <Loaders.circular size="small" loading={isScanning} />
+                  <ScanTextIcon className="w-4 h-4 mr-2" />
+                  Scan
+                </Button>
+              </div>
+              <div className="w-full flex-1">
+                <FilesSection
+                  fileCoverAspectRatio={FileCoverAspectRatio.Book}
+                  includeInName={form.getValues().includeInName}
+                  ignoreChildren={form.getValues().ignoreChildren}
+                  includeTagIds={(form.getValues().includeTags || []).map(
+                    (tag) => Number(tag.value),
+                  )}
+                  excludeTagIds={(form.getValues().excludeTags || []).map(
+                    (tag) => Number(tag.value),
+                  )}
+                />
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
     </>
   );
 };

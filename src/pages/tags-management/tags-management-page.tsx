@@ -66,48 +66,54 @@ export const TagsManagementPage = () => {
       id="tags-management"
     >
       <div className="w-full h-full flex justify-center">
-      <div className="w-[80%] h-full flex flex-col items-center gap-4 ">
-        <H3 className="w-full flex">
-          All Tags
-        </H3>
-        <div className="flex gap-4 w-full flex-grow">
-          <Card className="w-[20%] h-full p-6 flex flex-col">
-            <TagForm 
-              form={form}
-              onSubmit={onSubmit} 
-              isSubmitting={isCreatingTag} 
-              onCancel={() => {}}
-              submitButtonText="Create Tag"
-            />
-            <div className="w-full flex flex-col mt-8 gap-4">
-            <H4>Preview</H4>
-            <TagDisplay
-              tagCommon={{
-                id: 0,
-                name: form.getValues("name") === "" ? "Tag Name" : form.getValues("name"),
-                type: "default",
-                color: null,
-                coverPath: form.getValues("coverPath") === "" ? undefined : form.getValues("coverPath"),
-                description: "",
-              } as TagCommon}
-              numOfFiles={9999}
-            />
-            </div>
-          </Card>
-          <Card className="w-[calc(80%-1rem)] h-full p-6 flex flex-col gap-8">
-            <div className="w-full flex items-center gap-4">
-              <SearchInput />
-              <div className="flex-1" />
-            </div>
-            <div className="w-full flex-1">
-              <TagsSection
-                includeInName={searchName === "" ? undefined : searchName}
+        <div className="w-[80%] h-full flex flex-col items-center gap-4 ">
+          <H3 className="w-full flex">All Tags</H3>
+          <div className="flex gap-4 w-full flex-grow">
+            <Card className="w-[20%] h-full p-6 flex flex-col">
+              <TagForm
+                form={form}
+                onSubmit={onSubmit}
+                isSubmitting={isCreatingTag}
+                onCancel={() => {}}
+                submitButtonText="Create Tag"
               />
-            </div>
-          </Card>
+              <div className="w-full flex flex-col mt-8 gap-4">
+                <H4>Preview</H4>
+                <TagDisplay
+                  tagCommon={
+                    {
+                      id: 0,
+                      name:
+                        form.getValues("name") === ""
+                          ? "Tag Name"
+                          : form.getValues("name"),
+                      type: "default",
+                      color: null,
+                      coverPath:
+                        form.getValues("coverPath") === ""
+                          ? undefined
+                          : form.getValues("coverPath"),
+                      description: "",
+                    } as TagCommon
+                  }
+                  numOfFiles={9999}
+                />
+              </div>
+            </Card>
+            <Card className="w-[calc(80%-1rem)] h-full p-6 flex flex-col gap-8">
+              <div className="w-full flex items-center gap-4">
+                <SearchInput />
+                <div className="flex-1" />
+              </div>
+              <div className="w-full flex-1">
+                <TagsSection
+                  includeInName={searchName === "" ? undefined : searchName}
+                />
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
     </DataProvider>
   );
 };

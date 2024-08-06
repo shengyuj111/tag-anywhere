@@ -76,9 +76,9 @@ export const libraryApi = apiSlice.injectEndpoints({
             sortOn,
             isAscending = true,
             pageSize,
-            page
+            page,
           } = request;
-    
+
           const db = await DatabaseManager.getInstance().getDbInstance();
           let baseQuery = `FROM Library l
           LEFT JOIN LibraryIncludeTag lit ON l.id = lit.library_id
@@ -87,26 +87,31 @@ export const libraryApi = apiSlice.injectEndpoints({
           LEFT JOIN LibraryExcludeFile lef ON l.id = lef.library_id`;
           const conditions: string[] = [];
           const params: (string | number)[] = [];
-    
+
           if (includeInName) {
             conditions.push("l.name LIKE ?");
             params.push(`%${includeInName}%`);
           }
-    
+
           if (conditions.length > 0) {
             baseQuery += " WHERE " + conditions.join(" AND ");
           }
-    
+
           baseQuery += " GROUP BY l.id, l.name, l.coverPath, l.includeInName";
-    
+
           // Query to count total libraries
           const countQuery = `SELECT COUNT(DISTINCT l.id) as total ${baseQuery}`;
-          const countResult: { total: number }[] = await db.select(countQuery, params);
+          const countResult: { total: number }[] = await db.select(
+            countQuery,
+            params,
+          );
           const totalLibraries = countResult[0]?.total || 0;
-    
+
           // Calculate total pages
-          const totalPages = pageSize ? Math.ceil(totalLibraries / pageSize) : 1;
-    
+          const totalPages = pageSize
+            ? Math.ceil(totalLibraries / pageSize)
+            : 1;
+
           // Main query to fetch libraries
           let query = `
             SELECT 
@@ -117,17 +122,17 @@ export const libraryApi = apiSlice.injectEndpoints({
               GROUP_CONCAT(DISTINCT lef.file_id) AS excludeFileIds
             ${baseQuery}
           `;
-    
+
           if (sortOn) {
-            query += ` ORDER BY l.${sortOn} ${isAscending ? 'ASC' : 'DESC'}`;
+            query += ` ORDER BY l.${sortOn} ${isAscending ? "ASC" : "DESC"}`;
           }
-    
+
           if (pageSize && page) {
             const offset = (page - 1) * pageSize;
             query += " LIMIT ? OFFSET ?";
             params.push(pageSize, offset);
           }
-    
+
           const libraries: LibraryReturnType[] = await db.select(query, params);
           const formattedLibraries: Library[] = libraries.map((library) => ({
             ...library,
@@ -144,13 +149,13 @@ export const libraryApi = apiSlice.injectEndpoints({
               ? library.excludeFileIds.split(",").map(Number)
               : [],
           }));
-    
+
           return {
             data: {
               libraries: formattedLibraries,
               totalPages,
               currentPage: page || 1,
-              totalLibraries
+              totalLibraries,
             } as GetLibrariesResponse,
           };
         } catch (error: unknown) {

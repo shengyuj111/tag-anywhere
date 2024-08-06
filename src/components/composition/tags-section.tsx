@@ -18,8 +18,7 @@ import { TagDisplay } from "./tag-display";
 
 const pageSizeOptions = [10, 20, 40, 80];
 
-export interface TagsSectionProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface TagsSectionProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
   includeInName?: string;
   ignoreChildren?: boolean;
@@ -94,19 +93,10 @@ export const TagsSection = ({
         ref={fileContainerRef}
         className="flex flex-wrap justify-start items-start gap-3"
       >
-        <Loaders.circular
-          size="large"
-          layout="area"
-          loading={isFetchingTags}
-        />
+        <Loaders.circular size="large" layout="area" loading={isFetchingTags} />
         <Visibility isVisible={!isFetchingTags}>
           {tags.map((tag) => {
-            const TagComponent = (
-              <TagDisplay
-                key={tag.id}
-                tagCommon={tag}
-              />
-            );
+            const TagComponent = <TagDisplay key={tag.id} tagCommon={tag} />;
 
             return ContextMenuWrapper ? (
               <ContextMenuWrapper key={tag.id} fileId={tag.id}>
