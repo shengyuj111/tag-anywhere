@@ -37,15 +37,16 @@ import { pathToUrl } from "@/api/api/helper";
 import { EditableText } from "@/components/composition/editable-text";
 
 export type TagFileContextMenuData = {
-  tagName: string;
+  tagId: number | null;
 };
 
 export const TagDetailsPage = () => {
   const { tagId } = useParams();
   const { config } = useStorage()!;
-  const { data: tag } = useGetTagByIdQuery(
+  const { data: tagResponse } = useGetTagByIdQuery(
     !tagId ? skipToken : { id: Number(tagId) },
   );
+  const tag = useMemo(() => tagResponse?.tag, [tagResponse]);
   const [tagFiles, { isLoading }] = useTagFilesMutation();
   const [updateTag] = useUpdateTagMutation();
   const includeTagIds = useMemo(() => (tag ? [tag.id] : []), [tag]);
@@ -77,7 +78,7 @@ export const TagDetailsPage = () => {
     if (Array.isArray(selected)) {
       // user selected multiple files
       await tagFiles({
-        tagName: tag!.name,
+        tagId: tag!.id,
         filePaths: selected,
       } as TagFileRequest);
     } else if (selected === null) {
@@ -176,7 +177,7 @@ export const TagDetailsPage = () => {
             <DataProvider
               data={
                 {
-                  tagName: tag?.name || "",
+                  tagId: tag?.id || null,
                 } as TagFileContextMenuData
               }
               id="tag-files-section-context-menu"
@@ -201,7 +202,7 @@ export const TagPageFileContext = ({
   children: ReactNode;
   fileId: number;
 }) => {
-  const { tagName } = useData<TagFileContextMenuData>(
+  const { tagId } = useData<TagFileContextMenuData>(
     "tag-files-section-context-menu",
   );
   const [removeTagsFromFile] = useRemoveTagFromFileMutation();
@@ -209,8 +210,8 @@ export const TagPageFileContext = ({
     try {
       await removeTagsFromFile({
         fileId,
-        tagNames: [tagName],
-      } as RemoveTagsFromFileRequest);
+        tagIds: tagId ? [tagId] : [],
+      } as RemoveTagsFromFileRequest).unwrap();
       toast({
         title: "Tag removed",
         description: "Tag removed from file",

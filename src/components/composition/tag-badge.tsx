@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { copyToClipboard } from "@/lib/system-utils";
 import { Badge } from "../ui/badge";
 import {
@@ -21,7 +21,8 @@ interface TagBadgeProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const TagBadge = ({ tagId, ...props }: TagBadgeProps) => {
   const { toast } = useToast();
-  const { data: tag } = useGetTagByIdQuery({ id: tagId });
+  const { data: tagResponse } = useGetTagByIdQuery({ id: tagId });
+  const tag = useMemo(() => tagResponse?.tag, [tagResponse]);
   const [tooltipVisible, setTooltipVisible] = useState(false);
 
   const copyTagName = () => {

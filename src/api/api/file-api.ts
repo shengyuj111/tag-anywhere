@@ -135,13 +135,11 @@ export interface AddTagsToFileRequest {
 export interface RemoveTagsFromFileRequest {
   fileId: number;
   tagIds?: number[];
-  tagNames?: string[];
 }
 
 export interface UpdateTagsRequest {
   fileIds: number[];
   tagIds?: number[];
-  tagNames?: string[];
 }
 
 export interface ScanFilesRequest {}
@@ -170,7 +168,7 @@ export interface CreateFileResponse {
 }
 
 export interface TagFileRequest {
-  tagName: string;
+  tagId: number;
   filePaths: string[];
 }
 
@@ -609,25 +607,18 @@ export const fileApi = apiSlice.injectEndpoints({
           });
         }
       },
-      invalidatesTags: (_result, _error, { fileId }) => [
+      invalidatesTags: (_result, _error, { fileId, tagIds }) => [
         { type: "FILE", id: fileId },
+        ...(tagIds || []).map((id) => ({ type: "TAG", id }) as const),
       ],
     }),
     removeTagFromFile: builder.mutation<null, RemoveTagsFromFileRequest>({
       queryFn: async (request) => {
         try {
-          const { fileId, tagIds = [], tagNames = [] } = request;
+          const { fileId, tagIds = [] } = request;
           const db = await DatabaseManager.getInstance().getDbInstance();
 
           const tempTags = [...tagIds];
-
-          if (tagNames.length > 0) {
-            const existingTags: { id: number }[] = await db.select(
-              `SELECT id FROM Tag WHERE name IN (${tagNames.map(() => "?").join(", ")})`,
-              tagNames,
-            );
-            tempTags.push(...existingTags.map((tag) => tag.id));
-          }
 
           const tags = removeDuplicates(tempTags);
 
@@ -644,7 +635,7 @@ export const fileApi = apiSlice.injectEndpoints({
               [fileId, tagId],
             );
           }
-
+          console.log(tagIds);
           return { data: null };
         } catch (error: unknown) {
           return Promise.reject({
@@ -653,25 +644,18 @@ export const fileApi = apiSlice.injectEndpoints({
           });
         }
       },
-      invalidatesTags: (_result, _error, { fileId }) => [
+      invalidatesTags: (_result, _error, { fileId, tagIds }) => [
         { type: "FILE", id: fileId },
+        ...(tagIds || []).map((id) => ({ type: "TAG" as const, id })),
       ],
     }),
     updateTagsToFiles: builder.mutation<null, UpdateTagsRequest>({
       queryFn: async (request) => {
         try {
-          const { fileIds, tagIds = [], tagNames = [] } = request;
+          const { fileIds, tagIds = [] } = request;
           const db = await DatabaseManager.getInstance().getDbInstance();
 
           const tempTags = [...tagIds];
-
-          if (tagNames.length > 0) {
-            const existingTags: { id: number }[] = await db.select(
-              `SELECT id FROM Tag WHERE name IN (${tagNames.map(() => "?").join(", ")})`,
-              tagNames,
-            );
-            tempTags.push(...existingTags.map((tag) => tag.id));
-          }
 
           const tags = removeDuplicates(tempTags);
 
@@ -710,8 +694,9 @@ export const fileApi = apiSlice.injectEndpoints({
           });
         }
       },
-      invalidatesTags: (_result, _error, { fileIds }) => [
+      invalidatesTags: (_result, _error, { fileIds, tagIds }) => [
         ...fileIds.map((id) => ({ type: "FILE", id })),
+        ...(tagIds || []).map((id) => ({ type: "TAG", id }) as const),
       ],
     }),
     createCompositeFile: builder.mutation<null, CreateCompositeFileRequest>({
@@ -785,14 +770,14 @@ export const fileApi = apiSlice.injectEndpoints({
     tagFiles: builder.mutation<null, TagFileRequest>({
       queryFn: async (request) => {
         try {
-          const { tagName, filePaths } = request;
+          const { tagId, filePaths } = request;
           const db = await DatabaseManager.getInstance().getDbInstance();
 
           // Get tag ID
           const tag: { id: number } = await selectOne(
             db,
-            `SELECT id FROM Tag WHERE name = ?`,
-            [tagName],
+            `SELECT id FROM Tag WHERE id = ?`,
+            [tagId],
             {
               noDataFound: "No tag found",
               multipleRowsFound: "Multiple tags found",
@@ -835,7 +820,7 @@ export const fileApi = apiSlice.injectEndpoints({
           });
         }
       },
-      invalidatesTags: () => [{ type: "FILE", id: "LIST" }],
+      invalidatesTags: (_result, _error, { tagId }) => [{ type: "FILE", id: "LIST" }, { type: "TAG", id: tagId }],
     }),
   }),
 });

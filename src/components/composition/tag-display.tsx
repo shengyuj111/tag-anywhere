@@ -1,7 +1,7 @@
 import { FileCoverAspectRatio } from "@/lib/file-enum";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { H4, Small } from "../ui/typography";
-import { TagCommon, useDeleteTagMutation } from "@/api/api/tag-api";
+import { TagCommon, useDeleteTagMutation, useGetTagByIdQuery } from "@/api/api/tag-api";
 import { useToast } from "../ui/use-toast";
 import { copyToClipboard } from "@/lib/system-utils";
 import {
@@ -14,6 +14,7 @@ import {
 import Image from "../ui/image";
 import { useNavigate } from "react-router-dom";
 import { pathToUrl } from "@/api/api/helper";
+import { useMemo } from "react";
 
 interface TagDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
   tagCommon: TagCommon;
@@ -22,6 +23,8 @@ interface TagDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
 export const TagDisplay = ({ tagCommon }: TagDisplayProps) => {
   const [deleteTag] = useDeleteTagMutation();
   const { toast } = useToast();
+  const { data: tagResponse } = useGetTagByIdQuery({ id: tagCommon.id });
+  const fileNumber = useMemo(() => tagResponse ? tagResponse!.fileIds.length : 0, [tagResponse]);
   const navigate = useNavigate();
   const navigateToDetails = () => {
     navigate(`/tags/details/${tagCommon.id}`);
@@ -55,7 +58,7 @@ export const TagDisplay = ({ tagCommon }: TagDisplayProps) => {
               <Image src={pathToUrl(tagCommon.coverPath)} alt="Image" />
               <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black to-transparent p-2 pt-20">
                 <H4 className="text-white">{tagCommon.name}</H4>
-                <Small className="text-slate-400">1,928 Files</Small>
+                <Small className="text-slate-400">{`${fileNumber.toLocaleString('en-US')} Files`}</Small>
               </div>
             </AspectRatio>
           </div>

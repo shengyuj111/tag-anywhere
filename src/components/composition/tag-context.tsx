@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Option } from "@/components/ui/multi-selector";
 import { pathToUrl } from "@/api/api/helper";
@@ -15,7 +15,8 @@ export const TagContext = ({
   children: ReactNode;
 }) => {
   const tagId = Number(option.value);
-  const { data: tag } = useGetTagByIdQuery({ id: tagId });
+  const { data: tagResponse } = useGetTagByIdQuery({ id: tagId });
+  const tag = useMemo(() => tagResponse?.tag, [tagResponse]);
 
   return (
     <Tooltip>

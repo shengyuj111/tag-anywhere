@@ -21,6 +21,11 @@ export interface GetTagByIdRequest {
   id: number;
 }
 
+export interface GetTagByIdResponse {
+  tag: TagCommon;
+  fileIds: number[];
+}
+
 export interface GetTagByNameRequest {
   name: string;
 }
@@ -61,7 +66,7 @@ export const tagApi = apiSlice.injectEndpoints({
             ]
           : [{ type: "TAG", id: "LIST" }],
     }),
-    getTagById: builder.query<TagCommon, GetTagByIdRequest>({
+    getTagById: builder.query<GetTagByIdResponse, GetTagByIdRequest>({
       queryFn: async (request) => {
         try {
           const { id } = request;
@@ -77,7 +82,22 @@ export const tagApi = apiSlice.injectEndpoints({
           if (!tags || tags.length === 0) {
             return Promise.reject({ message: "Tag not found" });
           }
-          return { data: tags[0] };
+          console.log(tags);
+          const fileIds: { fileId: number }[] = await db.select(
+            `
+              SELECT file_Id as fileId
+              FROM FileTag
+              WHERE tag_id = ?
+            `,
+            [id],
+          );
+
+          console.log(fileIds);
+
+          return { data: {
+            tag: tags[0],
+            fileIds: fileIds.map(({ fileId }) => fileId),
+          } as GetTagByIdResponse };
         } catch (error: unknown) {
           return Promise.reject({
             message: (error as Error).message || "Failed to get tag",
