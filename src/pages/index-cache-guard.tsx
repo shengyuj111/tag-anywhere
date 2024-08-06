@@ -10,7 +10,6 @@ export const IndexCacheGuard = () => {
   const { setConfig } = useStorage()!;
 
   useEffect(() => {
-    // console.log(config);
     if (!isFetching && !config) {
       navigate("/setup");
     }

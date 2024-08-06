@@ -6,7 +6,6 @@ export const copyToClipboard = (
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        console.log("Text copied to clipboard");
         if (callback) callback(true);
       })
       .catch((err) => {
@@ -21,10 +20,8 @@ export const copyToClipboard = (
     textArea.select();
     try {
       document.execCommand("copy");
-      console.log("Text copied to clipboard");
       if (callback) callback(true);
     } catch (err) {
-      console.error("Failed to copy text: ", err);
       if (callback) callback(false);
     }
     document.body.removeChild(textArea);

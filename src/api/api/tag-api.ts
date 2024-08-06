@@ -82,7 +82,6 @@ export const tagApi = apiSlice.injectEndpoints({
           if (!tags || tags.length === 0) {
             return Promise.reject({ message: "Tag not found" });
           }
-          console.log(tags);
           const fileIds: { fileId: number }[] = await db.select(
             `
               SELECT file_Id as fileId
@@ -92,12 +91,12 @@ export const tagApi = apiSlice.injectEndpoints({
             [id],
           );
 
-          console.log(fileIds);
-
-          return { data: {
-            tag: tags[0],
-            fileIds: fileIds.map(({ fileId }) => fileId),
-          } as GetTagByIdResponse };
+          return {
+            data: {
+              tag: tags[0],
+              fileIds: fileIds.map(({ fileId }) => fileId),
+            } as GetTagByIdResponse,
+          };
         } catch (error: unknown) {
           return Promise.reject({
             message: (error as Error).message || "Failed to get tag",

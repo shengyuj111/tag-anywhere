@@ -635,7 +635,6 @@ export const fileApi = apiSlice.injectEndpoints({
               [fileId, tagId],
             );
           }
-          console.log(tagIds);
           return { data: null };
         } catch (error: unknown) {
           return Promise.reject({
@@ -820,7 +819,10 @@ export const fileApi = apiSlice.injectEndpoints({
           });
         }
       },
-      invalidatesTags: (_result, _error, { tagId }) => [{ type: "FILE", id: "LIST" }, { type: "TAG", id: tagId }],
+      invalidatesTags: (_result, _error, { tagId }) => [
+        { type: "FILE", id: "LIST" },
+        { type: "TAG", id: tagId },
+      ],
     }),
   }),
 });

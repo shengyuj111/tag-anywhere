@@ -90,7 +90,6 @@ export const replacePathWithIndex = (
 
 export const getUniqueNameInFolder = async (dirPath: string) => {
   const existingFileNames = await getFileNamesInFolder(dirPath);
-  console.log("existingFileNames", existingFileNames);
   return getUniqueNameNotInList(existingFileNames);
 };
 

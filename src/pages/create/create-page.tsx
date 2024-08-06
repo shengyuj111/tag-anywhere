@@ -231,7 +231,6 @@ const BookCreateForm = () => {
                     } else {
                       // user selected a single file
                       field.onChange(selected);
-                      console.log(selected);
                     }
                   }}
                 >
@@ -275,7 +274,6 @@ const BookCreateForm = () => {
                     if (Array.isArray(selected)) {
                       // user selected multiple files
                       field.onChange(selected);
-                      console.log(selected);
                     } else if (selected === null) {
                       // user cancelled the selection
                     } else {
@@ -453,7 +451,6 @@ const LibraryCreateForm = () => {
                     } else {
                       // user selected a single file
                       field.onChange(selected);
-                      console.log(selected);
                     }
                   }}
                 >
@@ -642,7 +639,6 @@ const TagCreateForm = () => {
                     } else {
                       // user selected a single file
                       field.onChange(selected);
-                      console.log(selected);
                     }
                   }}
                 >
