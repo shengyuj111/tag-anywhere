@@ -7,7 +7,7 @@ export interface Library {
   id: number;
   name: string;
   coverPath: string;
-  nameRegx: string | null;
+  includeInName: string | null;
   includeTagIds?: number[];
   excludeTagIds?: number[];
   includeFileIds?: number[];
@@ -18,11 +18,19 @@ export interface LibraryReturnType {
   id: number;
   name: string;
   coverPath: string;
-  nameRegx: string | null;
+  includeInName: string | null;
   includeTagIds: string;
   excludeTagIds: string;
   includeFileIds: string;
   excludeFileIds: string;
+}
+
+export interface GetLibrariesRequest {
+  includeInName?: string;
+  sortOn?: string;
+  isAscending?: boolean;
+  pageSize?: number;
+  page?: number;
 }
 
 export interface GetLibrariesResponse {
@@ -37,7 +45,7 @@ export interface UpdateLibraryRequest {
   id: number;
   name: string;
   coverPath: string;
-  nameRegx: string | null;
+  includeInName: string | null;
   includeTagIds: number[];
   excludeTagIds: number[];
   includeFileIds: number[];
@@ -47,7 +55,7 @@ export interface UpdateLibraryRequest {
 export interface CreateLibraryRequest {
   name: string;
   coverPath: string;
-  nameRegx: string | null;
+  includeInName: string | null;
   includeTagIds: number[];
   excludeTagIds: number[];
   includeFileIds: number[];
@@ -60,28 +68,67 @@ export interface DeleteLibraryRequest {
 
 export const libraryApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getAllLibraries: builder.query<GetLibrariesResponse, void>({
-      queryFn: async () => {
+    getAllLibraries: builder.query<GetLibrariesResponse, GetLibrariesRequest>({
+      queryFn: async (request) => {
         try {
+          const {
+            includeInName,
+            sortOn,
+            isAscending = true,
+            pageSize,
+            page
+          } = request;
+    
           const db = await DatabaseManager.getInstance().getDbInstance();
-
-          const libraries: LibraryReturnType[] = await db.select(
-            `
-              SELECT 
-                l.id, l.name, l.coverPath, l.nameRegx,
-                GROUP_CONCAT(DISTINCT lit.tag_id) AS includeTagIds,
-                GROUP_CONCAT(DISTINCT let.tag_id) AS excludeTagIds,
-                GROUP_CONCAT(DISTINCT lif.file_id) AS includeFileIds,
-                GROUP_CONCAT(DISTINCT lef.file_id) AS excludeFileIds
-              FROM Library l
-              LEFT JOIN LibraryIncludeTag lit ON l.id = lit.library_id
-              LEFT JOIN LibraryExcludeTag let ON l.id = let.library_id
-              LEFT JOIN LibraryIncludeFile lif ON l.id = lif.library_id
-              LEFT JOIN LibraryExcludeFile lef ON l.id = lef.library_id
-              GROUP BY l.id, l.name, l.coverPath, l.nameRegx
-              `,
-          );
-
+          let baseQuery = `FROM Library l
+          LEFT JOIN LibraryIncludeTag lit ON l.id = lit.library_id
+          LEFT JOIN LibraryExcludeTag let ON l.id = let.library_id
+          LEFT JOIN LibraryIncludeFile lif ON l.id = lif.library_id
+          LEFT JOIN LibraryExcludeFile lef ON l.id = lef.library_id`;
+          const conditions: string[] = [];
+          const params: (string | number)[] = [];
+    
+          if (includeInName) {
+            conditions.push("l.name LIKE ?");
+            params.push(`%${includeInName}%`);
+          }
+    
+          if (conditions.length > 0) {
+            baseQuery += " WHERE " + conditions.join(" AND ");
+          }
+    
+          baseQuery += " GROUP BY l.id, l.name, l.coverPath, l.includeInName";
+    
+          // Query to count total libraries
+          const countQuery = `SELECT COUNT(DISTINCT l.id) as total ${baseQuery}`;
+          const countResult: { total: number }[] = await db.select(countQuery, params);
+          const totalLibraries = countResult[0]?.total || 0;
+    
+          // Calculate total pages
+          const totalPages = pageSize ? Math.ceil(totalLibraries / pageSize) : 1;
+    
+          // Main query to fetch libraries
+          let query = `
+            SELECT 
+              l.id, l.name, l.coverPath, l.includeInName,
+              GROUP_CONCAT(DISTINCT lit.tag_id) AS includeTagIds,
+              GROUP_CONCAT(DISTINCT let.tag_id) AS excludeTagIds,
+              GROUP_CONCAT(DISTINCT lif.file_id) AS includeFileIds,
+              GROUP_CONCAT(DISTINCT lef.file_id) AS excludeFileIds
+            ${baseQuery}
+          `;
+    
+          if (sortOn) {
+            query += ` ORDER BY l.${sortOn} ${isAscending ? 'ASC' : 'DESC'}`;
+          }
+    
+          if (pageSize && page) {
+            const offset = (page - 1) * pageSize;
+            query += " LIMIT ? OFFSET ?";
+            params.push(pageSize, offset);
+          }
+    
+          const libraries: LibraryReturnType[] = await db.select(query, params);
           const formattedLibraries: Library[] = libraries.map((library) => ({
             ...library,
             includeTagIds: library.includeTagIds
@@ -97,10 +144,13 @@ export const libraryApi = apiSlice.injectEndpoints({
               ? library.excludeFileIds.split(",").map(Number)
               : [],
           }));
-
+    
           return {
             data: {
               libraries: formattedLibraries,
+              totalPages,
+              currentPage: page || 1,
+              totalLibraries
             } as GetLibrariesResponse,
           };
         } catch (error: unknown) {
@@ -141,7 +191,7 @@ export const libraryApi = apiSlice.injectEndpoints({
           const [library]: LibraryReturnType[] = await db.select(
             `
               SELECT 
-                l.id, l.name, l.coverPath, l.nameRegx,
+                l.id, l.name, l.coverPath, l.includeInName,
                 GROUP_CONCAT(DISTINCT lit.tag_id) AS includeTagIds,
                 GROUP_CONCAT(DISTINCT let.tag_id) AS excludeTagIds,
                 GROUP_CONCAT(DISTINCT lif.file_id) AS includeFileIds,
@@ -152,7 +202,7 @@ export const libraryApi = apiSlice.injectEndpoints({
               LEFT JOIN LibraryIncludeFile lif ON l.id = lif.library_id
               LEFT JOIN LibraryExcludeFile lef ON l.id = lef.library_id
               WHERE l.id = ?
-              GROUP BY l.id, l.name, l.coverPath, l.nameRegx
+              GROUP BY l.id, l.name, l.coverPath, l.includeInName
               `,
             [libraryId],
           );
@@ -210,7 +260,7 @@ export const libraryApi = apiSlice.injectEndpoints({
             id,
             name,
             coverPath,
-            nameRegx,
+            includeInName,
             includeTagIds,
             excludeTagIds,
             includeFileIds,
@@ -221,10 +271,10 @@ export const libraryApi = apiSlice.injectEndpoints({
           await db.execute(
             `
                 UPDATE Library
-                SET name = ?, coverPath = ?, nameRegx = ?
+                SET name = ?, coverPath = ?, includeInName = ?
                 WHERE id = ?
               `,
-            [name, coverPath, nameRegx, id],
+            [name, coverPath, includeInName, id],
           );
 
           // Fetch current tags and file IDs
@@ -349,7 +399,7 @@ export const libraryApi = apiSlice.injectEndpoints({
           const {
             name,
             coverPath,
-            nameRegx,
+            includeInName,
             includeTagIds,
             excludeTagIds,
             includeFileIds,
@@ -369,10 +419,10 @@ export const libraryApi = apiSlice.injectEndpoints({
 
           const result = await db.execute(
             `
-              INSERT INTO Library (name, coverPath, nameRegx)
+              INSERT INTO Library (name, coverPath, includeInName)
               VALUES (?, ?, ?)
             `,
-            [name, thumbnailPath, nameRegx],
+            [name, thumbnailPath, includeInName],
           );
 
           const libraryId = result.lastInsertId;

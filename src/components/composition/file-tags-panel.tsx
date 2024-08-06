@@ -21,7 +21,7 @@ interface FileDetailProps {
 export const FileTagsPanel = ({ mainFile }: FileDetailProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const { data: tagsResponse } = useGetAllTagsQuery({});
-  const tags = useMemo(() => tagsResponse ?? [], [tagsResponse]);
+  const tags = useMemo(() => tagsResponse?.tags ?? [], [tagsResponse?.tags]);
   const [updatedTags, setUpdatedTags] = useState<
     { label: string; value: string }[]
   >([]);

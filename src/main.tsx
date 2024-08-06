@@ -17,7 +17,6 @@ import { ThemeProvider } from "./components/provider/theme-provider/theme-provid
 import { StorageProvider } from "./components/provider/storage-provider/storage-provider.tsx";
 import { TestPage } from "./pages/test/test-page.tsx";
 import { Toaster } from "./components/ui/toaster.tsx";
-import { CreatePage } from "./pages/create/create-page.tsx";
 import { FileDetailsPage } from "./pages/all-files/details/file-details-page.tsx";
 import { LibraryDetailsPage } from "./pages/all-files/library/library-details-page.tsx";
 import { TooltipProvider } from "./components/ui/tooltip.tsx";
@@ -74,10 +73,6 @@ const router = createBrowserRouter([
           {
             path: "test",
             element: <TestPage />,
-          },
-          {
-            path: "create",
-            element: <CreatePage />,
           },
         ],
       },

@@ -4,7 +4,6 @@ import { Link } from "@/components/ui/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { IconType } from "@/lib/type-utils";
 import {
-  BriefcaseIcon,
   BugIcon,
   FilesIcon,
   HomeIcon,
@@ -50,11 +49,6 @@ const NavMenu = () => {
       icon: HomeIcon,
       text: "Browse",
       href: "/home",
-    },
-    {
-      icon: BriefcaseIcon,
-      text: "Create",
-      href: "/create",
     },
     {
       icon: FilesIcon,

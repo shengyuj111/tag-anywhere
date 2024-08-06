@@ -115,7 +115,7 @@ async function createDatabase(dbPath: string) {
       id INTEGER PRIMARY KEY,
       name TEXT NOT NULL,
       coverPath TEXT NOT NULL,
-      nameRegx TEXT
+      includeInName TEXT
     );
   `);
 

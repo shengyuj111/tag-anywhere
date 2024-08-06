@@ -8,11 +8,11 @@ import { TagContext } from "@/components/composition/tag-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loaders } from "@/components/ui/loaders";
-import MultipleSelector from "@/components/ui/multi-selector";
 import { cn } from "@/lib/utils";
 import { UploadIcon } from "lucide-react";
 import { open } from "@tauri-apps/api/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import MultipleSelector from "@/components/ui/multi-selector";
 
 interface LibraryFormProps {
     form: ReturnType<typeof useForm<z.infer<typeof libraryForm>>>;
@@ -30,7 +30,7 @@ export const LibraryForm = ({
     submitButtonText = "Save",
 }: LibraryFormProps) => {
     const { data: tagsResponse } = useGetAllTagsQuery({});
-    const tags = useMemo(() => tagsResponse ?? [], [tagsResponse]);
+    const tags = useMemo(() => tagsResponse?.tags ?? [], [tagsResponse?.tags]);
   
     const submit = async (values: z.infer<typeof libraryForm>) => {
       onSubmit(values).then((success) => {
@@ -66,13 +66,13 @@ export const LibraryForm = ({
           />
           <FormField
             control={form.control}
-            name="nameRegex"
+            name="includeInName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name Regex</FormLabel>
+                <FormLabel>Name Contains</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="e.g. '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$'"
+                    placeholder="e.g. 480p"
                     {...field}
                   />
                 </FormControl>
@@ -183,13 +183,13 @@ export const LibraryForm = ({
             )}
           />
           <div className="w-full flex justify-between mt-4">
-            <Button type="submit" disabled={isSubmitting}>
-              <Loaders.circular loading={isSubmitting} className="mr-2" />
-              {submitButtonText}
-            </Button>
-            <Button type="button" variant="secondary" onClick={cancel}>
-              Cancel
-            </Button>
+          <Button type="button" variant="secondary" onClick={cancel}>
+                        Cancel
+                    </Button>
+                    <Button type="submit" disabled={isSubmitting}>
+                        <Loaders.circular loading={isSubmitting} className="mr-2" />
+                        {submitButtonText}
+                    </Button>
           </div>
         </form>
       </Form>

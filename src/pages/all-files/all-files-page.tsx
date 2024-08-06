@@ -1,45 +1,26 @@
-import { useGetAllFilesQuery, useScanFilesMutation } from "@/api/api/file-api";
-import { BackableHeader } from "@/components/composition/backable-header";
-import { FileDisplay } from "@/components/composition/file-display";
+import { useScanFilesMutation } from "@/api/api/file-api";
 import { useStorage } from "@/components/provider/storage-provider/storage-provider";
-import { AutosizeTextarea } from "@/components/ui/autosize-textarea";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Loaders } from "@/components/ui/loaders";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { SelectGroupOptionsType } from "@/components/ui/select-helper";
-import { Visibility } from "@/components/ui/visibility";
-import { skipToken } from "@reduxjs/toolkit/query";
-import { ScanTextIcon, SearchIcon } from "lucide-react";
-import { useState, useEffect } from "react";
-import Database from "tauri-plugin-sql-api";
+import { BookAIcon, ScanTextIcon } from "lucide-react";
 import { LibraryForm } from "../create/library-form";
 import { CreateLibraryRequest, useCreateLibraryMutation } from "@/api/api/library-api";
 import { libraryForm } from "../create/forms";
 import { z } from "zod";
 import { toast } from "@/components/ui/use-toast";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { FilesSection } from "@/components/composition/files-section";
 import { FileCoverAspectRatio } from "@/lib/file-enum";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { H3, H4 } from "@/components/ui/typography";
+import { H3 } from "@/components/ui/typography";
+import { useContext } from "react";
+import { DialogContext } from "@/components/provider/dialog-provider/dialog-service-provider";
+import CreateBookDialog from "./create-book-dialog";
 
 export const AllFilesPage = () => {
-  const { currentDatabase } = useStorage()!;
-  const [db, setDb] = useState<Database | null>(null);
+  const dialogManager = useContext(DialogContext).manager;
   const [createLibrary, { isLoading: isCreatingLibrary }] = useCreateLibraryMutation();
-  const { data: filesResponse, isFetching: isFetchingFiles } =
-    useGetAllFilesQuery(db === null ? skipToken : {});
-  const files = filesResponse?.files ?? [];
   const { config } = useStorage()!;
   const [scanFiles, { isLoading: isScanning }] = useScanFilesMutation();
   const form = useForm<z.infer<typeof libraryForm>>({
@@ -47,22 +28,19 @@ export const AllFilesPage = () => {
     defaultValues: {
       name: "",
       coverPath: "",
-      nameRegex: "",
+      includeInName: "",
       ignoreChildren: true,
       includeTags: [],
       excludeTags: [],
     },
   });
 
-  useEffect(() => {
-    setDb(currentDatabase);
-  }, [currentDatabase]);
 
   const onSubmit = async (values: z.infer<typeof libraryForm>) => {
     try {
       await createLibrary({
         name: values.name,
-        nameRegx: values.nameRegex === "" ? null : values.nameRegex,
+        includeInName: values.includeInName === "" ? null : values.includeInName,
         coverPath: values.coverPath,
         includeTagIds:
           values.includeTags?.map((tag) => Number(tag.value)) ?? [],
@@ -86,12 +64,18 @@ export const AllFilesPage = () => {
     }
   };
 
+  const openCreateBookDialog = () => {
+    dialogManager.openDialog({
+      child: <CreateBookDialog />,
+    });
+  }
+
   return (
     <>
       <div className="w-full h-full flex justify-center">
       <div className="w-[80%] h-full flex flex-col items-center gap-4 ">
         <H3 className="w-full flex">
-          All Files
+          Files Library
         </H3>
         <div className="flex gap-4 w-full flex-grow">
           <Card className="w-[20%] h-full p-6">
@@ -107,7 +91,13 @@ export const AllFilesPage = () => {
             <div className="w-full flex items-center gap-4">
               <div className="flex-1" />
               <Button
-                disabled={isScanning || isFetchingFiles || !config}
+                disabled={isScanning || !config}
+                onClick={openCreateBookDialog}>
+                <BookAIcon className="w-4 h-4 mr-2" />
+                Create Book
+              </Button>
+              <Button
+                disabled={isScanning || !config}
                 onClick={() => {
                   scanFiles({});
                 }}
@@ -120,7 +110,7 @@ export const AllFilesPage = () => {
             <div className="w-full flex-1">
               <FilesSection 
                 fileCoverAspectRatio={FileCoverAspectRatio.Book}
-                nameRegex={form.getValues().nameRegex}
+                includeInName={form.getValues().includeInName}
                 ignoreChildren={form.getValues().ignoreChildren}
                 includeTagIds={(form.getValues().includeTags || []).map((tag) => Number(tag.value))}
                 excludeTagIds={(form.getValues().excludeTags || []).map((tag) => Number(tag.value))}

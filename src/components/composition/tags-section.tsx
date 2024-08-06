@@ -1,5 +1,4 @@
-import { GetFilesRequest, useGetAllFilesQuery } from "@/api/api/file-api";
-import { FileCoverAspectRatio } from "@/lib/file-enum";
+import { GetFilesRequest } from "@/api/api/file-api";
 import {
   useEffect,
   useState,
@@ -10,22 +9,18 @@ import {
   useMemo,
 } from "react";
 import { cn } from "@/lib/utils";
-import { FileDisplay } from "./file-display";
 import { Loaders } from "../ui/loaders";
 import { Visibility } from "../ui/visibility";
 import { H1 } from "../ui/typography";
 import PaginationControl from "./pagination-control";
+import { useGetAllTagsQuery } from "@/api/api/tag-api";
+import { TagDisplay } from "./tag-display";
 
 const pageSizeOptions = [10, 20, 40, 80];
 
-export interface FilesSectionProps
+export interface TagsSectionProps
   extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
-  fileCoverAspectRatio: FileCoverAspectRatio;
-  includeTagIds?: number[];
-  excludeTagIds?: number[];
-  includeFileIds?: number[];
-  excludeFileIds?: number[];
   includeInName?: string;
   ignoreChildren?: boolean;
   sortOn?: string;
@@ -36,35 +31,24 @@ export interface FilesSectionProps
   }) => ReactElement;
 }
 
-export const FilesSection = ({
+export const TagsSection = ({
   className,
-  fileCoverAspectRatio,
-  includeTagIds,
-  excludeTagIds,
-  includeFileIds,
-  excludeFileIds,
   includeInName,
-  ignoreChildren,
   sortOn,
   isAscending,
   contextMenuWrapper: ContextMenuWrapper,
-}: FilesSectionProps) => {
+}: TagsSectionProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(pageSizeOptions[0]);
-  const { data: filesDate, isLoading: isFetchingFiles } = useGetAllFilesQuery({
-    includeTagIds,
-    excludeTagIds,
-    includeFileIds,
-    excludeFileIds,
+  const { data: tagsData, isLoading: isFetchingTags } = useGetAllTagsQuery({
     includeInName,
-    ignoreChildren,
+    pageSize,
     sortOn,
     isAscending,
-    pageSize,
     page: currentPage,
   } as GetFilesRequest);
-  const files = useMemo(() => filesDate?.files ?? [], [filesDate?.files]);
-  const totalPages = filesDate?.totalPages ?? 0;
+  const tags = useMemo(() => tagsData?.tags ?? [], [tagsData?.tags]);
+  const totalPages = tagsData?.totalPages ?? 0;
 
   const sectionContainerRef = useRef<HTMLDivElement>(null);
   const fileContainerRef = useRef<HTMLDivElement>(null);
@@ -99,7 +83,7 @@ export const FilesSection = ({
 
   useEffect(() => {
     updateFittedWidth();
-  }, [currentPage, pageSize, files, updateFittedWidth]);
+  }, [currentPage, pageSize, tags, updateFittedWidth]);
 
   return (
     <div
@@ -113,28 +97,27 @@ export const FilesSection = ({
         <Loaders.circular
           size="large"
           layout="area"
-          loading={isFetchingFiles}
+          loading={isFetchingTags}
         />
-        <Visibility isVisible={!isFetchingFiles}>
-          {files.map((file) => {
-            const FileComponent = (
-              <FileDisplay
-                key={file.id}
-                fileCommon={file}
-                fileCoverAspectRatio={fileCoverAspectRatio}
+        <Visibility isVisible={!isFetchingTags}>
+          {tags.map((tag) => {
+            const TagComponent = (
+              <TagDisplay
+                key={tag.id}
+                tagCommon={tag}
               />
             );
 
             return ContextMenuWrapper ? (
-              <ContextMenuWrapper key={file.id} fileId={file.id}>
-                {FileComponent}
+              <ContextMenuWrapper key={tag.id} fileId={tag.id}>
+                {TagComponent}
               </ContextMenuWrapper>
             ) : (
-              FileComponent
+              TagComponent
             );
           })}
         </Visibility>
-        <Visibility isVisible={files.length !== 0}>
+        <Visibility isVisible={tags.length !== 0}>
           <PaginationControl
             itemsPerPage={pageSize}
             setItemsPerPage={setPageSize}
@@ -145,7 +128,7 @@ export const FilesSection = ({
           />
         </Visibility>
       </div>
-      <Visibility isVisible={files.length === 0}>
+      <Visibility isVisible={tags.length === 0}>
         <div className="flex-1">
           <H1 className="text-muted-foreground">Nothing</H1>
         </div>

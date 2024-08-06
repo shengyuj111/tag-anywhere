@@ -19,18 +19,20 @@ import Image from "../ui/image";
 import { useNavigate } from "react-router-dom";
 import { pathToUrl } from "@/api/api/helper";
 import { useMemo } from "react";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 interface TagDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
   tagCommon: TagCommon;
+  numOfFiles?: number;
 }
 
-export const TagDisplay = ({ tagCommon }: TagDisplayProps) => {
+export const TagDisplay = ({ tagCommon, numOfFiles }: TagDisplayProps) => {
   const [deleteTag] = useDeleteTagMutation();
   const { toast } = useToast();
-  const { data: tagResponse } = useGetTagByIdQuery({ id: tagCommon.id });
+  const { data: tagResponse } = useGetTagByIdQuery(numOfFiles ? skipToken : { id: tagCommon.id });
   const fileNumber = useMemo(
-    () => (tagResponse ? tagResponse!.fileIds.length : 0),
-    [tagResponse],
+    () => (numOfFiles ? numOfFiles : tagResponse ? tagResponse!.fileIds.length : 0),
+    [tagResponse, numOfFiles],
   );
   const navigate = useNavigate();
   const navigateToDetails = () => {
@@ -54,7 +56,7 @@ export const TagDisplay = ({ tagCommon }: TagDisplayProps) => {
 
   return (
     <ContextMenu>
-      <ContextMenuTrigger>
+      <ContextMenuTrigger disabled={!!numOfFiles}>
         <div className="space-y-3 w-[250px]">
           <div className="w-[250px] relative">
             <AspectRatio

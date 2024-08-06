@@ -15,7 +15,20 @@ export interface TagCommon {
   coverPath: string;
 }
 
-export interface GetTagsRequest {}
+export interface GetTagsRequest {
+  includeInName?: string;
+  pageSize?: number;
+  page?: number;
+  sortOn?: string;
+  isAscending?: boolean;
+}
+
+export interface GetTagsResponse {
+  tags: TagCommon[];
+  totalPages: number;
+  currentPage: number;
+  totalTags: number;
+}
 
 export interface GetTagByIdRequest {
   id: number;
@@ -40,18 +53,65 @@ export interface DeleteTagRequest {
 
 export const tagApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getAllTags: builder.query<TagCommon[], GetTagsRequest>({
-      queryFn: async () => {
+    getAllTags: builder.query<GetTagsResponse, GetTagsRequest>({
+      queryFn: async (request) => {
         try {
+          const {
+            includeInName,
+            sortOn,
+            isAscending = true,
+            pageSize,
+            page
+          } = request;
+          
           const db = await DatabaseManager.getInstance().getDbInstance();
-          const tags: TagCommon[] = await db.select(
-            `
-              SELECT id, name, type, color, coverPath, description
-              FROM Tag
-            `,
-            [],
-          );
-          return { data: tags };
+          let baseQuery = `FROM Tag`;
+          const conditions: string[] = [];
+          const params: (string | number)[] = [];
+          
+          if (includeInName) {
+            conditions.push("Tag.name LIKE ?");
+            params.push(`%${includeInName}%`);
+          }
+    
+          if (conditions.length > 0) {
+            baseQuery += " WHERE " + conditions.join(" AND ");
+          }
+    
+          // Query to count total tags
+          const countQuery = `SELECT COUNT(*) as total ${baseQuery}`;
+          const countResult: { total: number }[] = await db.select(countQuery, params);
+          const totalTags = countResult[0]?.total || 0;
+    
+          // Calculate total pages
+          const totalPages = pageSize ? Math.ceil(totalTags / pageSize) : 1;
+    
+          // Main query to fetch tags
+          let query = `
+            SELECT id, name, type, color, coverPath, description
+            ${baseQuery}
+          `;
+    
+          if (sortOn) {
+            query += ` ORDER BY ${sortOn} ${isAscending ? 'ASC' : 'DESC'}`;
+          }
+    
+          if (pageSize && page) {
+            const offset = (page - 1) * pageSize;
+            query += " LIMIT ? OFFSET ?";
+            params.push(pageSize, offset);
+          }
+    
+          const tags: TagCommon[] = await db.select(query, params);
+          
+          return { 
+            data: {
+              tags,
+              totalPages: totalPages,
+              currentPage: page || 1,
+              totalTags: totalTags,
+            } as GetTagsResponse,
+          };
         } catch (error: unknown) {
           return Promise.reject({
             message: (error as Error).message || "Failed to get tags",
@@ -61,11 +121,11 @@ export const tagApi = apiSlice.injectEndpoints({
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: "TAG", id }) as const),
+              ...result.tags.map(({ id }) => ({ type: "TAG", id }) as const),
               { type: "TAG", id: "LIST" },
             ]
           : [{ type: "TAG", id: "LIST" }],
-    }),
+    }),    
     getTagById: builder.query<GetTagByIdResponse, GetTagByIdRequest>({
       queryFn: async (request) => {
         try {

@@ -24,7 +24,7 @@ const checkDuplicateTagName = async (name: string) => {
   }
 };
 
-export const createTagForm = z.object({
+export const tagForm = z.object({
   name: z
     .string()
     .min(2)
@@ -43,7 +43,7 @@ export const createTagForm = z.object({
   coverPath: z.string(),
 });
 
-export const createBookForm = z.object({
+export const bookForm = z.object({
   name: z.string().min(2).max(50),
   type: z.enum(fileTypes),
   description: z.string(),
@@ -75,7 +75,7 @@ const OptionSchema = z.object({
 export const libraryForm = z.object({
   name: z.string().min(2).max(50),
   coverPath: z.string().min(1),
-  nameRegex: z.string().optional(),
+  includeInName: z.string().optional(),
   ignoreChildren: z.boolean(),
   includeTags: z.array(OptionSchema).optional(),
   excludeTags: z.array(OptionSchema).optional(),

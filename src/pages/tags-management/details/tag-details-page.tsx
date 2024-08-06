@@ -119,7 +119,7 @@ export const TagDetailsPage = () => {
 
   return (
     <div className="w-full h-full flex justify-center">
-      <div className="w-[80%] flex flex-col items-center gap-4 ">
+      <div className="w-[80%] h-[80%] flex flex-col items-center gap-4 ">
         <BackableHeader
           title={tag?.name}
           onEditSubmit={(value) => {
