@@ -105,6 +105,7 @@ export interface GetFilesRequest {
   excludeFileIds?: number[];
   pageSize?: number;
   page?: number;
+  ignoreChildren?: boolean;
 }
 
 export interface GetFilesResponse {
@@ -185,6 +186,7 @@ export const fileApi = apiSlice.injectEndpoints({
             excludeFileIds,
             pageSize,
             page,
+            ignoreChildren = true,
           } = request;
 
           const db = await DatabaseManager.getInstance().getDbInstance();
@@ -199,6 +201,11 @@ export const fileApi = apiSlice.injectEndpoints({
             conditions.push("FileData.name REGEXP ?");
             params.push(nameRegex);
           }
+
+          if (ignoreChildren) {
+            conditions.push("FileData.type NOT LIKE 'Child_%'");
+          }
+    
 
           if (includeTagIds && includeTagIds.length > 0) {
             conditions.push(
@@ -277,6 +284,8 @@ export const fileApi = apiSlice.injectEndpoints({
             ...file,
             tagIds: file.tagIds ? file.tagIds.split(",").map(Number) : [],
           }));
+
+          console.log("result", result);
 
           return {
             data: {

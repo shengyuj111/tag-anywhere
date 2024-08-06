@@ -1,8 +1,10 @@
 import { useGetAllFilesQuery, useScanFilesMutation } from "@/api/api/file-api";
+import { BackableHeader } from "@/components/composition/backable-header";
 import { FileDisplay } from "@/components/composition/file-display";
 import { useStorage } from "@/components/provider/storage-provider/storage-provider";
 import { AutosizeTextarea } from "@/components/ui/autosize-textarea";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Loaders } from "@/components/ui/loaders";
 import {
   Select,
@@ -19,101 +21,115 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { ScanTextIcon, SearchIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import Database from "tauri-plugin-sql-api";
+import { LibraryForm } from "../create/library-form";
+import { CreateLibraryRequest, useCreateLibraryMutation } from "@/api/api/library-api";
+import { libraryForm } from "../create/forms";
+import { z } from "zod";
+import { toast } from "@/components/ui/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { FilesSection } from "@/components/composition/files-section";
+import { FileCoverAspectRatio } from "@/lib/file-enum";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { H3, H4 } from "@/components/ui/typography";
 
 export const AllFilesPage = () => {
   const { currentDatabase } = useStorage()!;
   const [db, setDb] = useState<Database | null>(null);
+  const [createLibrary, { isLoading: isCreatingLibrary }] = useCreateLibraryMutation();
   const { data: filesResponse, isFetching: isFetchingFiles } =
     useGetAllFilesQuery(db === null ? skipToken : {});
   const files = filesResponse?.files ?? [];
   const { config } = useStorage()!;
   const [scanFiles, { isLoading: isScanning }] = useScanFilesMutation();
+  const form = useForm<z.infer<typeof libraryForm>>({
+    resolver: zodResolver(libraryForm),
+    defaultValues: {
+      name: "",
+      coverPath: "",
+      nameRegex: "",
+      ignoreChildren: true,
+      includeTags: [],
+      excludeTags: [],
+    },
+  });
 
   useEffect(() => {
     setDb(currentDatabase);
   }, [currentDatabase]);
 
+  const onSubmit = async (values: z.infer<typeof libraryForm>) => {
+    try {
+      await createLibrary({
+        name: values.name,
+        nameRegx: values.nameRegex === "" ? null : values.nameRegex,
+        coverPath: values.coverPath,
+        includeTagIds:
+          values.includeTags?.map((tag) => Number(tag.value)) ?? [],
+        excludeTagIds:
+          values.excludeTags?.map((tag) => Number(tag.value)) ?? [],
+        includeFileIds: [],
+        excludeFileIds: [],
+      } as CreateLibraryRequest);
+      toast({
+        title: "Library Created",
+        description: "Library has been created",
+      });
+      return true;
+    } catch (error) {
+      toast({
+        title: "Failed to create library",
+        description: (error as Error).message,
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
   return (
     <>
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold md:text-2xl">Files</h1>
-        <Button
-          disabled={isScanning || isFetchingFiles || !config}
-          onClick={() => {
-            scanFiles({});
-          }}
-        >
-          <Loaders.circular size="small" loading={isScanning} />
-          <ScanTextIcon className="w-4 h-4 mr-2" />
-          Scan
-        </Button>
-      </div>
-      <div className="flex gap-2">
-        <SearchInput />
-        <SearchSelect
-          placeholder="Extension"
-          options={[
-            {
-              label: "Extensions",
-              options: [
-                { value: "tag1", label: "Tag 1" },
-                { value: "tag2", label: "Tag 2" },
-                { value: "tag3", label: "Tag 3" },
-              ],
-            },
-          ]}
-        />
-        <Button>Search</Button>
-      </div>
-      <Loaders.circular size="large" layout="area" loading={isFetchingFiles} />
-      <Visibility isVisible={!isFetchingFiles}>
-        <div className="flex flex-wrap items-start justify-start gap-3">
-          {files?.map((file) => (
-            <FileDisplay key={file.id} fileCommon={file} />
-          ))}
+      <div className="w-full h-full flex justify-center">
+      <div className="w-[80%] h-full flex flex-col items-center gap-4 ">
+        <H3 className="w-full flex">
+          All Files
+        </H3>
+        <div className="flex gap-4 w-full flex-grow">
+          <Card className="w-[20%] h-full p-6">
+            <LibraryForm 
+              form={form}
+              onSubmit={onSubmit} 
+              isSubmitting={isCreatingLibrary} 
+              onCancel={() => {}}
+              submitButtonText="Create Library"
+            />
+          </Card>
+          <Card className="w-[calc(80%-1rem)] h-full p-6 flex flex-col gap-8">
+            <div className="w-full flex items-center gap-4">
+              <div className="flex-1" />
+              <Button
+                disabled={isScanning || isFetchingFiles || !config}
+                onClick={() => {
+                  scanFiles({});
+                }}
+              >
+                <Loaders.circular size="small" loading={isScanning} />
+                <ScanTextIcon className="w-4 h-4 mr-2" />
+                Scan
+              </Button>
+            </div>
+            <div className="w-full flex-1">
+              <FilesSection 
+                fileCoverAspectRatio={FileCoverAspectRatio.Book}
+                nameRegex={form.getValues().nameRegex}
+                ignoreChildren={form.getValues().ignoreChildren}
+                includeTagIds={(form.getValues().includeTags || []).map((tag) => Number(tag.value))}
+                excludeTagIds={(form.getValues().excludeTags || []).map((tag) => Number(tag.value))}
+              />
+            </div>
+          </Card>
         </div>
-      </Visibility>
-    </>
-  );
-};
-
-export const SearchInput = () => {
-  return (
-    <div className="flex flex-1 max-w-[500px] relative">
-      <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-      <AutosizeTextarea
-        placeholder="Search products..."
-        minHeight={10}
-        className="h-10 flex-grow appearance-none bg-accent pl-8 shadow-none md:w-2/3 lg:w-1/3"
-      />
+      </div>
     </div>
-  );
-};
-
-export const SearchSelect = ({
-  placeholder,
-  options,
-}: {
-  placeholder: string;
-  options: SelectGroupOptionsType;
-}) => {
-  return (
-    <Select>
-      <SelectTrigger className="w-[120px] bg-accent">
-        <SelectValue placeholder={placeholder} />
-      </SelectTrigger>
-      <SelectContent>
-        {options.map((group, index) => (
-          <SelectGroup key={index}>
-            <SelectLabel>{group.label}</SelectLabel>
-            {group.options.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        ))}
-      </SelectContent>
-    </Select>
+    </>
   );
 };

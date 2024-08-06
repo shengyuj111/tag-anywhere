@@ -4,7 +4,7 @@ import { Badge } from "../ui/badge";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { H4 } from "../ui/typography";
 import { TagBadge } from "./tag-badge";
-import { FileCommon } from "@/api/api/file-api";
+import { FileCommon, getFileDisplayType } from "@/api/api/file-api";
 import { useNavigate } from "react-router-dom";
 import Image from "../ui/image";
 import { pathToUrl } from "@/api/api/helper";
@@ -34,7 +34,7 @@ export const FileDisplay = ({
           <Image src={pathToUrl(fileCommon.coverPath)} alt="Image" />
         </AspectRatio>
         <div className="absolute top-2 right-2">
-          <Badge className="bg-blue-600 text-white">{fileCommon.type}</Badge>
+          <Badge className="bg-blue-600 text-white">{getFileDisplayType(fileCommon)}</Badge>
         </div>
       </div>
       <div>

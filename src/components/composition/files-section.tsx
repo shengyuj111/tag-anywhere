@@ -26,6 +26,8 @@ export interface FilesSectionProps
   excludeTagIds?: number[];
   includeFileIds?: number[];
   excludeFileIds?: number[];
+  nameRegex?: string;
+  ignoreChildren?: boolean;
   contextMenuWrapper?: (props: {
     children: ReactNode;
     fileId: number;
@@ -39,6 +41,8 @@ export const FilesSection = ({
   excludeTagIds,
   includeFileIds,
   excludeFileIds,
+  nameRegex,
+  ignoreChildren,
   contextMenuWrapper: ContextMenuWrapper,
 }: FilesSectionProps) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,6 +52,8 @@ export const FilesSection = ({
     excludeTagIds,
     includeFileIds,
     excludeFileIds,
+    nameRegex,
+    ignoreChildren,
     pageSize,
     page: currentPage,
   } as GetFilesRequest);
