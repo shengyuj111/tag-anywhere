@@ -1,11 +1,14 @@
 import { SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { DataProvider } from "@/components/provider/data-provider/data-provider";
 import { useData } from "@/components/provider/data-provider/data-context";
 import { H3 } from "@/components/ui/typography";
 import { Card } from "@/components/ui/card";
 import { LibrariesSection } from "@/components/composition/libraries-section";
+import { DeleteLibraryRequest, useDeleteLibraryMutation } from "@/api/api/library-api";
+import { toast } from "@/components/ui/use-toast";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
 
 type HomeData = {
   searchName: string;
@@ -35,6 +38,7 @@ export const LibraryPage = () => {
               </div>
               <div className="w-full flex-1">
                 <LibrariesSection
+                  contextMenuWrapper={LibraryContext}
                   includeInName={searchName === "" ? undefined : searchName}
                 />
               </div>
@@ -59,5 +63,41 @@ export const SearchInput = () => {
         onChange={(e) => setSearchName(e.target.value)}
       />
     </div>
+  );
+};
+
+export const LibraryContext = ({
+  children,
+  libraryId,
+}: {
+  children: ReactNode;
+  libraryId: number;
+}) => {
+  const [removeLibrary] = useDeleteLibraryMutation();
+  const removeTag = async () => {
+    try {
+      await removeLibrary({
+        id: libraryId,
+      } as DeleteLibraryRequest).unwrap();
+      toast({
+        title: "Library removed",
+        description: "Library has been removed",
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to remove Library",
+        description: (error as Error).message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger>{children}</ContextMenuTrigger>
+      <ContextMenuContent className="w-64">
+        <ContextMenuItem onClick={removeTag}>Remove Library</ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 };

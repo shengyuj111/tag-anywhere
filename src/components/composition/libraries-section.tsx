@@ -27,7 +27,7 @@ export interface LibrariesSectionProps
   isAscending?: boolean;
   contextMenuWrapper?: (props: {
     children: ReactNode;
-    fileId: number;
+    libraryId: number;
   }) => ReactElement;
 }
 
@@ -110,7 +110,7 @@ export const LibrariesSection = ({
             );
 
             return ContextMenuWrapper ? (
-              <ContextMenuWrapper key={library.id} fileId={library.id}>
+              <ContextMenuWrapper key={library.id} libraryId={library.id}>
                 {LibraryComponent}
               </ContextMenuWrapper>
             ) : (
