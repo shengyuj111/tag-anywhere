@@ -113,7 +113,7 @@ export const getFileNamesInFolder = async (dirPath: string) => {
 };
 
 export const getUniqueNameNotInList = async (existingNames: string[]) => {
-  let uniqueName = "";
+  let uniqueName = `${uuidv4()}`;
   while (existingNames.includes(uniqueName)) {
     uniqueName = `${uuidv4()}`;
   }
