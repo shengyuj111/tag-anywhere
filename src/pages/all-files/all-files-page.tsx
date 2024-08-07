@@ -17,9 +17,11 @@ import { FileCoverAspectRatio } from "@/lib/file-enum";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { H3 } from "@/components/ui/typography";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { DialogContext } from "@/components/provider/dialog-provider/dialog-service-provider";
 import CreateBookDialog from "./create-book-dialog";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 export const AllFilesPage = () => {
   const dialogManager = useContext(DialogContext).manager;
@@ -27,13 +29,13 @@ export const AllFilesPage = () => {
     useCreateLibraryMutation();
   const { config } = useStorage()!;
   const [scanFiles, { isLoading: isScanning }] = useScanFilesMutation();
+  const [ignoreChildren, setIgnoreChildren] = useState(true);
   const form = useForm<z.infer<typeof libraryForm>>({
     resolver: zodResolver(libraryForm),
     defaultValues: {
-      name: "",
+      name:  "",
       coverPath: "",
       includeInName: "",
-      ignoreChildren: true,
       includeTags: [],
       excludeTags: [],
     },
@@ -91,6 +93,10 @@ export const AllFilesPage = () => {
             </Card>
             <Card className="w-[calc(80%-1rem)] h-full p-6 flex flex-col gap-8">
               <div className="w-full flex items-center gap-4">
+                <div className="flex items-center space-x-2">
+                  <Switch checked={ignoreChildren} onCheckedChange={setIgnoreChildren} />
+                  <Label>Ignore Subfile</Label>
+                </div>
                 <div className="flex-1" />
                 <Button
                   disabled={isScanning || !config}
@@ -114,7 +120,7 @@ export const AllFilesPage = () => {
                 <FilesSection
                   fileCoverAspectRatio={FileCoverAspectRatio.Book}
                   includeInName={form.getValues().includeInName}
-                  ignoreChildren={form.getValues().ignoreChildren}
+                  ignoreChildren={ignoreChildren}
                   includeTagIds={(form.getValues().includeTags || []).map(
                     (tag) => Number(tag.value),
                   )}
