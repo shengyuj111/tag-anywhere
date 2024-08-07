@@ -51,6 +51,14 @@ export interface DeleteTagRequest {
   id: number;
 }
 
+export interface GetTagFileNumberRequest {
+  id: number;
+}
+
+export interface GetTagFileNumberResponse {
+  numOfFiles: number;
+}
+
 export const tagApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAllTags: builder.query<GetTagsResponse, GetTagsRequest>({
@@ -168,30 +176,29 @@ export const tagApi = apiSlice.injectEndpoints({
       },
       providesTags: (_result, _error, { id }) => [{ type: "TAG", id }],
     }),
-    getTagByName: builder.query<TagCommon, GetTagByNameRequest>({
+    getTagFileNumber: builder.query<GetTagFileNumberResponse, GetTagFileNumberRequest>({
       queryFn: async (request) => {
         try {
-          const { name } = request;
+          const { id } = request;
           const db = await DatabaseManager.getInstance().getDbInstance();
-          const tags: TagCommon[] = await db.select(
+          const fileIds: { fileId: number }[] = await db.select(
             `
-              SELECT id, name, type, color, coverPath, description
-              FROM Tag
-              WHERE name = ?
+              SELECT file_Id as fileId
+              FROM FileTag
+              WHERE tag_id = ?
             `,
-            [name],
+            [id],
           );
-          if (!tags || tags.length === 0) {
-            return Promise.reject({ message: "Tag not found" });
-          }
-          return { data: tags[0] };
+          return {
+            data: { numOfFiles: fileIds.length } as GetTagFileNumberResponse,
+          };
         } catch (error: unknown) {
           return Promise.reject({
             message: (error as Error).message || "Failed to get tag",
           });
         }
       },
-      providesTags: (_result) => [{ type: "TAG", id: _result?.id }],
+      providesTags: (_result, _error, { id }) => [{ type: "TAG", id }],
     }),
     createTag: builder.mutation<null, CreateTagRequest>({
       queryFn: async (request) => {
@@ -201,6 +208,7 @@ export const tagApi = apiSlice.injectEndpoints({
           const { coverPath: cover_dir_path } = await getCoverAndStoreSetUp();
 
           const uniqueName = await getUniqueNameInFolder(cover_dir_path);
+          console.log("uniqueName", uniqueName);
           const thumbnailPath = await createThumbnail(
             uniqueName,
             coverPath,
@@ -307,7 +315,7 @@ export const tagApi = apiSlice.injectEndpoints({
 export const {
   useGetAllTagsQuery,
   useGetTagByIdQuery,
-  useGetTagByNameQuery,
+  useGetTagFileNumberQuery,
   useCreateTagMutation,
   useUpdateTagMutation,
   useDeleteTagMutation,

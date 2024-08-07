@@ -4,7 +4,7 @@ import { H4, Small } from "../ui/typography";
 import {
   TagCommon,
   useDeleteTagMutation,
-  useGetTagByIdQuery,
+  useGetTagFileNumberQuery,
 } from "@/api/api/tag-api";
 import { useToast } from "../ui/use-toast";
 import { copyToClipboard } from "@/lib/system-utils";
@@ -29,13 +29,14 @@ interface TagDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
 export const TagDisplay = ({ tagCommon, numOfFiles }: TagDisplayProps) => {
   const [deleteTag] = useDeleteTagMutation();
   const { toast } = useToast();
-  const { data: tagResponse } = useGetTagByIdQuery(
+
+  const { data: numOfFilesResponse } = useGetTagFileNumberQuery(
     numOfFiles ? skipToken : { id: tagCommon.id },
   );
   const fileNumber = useMemo(
     () =>
-      numOfFiles ? numOfFiles : tagResponse ? tagResponse!.fileIds.length : 0,
-    [tagResponse, numOfFiles],
+      numOfFiles ? numOfFiles : numOfFilesResponse ? numOfFilesResponse!.numOfFiles : 0,
+    [numOfFiles, numOfFilesResponse],
   );
   const navigate = useNavigate();
   const navigateToDetails = () => {
