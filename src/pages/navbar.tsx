@@ -47,8 +47,8 @@ const NavMenu = () => {
   const menuItemsData: { icon: IconType; text: string; href: string }[] = [
     {
       icon: HomeIcon,
-      text: "Browse",
-      href: "/home",
+      text: "Library",
+      href: "/library",
     },
     {
       icon: FilesIcon,
