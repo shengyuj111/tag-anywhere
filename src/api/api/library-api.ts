@@ -35,6 +35,9 @@ export interface GetLibrariesRequest {
 
 export interface GetLibrariesResponse {
   libraries: Library[];
+  totalPages: number;
+  currentPage: number;
+  totalLibraries: number;
 }
 
 export interface GetLibraryByIdRequest {

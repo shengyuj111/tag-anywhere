@@ -18,8 +18,8 @@ import { Loaders } from "@/components/ui/loaders";
 import { cn } from "@/lib/utils";
 import { UploadIcon } from "lucide-react";
 import { open } from "@tauri-apps/api/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
 import MultipleSelector from "@/components/ui/multi-selector";
+import { Visibility } from "@/components/ui/visibility";
 
 interface LibraryFormProps {
   form: ReturnType<typeof useForm<z.infer<typeof libraryForm>>>;
@@ -38,7 +38,6 @@ export const LibraryForm = ({
 }: LibraryFormProps) => {
   const { data: tagsResponse } = useGetAllTagsQuery({});
   const tags = useMemo(() => tagsResponse?.tags ?? [], [tagsResponse?.tags]);
-
   const submit = async (values: z.infer<typeof libraryForm>) => {
     onSubmit(values).then((success) => {
       if (success) {
@@ -86,23 +85,6 @@ export const LibraryForm = ({
         />
         <FormField
           control={form.control}
-          name="ignoreChildren"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>Ignore Children File</FormLabel>
-              </div>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name="coverPath"
           render={({ field }) => (
             <FormItem>
@@ -142,27 +124,30 @@ export const LibraryForm = ({
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="includeTags"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Include Tags</FormLabel>
-              <FormControl>
-                <MultipleSelector
-                  badgeWrapper={TagContext}
-                  value={field.value ?? []}
-                  defaultOptions={tags.map((tag) => ({
-                    label: tag.name,
-                    value: tag.id.toString(),
-                  }))}
-                  onChange={(selected) => field.onChange(selected)}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <Visibility isVisible={tags.length > 0}>
+            <FormField
+            control={form.control}
+            name="includeTags"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Include Tags</FormLabel>
+                <FormControl>
+                    <MultipleSelector
+                    badgeWrapper={TagContext}
+                    value={field.value ?? []}
+                    defaultOptions={tags.map((tag) => ({
+                        label: tag.name,
+                        value: tag.id.toString(),
+                    }))}
+                    onChange={(selected) => field.onChange(selected)}
+                    />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        </Visibility>
+        <Visibility isVisible={tags.length > 0}>
         <FormField
           control={form.control}
           name="excludeTags"
@@ -184,6 +169,7 @@ export const LibraryForm = ({
             </FormItem>
           )}
         />
+        </Visibility>
         <div className="w-full flex justify-between mt-4">
           <Button type="button" variant="secondary" onClick={cancel}>
             Cancel

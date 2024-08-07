@@ -76,7 +76,6 @@ export const libraryForm = z.object({
   name: z.string().min(2).max(50),
   coverPath: z.string().min(1),
   includeInName: z.string().optional(),
-  ignoreChildren: z.boolean(),
   includeTags: z.array(OptionSchema).optional(),
   excludeTags: z.array(OptionSchema).optional(),
 });

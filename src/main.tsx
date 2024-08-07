@@ -18,10 +18,11 @@ import { StorageProvider } from "./components/provider/storage-provider/storage-
 import { TestPage } from "./pages/test/test-page.tsx";
 import { Toaster } from "./components/ui/toaster.tsx";
 import { FileDetailsPage } from "./pages/all-files/details/file-details-page.tsx";
-import { LibraryDetailsPage } from "./pages/all-files/library/library-details-page.tsx";
 import { TooltipProvider } from "./components/ui/tooltip.tsx";
 import { TagDetailsPage } from "./pages/tags-management/details/tag-details-page.tsx";
-import { HomePage } from "./pages/home/home-page.tsx";
+
+import { LibraryDetailsPage } from "./pages/home/library-details/library-details.tsx";
+import { LibraryPage } from "./pages/home/library-page.tsx";
 
 const router = createBrowserRouter([
   {
@@ -37,8 +38,17 @@ const router = createBrowserRouter([
             element: <Navigate to="/home" />,
           },
           {
-            path: "home",
-            element: <HomePage />,
+            path: "",
+            children: [
+              {
+                path: "library",
+                element: <LibraryPage />,
+              },
+              {
+                path: "library/:libraryId",
+                element: <LibraryDetailsPage />,
+              },
+            ],
           },
           {
             path: "all-files",
@@ -50,10 +60,6 @@ const router = createBrowserRouter([
               {
                 path: "details/:fileId",
                 element: <FileDetailsPage />,
-              },
-              {
-                path: "library/:libraryName",
-                element: <LibraryDetailsPage />,
               },
             ],
           },
