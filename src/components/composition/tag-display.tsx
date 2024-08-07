@@ -44,6 +44,7 @@ export const TagDisplay = ({ tagCommon, numOfFiles }: TagDisplayProps) => {
   );
   const navigate = useNavigate();
   const navigateToDetails = () => {
+    if (numOfFiles) return;
     navigate(`/tags/details/${tagCommon.id}`);
   };
 

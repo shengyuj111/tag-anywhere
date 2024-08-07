@@ -79,10 +79,10 @@ export const AllFilesPage = () => {
   return (
     <>
       <div className="w-full h-full flex justify-center">
-        <div className="w-[80%] h-full flex flex-col items-center gap-4 ">
+        <div className="w-[95%] 2xl:w-[80%] h-full flex flex-col items-center gap-4 ">
           <H3 className="w-full flex">Files Library</H3>
           <div className="flex gap-4 w-full flex-grow">
-            <Card className="w-[20%] h-full p-6">
+            <Card className="w-[20%] h-full p-6 overflow-hidden">
               <LibraryForm
                 form={form}
                 onSubmit={onSubmit}

@@ -66,10 +66,10 @@ export const TagsManagementPage = () => {
       id="tags-management"
     >
       <div className="w-full h-full flex justify-center">
-        <div className="w-[80%] h-full flex flex-col items-center gap-4 ">
+        <div className="w-[95%] 2xl:w-[80%] h-full flex flex-col items-center gap-4 ">
           <H3 className="w-full flex">All Tags</H3>
           <div className="flex gap-4 w-full flex-grow">
-            <Card className="w-[20%] h-full p-6 flex flex-col">
+            <Card className="w-[20%] h-full p-6 flex flex-col overflow-hidden">
               <TagForm
                 form={form}
                 onSubmit={onSubmit}

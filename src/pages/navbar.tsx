@@ -4,7 +4,7 @@ import { Link } from "@/components/ui/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { IconType } from "@/lib/type-utils";
 import {
-  BugIcon,
+  // BugIcon,
   FilesIcon,
   HomeIcon,
   Package2Icon,
@@ -66,11 +66,11 @@ const NavMenu = () => {
       text: "Settings",
       href: "/settings",
     },
-    {
-      icon: BugIcon,
-      text: "Test",
-      href: "/test",
-    },
+    // {
+    //   icon: BugIcon,
+    //   text: "Test",
+    //   href: "/test",
+    // },
   ];
 
   return (
