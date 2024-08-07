@@ -18,7 +18,8 @@ import { LibraryDisplay } from "./library-display";
 
 const pageSizeOptions = [10, 20, 40, 80];
 
-export interface LibrariesSectionProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface LibrariesSectionProps
+  extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
   includeInName?: string;
   ignoreChildren?: boolean;
@@ -39,14 +40,18 @@ export const LibrariesSection = ({
 }: LibrariesSectionProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(pageSizeOptions[0]);
-  const { data: librariesData, isLoading: isFetchingLibraries } = useGetAllLibrariesQuery({
-    includeInName,
-    pageSize,
-    sortOn,
-    isAscending,
-    page: currentPage,
-  } as GetFilesRequest);
-  const libraries = useMemo(() => librariesData?.libraries ?? [], [librariesData?.libraries]);
+  const { data: librariesData, isLoading: isFetchingLibraries } =
+    useGetAllLibrariesQuery({
+      includeInName,
+      pageSize,
+      sortOn,
+      isAscending,
+      page: currentPage,
+    } as GetFilesRequest);
+  const libraries = useMemo(
+    () => librariesData?.libraries ?? [],
+    [librariesData?.libraries],
+  );
   const totalPages = librariesData?.totalPages ?? 0;
 
   const sectionContainerRef = useRef<HTMLDivElement>(null);
@@ -93,17 +98,23 @@ export const LibrariesSection = ({
         ref={fileContainerRef}
         className="flex flex-wrap justify-start items-start gap-3"
       >
-        <Loaders.circular size="large" layout="area" loading={isFetchingLibraries} />
+        <Loaders.circular
+          size="large"
+          layout="area"
+          loading={isFetchingLibraries}
+        />
         <Visibility isVisible={!isFetchingLibraries}>
           {libraries.map((library) => {
-            const LibraryComponent = <LibraryDisplay key={library.id} library={library} />;
+            const LibraryComponent = (
+              <LibraryDisplay key={library.id} library={library} />
+            );
 
             return ContextMenuWrapper ? (
               <ContextMenuWrapper key={library.id} fileId={library.id}>
                 {LibraryComponent}
               </ContextMenuWrapper>
             ) : (
-                LibraryComponent
+              LibraryComponent
             );
           })}
         </Visibility>

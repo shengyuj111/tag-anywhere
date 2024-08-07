@@ -10,14 +10,12 @@ interface LibraryDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
   library: Library;
 }
 
-export const LibraryDisplay = ({
-  library,
-}: LibraryDisplayProps) => {
+export const LibraryDisplay = ({ library }: LibraryDisplayProps) => {
   const navigate = useNavigate();
 
   const navigateToFilesPage = () => {
     navigate(`/library/${library.id}`);
-  }
+  };
 
   return (
     <div className="space-y-3 w-[250px]">

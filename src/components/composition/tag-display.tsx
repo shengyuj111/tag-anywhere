@@ -35,7 +35,11 @@ export const TagDisplay = ({ tagCommon, numOfFiles }: TagDisplayProps) => {
   );
   const fileNumber = useMemo(
     () =>
-      numOfFiles ? numOfFiles : numOfFilesResponse ? numOfFilesResponse!.numOfFiles : 0,
+      numOfFiles
+        ? numOfFiles
+        : numOfFilesResponse
+          ? numOfFilesResponse!.numOfFiles
+          : 0,
     [numOfFiles, numOfFilesResponse],
   );
   const navigate = useNavigate();

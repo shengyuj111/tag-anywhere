@@ -125,50 +125,50 @@ export const LibraryForm = ({
           )}
         />
         <Visibility isVisible={tags.length > 0}>
-            <FormField
+          <FormField
             control={form.control}
             name="includeTags"
             render={({ field }) => (
-                <FormItem>
+              <FormItem>
                 <FormLabel>Include Tags</FormLabel>
                 <FormControl>
-                    <MultipleSelector
+                  <MultipleSelector
                     badgeWrapper={TagContext}
                     value={field.value ?? []}
                     defaultOptions={tags.map((tag) => ({
-                        label: tag.name,
-                        value: tag.id.toString(),
+                      label: tag.name,
+                      value: tag.id.toString(),
                     }))}
                     onChange={(selected) => field.onChange(selected)}
-                    />
+                  />
                 </FormControl>
                 <FormMessage />
-                </FormItem>
+              </FormItem>
             )}
-            />
+          />
         </Visibility>
         <Visibility isVisible={tags.length > 0}>
-        <FormField
-          control={form.control}
-          name="excludeTags"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Exclude Files</FormLabel>
-              <FormControl>
-                <MultipleSelector
-                  badgeWrapper={TagContext}
-                  value={field.value ?? []}
-                  defaultOptions={tags.map((tag) => ({
-                    label: tag.name,
-                    value: tag.id.toString(),
-                  }))}
-                  onChange={(selected) => field.onChange(selected)}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="excludeTags"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Exclude Files</FormLabel>
+                <FormControl>
+                  <MultipleSelector
+                    badgeWrapper={TagContext}
+                    value={field.value ?? []}
+                    defaultOptions={tags.map((tag) => ({
+                      label: tag.name,
+                      value: tag.id.toString(),
+                    }))}
+                    onChange={(selected) => field.onChange(selected)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </Visibility>
         <div className="w-full flex justify-between mt-4">
           <Button type="button" variant="secondary" onClick={cancel}>

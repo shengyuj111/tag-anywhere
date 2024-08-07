@@ -176,7 +176,10 @@ export const tagApi = apiSlice.injectEndpoints({
       },
       providesTags: (_result, _error, { id }) => [{ type: "TAG", id }],
     }),
-    getTagFileNumber: builder.query<GetTagFileNumberResponse, GetTagFileNumberRequest>({
+    getTagFileNumber: builder.query<
+      GetTagFileNumberResponse,
+      GetTagFileNumberRequest
+    >({
       queryFn: async (request) => {
         try {
           const { id } = request;

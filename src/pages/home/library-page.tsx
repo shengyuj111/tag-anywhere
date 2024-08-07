@@ -47,8 +47,7 @@ export const LibraryPage = () => {
 };
 
 export const SearchInput = () => {
-  const { searchName, setSearchName } =
-    useData<HomeData>("home")!;
+  const { searchName, setSearchName } = useData<HomeData>("home")!;
 
   return (
     <div className="flex relative">

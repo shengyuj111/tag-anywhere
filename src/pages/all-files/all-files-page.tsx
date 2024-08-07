@@ -33,7 +33,7 @@ export const AllFilesPage = () => {
   const form = useForm<z.infer<typeof libraryForm>>({
     resolver: zodResolver(libraryForm),
     defaultValues: {
-      name:  "",
+      name: "",
       coverPath: "",
       includeInName: "",
       includeTags: [],
@@ -94,7 +94,10 @@ export const AllFilesPage = () => {
             <Card className="w-[calc(80%-1rem)] h-full p-6 flex flex-col gap-8">
               <div className="w-full flex items-center gap-4">
                 <div className="flex items-center space-x-2">
-                  <Switch checked={ignoreChildren} onCheckedChange={setIgnoreChildren} />
+                  <Switch
+                    checked={ignoreChildren}
+                    onCheckedChange={setIgnoreChildren}
+                  />
                   <Label>Ignore Subfile</Label>
                 </div>
                 <div className="flex-1" />
