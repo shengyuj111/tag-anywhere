@@ -6,9 +6,17 @@ import { useData } from "@/components/provider/data-provider/data-context";
 import { H3 } from "@/components/ui/typography";
 import { Card } from "@/components/ui/card";
 import { LibrariesSection } from "@/components/composition/libraries-section";
-import { DeleteLibraryRequest, useDeleteLibraryMutation } from "@/api/api/library-api";
+import {
+  DeleteLibraryRequest,
+  useDeleteLibraryMutation,
+} from "@/api/api/library-api";
 import { toast } from "@/components/ui/use-toast";
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 
 type HomeData = {
   searchName: string;
