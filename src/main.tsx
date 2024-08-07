@@ -23,6 +23,7 @@ import { TagDetailsPage } from "./pages/tags-management/details/tag-details-page
 
 import { LibraryDetailsPage } from "./pages/home/library-details/library-details.tsx";
 import { LibraryPage } from "./pages/home/library-page.tsx";
+import { SettingsPage } from "./pages/settings/settings-page.tsx";
 
 const router = createBrowserRouter([
   {
@@ -75,6 +76,10 @@ const router = createBrowserRouter([
                 element: <TagDetailsPage />,
               },
             ],
+          },
+          {
+            path: "settings",
+            element: <SettingsPage />,
           },
           {
             path: "test",

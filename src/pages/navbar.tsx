@@ -8,6 +8,7 @@ import {
   FilesIcon,
   HomeIcon,
   Package2Icon,
+  SettingsIcon,
   TagsIcon,
 } from "lucide-react";
 import { Outlet, useLocation } from "react-router-dom";
@@ -59,6 +60,11 @@ const NavMenu = () => {
       icon: TagsIcon,
       text: "Tags",
       href: "/tags",
+    },
+    {
+      icon: SettingsIcon,
+      text: "Settings",
+      href: "/settings",
     },
     {
       icon: BugIcon,
