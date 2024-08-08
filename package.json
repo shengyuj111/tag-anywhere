@@ -7,6 +7,7 @@
     "dev": "vite",
     "tauri": "tauri dev",
     "build": "tsc -b && vite build",
+    "debug": "tauri build --debug",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "pretty": "prettier --write src/**/*.{js,jsx,ts,tsx,json,css,scss,md}",
     "preview": "vite preview",
