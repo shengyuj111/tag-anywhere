@@ -16,9 +16,7 @@ export interface Option {
   value: string;
   label: string;
   disable?: boolean;
-  /** fixed option that can't be removed. */
   fixed?: boolean;
-  /** Group the options by providing key. */
   [key: string]: string | boolean | undefined;
 }
 interface GroupOption {
@@ -28,51 +26,28 @@ interface GroupOption {
 interface MultipleSelectorProps {
   value?: Option[];
   defaultOptions?: Option[];
-  /** manually controlled options */
   options?: Option[];
   placeholder?: string;
-  /** Loading component. */
   loadingIndicator?: React.ReactNode;
-  /** Empty component. */
   emptyIndicator?: React.ReactNode;
-  /** Debounce time for async search. Only work with `onSearch`. */
   delay?: number;
-  /**
-   * Only work with `onSearch` prop. Trigger search when `onFocus`.
-   * For example, when user click on the input, it will trigger the search to get initial options.
-   **/
   triggerSearchOnFocus?: boolean;
-  /** async search */
   onSearch?: (value: string) => Promise<Option[]>;
   onChange?: (options: Option[]) => void;
-  /** Limit the maximum number of selected options. */
   maxSelected?: number;
-  /** When the number of selected options exceeds the limit, the onMaxSelected will be called. */
   onMaxSelected?: (maxLimit: number) => void;
-  /** Hide the placeholder when there are options selected. */
   hidePlaceholderWhenSelected?: boolean;
   disabled?: boolean;
-  /** Group the options base on provided key. */
   groupBy?: string;
   className?: string;
   badgeClassName?: string;
-  /**
-   * First item selected is a default behavior by cmdk. That is why the default is true.
-   * This is a workaround solution by add a dummy item.
-   *
-   * @reference: https://github.com/pacocoursey/cmdk/issues/171
-   */
   selectFirstItem?: boolean;
-  /** Allow user to create option when there is no option matched. */
   creatable?: boolean;
-  /** Props of `Command` */
   commandProps?: React.ComponentPropsWithoutRef<typeof Command>;
-  /** Props of `CommandInput` */
   inputProps?: Omit<
     React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>,
     "value" | "placeholder" | "disabled"
   >;
-  /** hide the clear all button. */
   hideClearAllButton?: boolean;
   badgeWrapper?: React.FC<{ option: Option; children: React.ReactNode }>;
 }
@@ -139,12 +114,6 @@ function isOptionsExist(groupOption: GroupOption, targetOption: Option[]) {
   return false;
 }
 
-/**
- * The `CommandEmpty` of shadcn/ui will cause the cmdk empty not rendering correctly.
- * So we create one and copy the `Empty` implementation from `cmdk`.
- *
- * @reference: https://github.com/hsuanyi-chou/shadcn-ui-expansions/issues/34#issuecomment-1949561607
- **/
 const CommandEmpty = forwardRef<
   HTMLDivElement,
   React.ComponentProps<typeof CommandPrimitive.Empty>
@@ -235,13 +204,11 @@ const MultipleSelector = React.forwardRef<
           if (e.key === "Delete" || e.key === "Backspace") {
             if (input.value === "" && selected.length > 0) {
               const lastSelectOption = selected[selected.length - 1];
-              // If last item is fixed, we should not remove it.
               if (!lastSelectOption.fixed) {
                 handleUnselect(selected[selected.length - 1]);
               }
             }
           }
-          // This is not a default behavior of the <input /> field
           if (e.key === "Escape") {
             input.blur();
           }
@@ -257,7 +224,6 @@ const MultipleSelector = React.forwardRef<
     }, [value]);
 
     useEffect(() => {
-      /** If `onSearch` is provided, do not trigger options updated. */
       if (!arrayOptions || onSearch) {
         return;
       }
@@ -288,8 +254,7 @@ const MultipleSelector = React.forwardRef<
       };
 
       void exec();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [debouncedSearchTerm, groupBy, open, triggerSearchOnFocus]);
+    }, [debouncedSearchTerm, groupBy, onSearch, open, triggerSearchOnFocus]);
 
     const CreatableItem = () => {
       if (!creatable) return undefined;
@@ -323,12 +288,10 @@ const MultipleSelector = React.forwardRef<
         </CommandItem>
       );
 
-      // For normal creatable
       if (!onSearch && inputValue.length > 0) {
         return Item;
       }
 
-      // For async search creatable. avoid showing creatable item before loading at first.
       if (onSearch && debouncedSearchTerm.length > 0 && !isLoading) {
         return Item;
       }
@@ -339,10 +302,9 @@ const MultipleSelector = React.forwardRef<
     const EmptyItem = React.useCallback(() => {
       if (!emptyIndicator) return undefined;
 
-      // For async search that showing emptyIndicator
       if (onSearch && !creatable && Object.keys(options).length === 0) {
         return (
-          <CommandItem value="-" disabled>
+          <CommandItem key="empty" value="-" disabled>
             {emptyIndicator}
           </CommandItem>
         );
@@ -356,7 +318,6 @@ const MultipleSelector = React.forwardRef<
       [options, selected],
     );
 
-    /** Avoid Creatable Selector freezing or lagging when paste a long string. */
     const commandFilter = React.useCallback(() => {
       if (commandProps?.filter) {
         return commandProps.filter;
@@ -367,7 +328,6 @@ const MultipleSelector = React.forwardRef<
           return value.toLowerCase().includes(search.toLowerCase()) ? 1 : -1;
         };
       }
-      // Using default filter in `cmdk`. We don't have to provide it.
       return undefined;
     }, [creatable, commandProps?.filter]);
 
@@ -386,7 +346,7 @@ const MultipleSelector = React.forwardRef<
           commandProps?.shouldFilter !== undefined
             ? commandProps.shouldFilter
             : !onSearch
-        } // When onSearch is provided, we don't want to filter the options. You can still override it.
+        }
         filter={commandFilter()}
       >
         <div
@@ -407,7 +367,7 @@ const MultipleSelector = React.forwardRef<
             {selected.map((option) => {
               const BadgeWrapper = badgeWrapper || React.Fragment;
               return (
-                <BadgeWrapper option={option}>
+                <BadgeWrapper key={option.value} option={option}>
                   <Badge
                     key={option.value}
                     className={cn(
@@ -419,7 +379,7 @@ const MultipleSelector = React.forwardRef<
                     data-disabled={disabled || undefined}
                   >
                     {option.label}
-                    <button
+                    <span
                       className={cn(
                         "ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2",
                         (disabled || option.fixed) && "hidden",
@@ -436,12 +396,11 @@ const MultipleSelector = React.forwardRef<
                       onClick={() => handleUnselect(option)}
                     >
                       <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                    </button>
+                    </span>
                   </Badge>
                 </BadgeWrapper>
               );
             })}
-            {/* Avoid having the "Search" Icon */}
             <CommandPrimitive.Input
               {...inputProps}
               ref={inputRef}
@@ -504,7 +463,7 @@ const MultipleSelector = React.forwardRef<
                   {EmptyItem()}
                   {CreatableItem()}
                   {!selectFirstItem && (
-                    <CommandItem value="-" className="hidden" />
+                    <CommandItem key="dummy" value="-" className="hidden" />
                   )}
                   {Object.entries(selectables).map(([key, dropdowns]) => (
                     <CommandGroup
@@ -517,7 +476,7 @@ const MultipleSelector = React.forwardRef<
                           return (
                             <CommandItem
                               key={option.value}
-                              value={option.value}
+                              value={option.label}
                               disabled={option.disable}
                               onMouseDown={(e) => {
                                 e.preventDefault();

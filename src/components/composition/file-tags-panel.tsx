@@ -22,6 +22,14 @@ export const FileTagsPanel = ({ mainFile }: FileDetailProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const { data: tagsResponse } = useGetAllTagsQuery({});
   const tags = useMemo(() => tagsResponse?.tags ?? [], [tagsResponse?.tags]);
+  const tagOptions = useMemo(() => {
+
+    const sortedTags = [...tags].sort((a, b) => a.name.localeCompare(b.name));
+    return sortedTags.map((tag) => ({
+      label: tag.name,
+      value: tag.id.toString(),
+    }));
+  }, [tags]);
   const [updatedTags, setUpdatedTags] = useState<
     { label: string; value: string }[]
   >([]);
@@ -105,10 +113,7 @@ export const FileTagsPanel = ({ mainFile }: FileDetailProps) => {
             <MultipleSelector
               badgeWrapper={TagContext}
               value={updatedTags}
-              defaultOptions={tags.map((tag) => ({
-                label: tag.name,
-                value: tag.id.toString(),
-              }))}
+              defaultOptions={tagOptions}
               onChange={(selected) => setUpdatedTags(selected)}
             />
           </Visibility>
