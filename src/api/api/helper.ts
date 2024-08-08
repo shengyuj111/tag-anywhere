@@ -1,40 +1,30 @@
-import { Store } from "tauri-plugin-store-api";
-import { StoreSetUpRequest } from "./setup-api";
 import Database from "tauri-plugin-sql-api";
 import { v4 as uuidv4 } from "uuid";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { getFilesAndTypes } from "./rust-api";
 import { formatFileName } from "@/lib/format-utils";
+import { getSettings, GlobalSettings } from "./settings-api";
 
-export const getStorePathConfig = async () => {
-  const store = new Store(".settings.dat");
-  const setup = await store.get<StoreSetUpRequest>("setup");
-  if (!setup) {
-    throw new Error("Setup not found");
-  }
-  return setup;
+export const getCoverPathBySetUp = (settings: GlobalSettings) => {
+  return `${settings.indexPath}\\cover`;
 };
 
-export const getCoverPathBySetUp = (setup: StoreSetUpRequest) => {
-  return `${setup.indexPath}\\cover`;
-};
-
-export const getStorePathBySetUp = (setup: StoreSetUpRequest) => {
-  return setup.storehousePath;
+export const getStorePathBySetUp = (settings: GlobalSettings) => {
+  return settings.storehousePath!;
 };
 
 export const getCoverPath = async () => {
-  const setup = await getStorePathConfig();
+  const setup = await getSettings();
   return getCoverPathBySetUp(setup);
 };
 
 export const getStorePath = async () => {
-  const setup = await getStorePathConfig();
+  const setup = await getSettings();
   return getStorePathBySetUp(setup);
 };
 
 export const getCoverAndStoreSetUp = async () => {
-  const setup = await getStorePathConfig();
+  const setup = await getSettings();
   return {
     coverPath: getCoverPathBySetUp(setup),
     storehousePaths: getStorePathBySetUp(setup),

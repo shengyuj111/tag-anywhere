@@ -27,7 +27,7 @@ export const AllFilesPage = () => {
   const dialogManager = useContext(DialogContext).manager;
   const [createLibrary, { isLoading: isCreatingLibrary }] =
     useCreateLibraryMutation();
-  const { config } = useStorage()!;
+  const { settings } = useStorage()!;
   const [scanFiles, { isLoading: isScanning }] = useScanFilesMutation();
   const [ignoreChildren, setIgnoreChildren] = useState(true);
   const form = useForm<z.infer<typeof libraryForm>>({
@@ -102,14 +102,14 @@ export const AllFilesPage = () => {
                 </div>
                 <div className="flex-1" />
                 <Button
-                  disabled={isScanning || !config}
+                  disabled={isScanning || !settings}
                   onClick={openCreateBookDialog}
                 >
                   <BookAIcon className="w-4 h-4 mr-2" />
                   Create Book
                 </Button>
                 <Button
-                  disabled={isScanning || !config}
+                  disabled={isScanning || !settings}
                   onClick={() => {
                     scanFiles({});
                   }}

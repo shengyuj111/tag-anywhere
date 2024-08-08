@@ -42,7 +42,7 @@ export const BookForm = ({
   isSubmitting,
   submitButtonText = "Save",
 }: BookFormProps) => {
-  const { config } = useStorage()!;
+  const { settings } = useStorage()!;
   const getExtensionForBook = (type: string) => {
     if (type === "Composition_Manga") {
       return ["png", "jpeg", "jpg"];
@@ -169,7 +169,7 @@ export const BookForm = ({
                     const selected = await open({
                       title: "Select Cover",
                       multiple: true,
-                      defaultPath: config!.storehousePath,
+                      defaultPath: settings!.storehousePath!,
                       filters: [
                         {
                           name: "Image & Video",

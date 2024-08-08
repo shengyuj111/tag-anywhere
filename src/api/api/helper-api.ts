@@ -3,15 +3,6 @@ import { DatabaseManager } from "../database/database-manager";
 import { getCoverPath } from "./helper";
 import { deleteFilesInFolder } from "./rust-api";
 
-interface SetupCommon {
-  indexPath: string;
-  storehousePath: string;
-}
-
-export interface StoreSetUpRequest extends SetupCommon {}
-export interface GetSetUpResponse extends SetupCommon {}
-export interface PathSetUp extends SetupCommon {}
-
 export const helperApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     cleanUpUnusedFiles: builder.mutation<null, void>({

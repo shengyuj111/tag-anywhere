@@ -1,9 +1,8 @@
 import { fileTypes } from "@/api/api/file-api";
-import { StoreSetUpRequest } from "@/api/api/setup-api";
+import { getSettings } from "@/api/api/settings-api";
 import { tagTypes } from "@/api/api/tag-api";
 import { DatabaseManager } from "@/api/database/database-manager";
 import { hasDuplicates } from "@/lib/collection-utils";
-import { Store } from "tauri-plugin-store-api";
 import { z } from "zod";
 
 const checkDuplicateTagName = async (name: string) => {
@@ -55,12 +54,11 @@ export const bookForm = z.object({
     })
     .refine(
       async (paths) => {
-        const store = new Store(".settings.dat");
-        const setup = await store.get<StoreSetUpRequest>("setup");
+        const setup = await getSettings();
         if (!setup) {
           return false;
         }
-        const storehousePath = setup.storehousePath;
+        const storehousePath = setup.storehousePath!;
         return paths.every((path) => path.startsWith(storehousePath));
       },
       { message: "Only files in the store path are allowed" },

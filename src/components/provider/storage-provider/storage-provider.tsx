@@ -7,12 +7,13 @@ import React, {
 } from "react";
 import Database from "tauri-plugin-sql-api";
 import { DatabaseManager } from "../../../api/database/database-manager";
-import { PathSetUp } from "@/api/schema/setup";
+import { GlobalSettings } from "@/api/api/settings-api";
+
 
 interface StorageData {
   currentDatabase: Database | null;
-  config: PathSetUp | null;
-  setConfig: (config: PathSetUp) => void;
+  settings: GlobalSettings | null;
+  setSettings: (settings: GlobalSettings) => void;
 }
 
 // Create a context with undefined as initial value
@@ -25,14 +26,14 @@ interface DatabaseProviderProps {
 export const StorageProvider: React.FC<DatabaseProviderProps> = ({
   children,
 }) => {
-  const [config, setConfig] = useState<PathSetUp | null>(null);
+  const [settings, setSettings] = useState<GlobalSettings | null>(null);
   const [currentDatabase, setCurrentDatabase] = useState<Database | null>(null);
 
   useEffect(() => {
-    if (!config) {
+    if (!settings || !settings.indexPath) {
       return;
     }
-    const { indexPath } = config;
+    const { indexPath } = settings;
     const loadDatabase = async () => {
       const databaseManager = DatabaseManager.getInstance();
       DatabaseManager.init(indexPath);
@@ -42,14 +43,14 @@ export const StorageProvider: React.FC<DatabaseProviderProps> = ({
     };
 
     loadDatabase();
-  }, [config]);
+  }, [settings]);
 
   return (
     <StorageContext.Provider
       value={{
         currentDatabase,
-        config,
-        setConfig,
+        settings,
+        setSettings,
       }}
     >
       {children}
