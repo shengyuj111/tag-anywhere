@@ -29,6 +29,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
+import { useStorage } from "@/components/provider/storage-provider/storage-provider";
 
 export const TVSeriesDetails = ({
   fileData,
@@ -36,6 +37,7 @@ export const TVSeriesDetails = ({
 }: FileDetailProps) => {
   const mainFile = useMemo(() => fileData?.file, [fileData]);
   const fileChildren = useMemo(() => fileData?.fileChildren, [fileData]);
+  const { settings } = useStorage()!;
 
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const currentVideo = useMemo(
@@ -80,6 +82,7 @@ export const TVSeriesDetails = ({
             <ContextMenu>
               <ContextMenuTrigger>
                 <VideoPlayer
+                  initialVolume={settings!.volume}
                   src={pathToUrl(currentVideo.path)!}
                   frameRate={videoFrameRate}
                   className="rounded-md"

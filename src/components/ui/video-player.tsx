@@ -69,7 +69,7 @@ const VideoPlayer = ({
   const [, setCurrentTime] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(initialVolume ?? 1);
+  const [volume, setVolume] = useState(1);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const currentFrameRate = useMemo(() => frameRate ?? 30, [frameRate]);
 
@@ -91,6 +91,7 @@ const VideoPlayer = ({
             sources: [{ src }],
           },
           () => {
+            player.volume(initialVolume);
             onReady && onReady(player);
           },
         ));
@@ -115,7 +116,7 @@ const VideoPlayer = ({
       player.currentTime(0);
       player.src({ src });
     }
-  }, [src, onReady, onSetTime]);
+  }, [src, onReady, onSetTime, initialVolume]);
 
   useEffect(() => {
     const player = playerRef.current;

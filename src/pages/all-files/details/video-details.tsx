@@ -17,6 +17,7 @@ import VideoPlayer from "@/components/ui/video-player";
 import { formatFileName } from "@/lib/format-utils";
 import { pathToUrl } from "@/api/api/helper";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useStorage } from "@/components/provider/storage-provider/storage-provider";
 
 export const VideoDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
   const mainFile = useMemo(() => fileData?.file, [fileData]);
@@ -26,6 +27,7 @@ export const VideoDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
   );
   const [videoCurrentTime, setVideoCurrentTime] = useState<number>(0);
   const [updateFileCover] = useUpdateCoverMutation();
+  const { settings } = useStorage()!;
 
   useEffect(() => {
     getVideoFrameRate(video_path).then((frameRate) => {
@@ -58,6 +60,7 @@ export const VideoDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
             <ContextMenu>
               <ContextMenuTrigger>
                 <VideoPlayer
+                  initialVolume={settings!.volume}
                   src={pathToUrl(mainFile?.path)!}
                   frameRate={videoFrameRate}
                   className="rounded-md"
