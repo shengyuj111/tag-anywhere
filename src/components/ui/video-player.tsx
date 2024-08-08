@@ -248,7 +248,7 @@ const VideoPlayer = ({
           progress={progress}
           onSetProgress={setPlayerProgress}
         />
-        <VideoPlayerVolume volume={volume} onSetVolume={setPlayerVolume} />
+        <VideoPlayerVolume volume={volume} onSetVolume={setPlayerVolume} container={placeholderRef.current ?? undefined} />
         <VideoPlayerFullScreenToggleButton
           isFullscreen={isFullscreen}
           toggleFullscreen={toggleFullscreen}
@@ -426,8 +426,10 @@ const VideoPauseButton = ({
 const VideoPlayerVolume = ({
   volume,
   onSetVolume,
+  container,
 }: {
   volume: number;
+  container?: HTMLElement;
   onSetVolume: (volume: number) => void;
 }) => {
   const volumeItensity: number[] = [1, 0.4, 0.2, 0.05, 0];
@@ -466,7 +468,7 @@ const VideoPlayerVolume = ({
           </Visibility>
         </Button>
       </PopoverTrigger>
-      <PopoverContent side="top" className="w-10 h-40">
+      <PopoverContent side="top" className="w-10 h-40" container={container}>
         <Slider
           orientation="vertical"
           variant="volume"
