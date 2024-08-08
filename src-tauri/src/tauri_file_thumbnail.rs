@@ -4,6 +4,8 @@ use std::{
 };
 use mime_guess::{mime, MimeGuess};
 use crate::error::AppError;
+use std::os::windows::process::CommandExt;
+const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 fn extract_frame_with_ffmpeg(ffmpeg_path: &str, file_path: &str, frame_number: usize, temp_frame_path: &str) -> Result<(), AppError> {
     let ffmpeg_output = Command::new(ffmpeg_path)
@@ -14,6 +16,7 @@ fn extract_frame_with_ffmpeg(ffmpeg_path: &str, file_path: &str, frame_number: u
             "-frames:v", "1",
             temp_frame_path
         ])
+        .creation_flags(CREATE_NO_WINDOW)
         .output()
         .map_err(|e| AppError::new(&e.to_string()))?;
 
@@ -31,11 +34,12 @@ fn extract_frame_with_ffmpeg(ffmpeg_path: &str, file_path: &str, frame_number: u
 fn extract_frame_with_ffmpeg_by_time(ffmpeg_path: &str, file_path: &str, time: f64, temp_frame_path: &str) -> Result<(), AppError> {
     let ffmpeg_output = Command::new(ffmpeg_path)
         .args(&[
-            "-i", file_path,
             "-ss", &time.to_string(),
+            "-i", file_path,
             "-vframes", "1",
             temp_frame_path
         ])
+        .creation_flags(CREATE_NO_WINDOW)
         .output()
         .map_err(|e| AppError::new(&e.to_string()))?;
 
@@ -54,14 +58,13 @@ fn compress_image_with_imagemagick(imagemagick_path: &str, input_path: &str, out
     let magick_output = Command::new(imagemagick_path)
         .args(&[
             input_path,
-            "-resize", "500x",
-            "-quality", "75",
+            "-resize", "50%",
+            "-quality", "85",
             output_path
         ])
+        .creation_flags(CREATE_NO_WINDOW)
         .output()
         .map_err(|e| AppError::new(&e.to_string()))?;
-
-    println!("ImageMagick: {:?}", magick_output);
 
     if !magick_output.status.success() {
         return Err(AppError::new(&format!(

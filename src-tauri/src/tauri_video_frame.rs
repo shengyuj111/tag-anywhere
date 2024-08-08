@@ -1,6 +1,7 @@
 use std::process::Command;
 use crate::error::AppError;
-
+use std::os::windows::process::CommandExt;
+const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 
 pub fn get_frame_rate(file_path: &String) -> Result<f64, AppError> {
@@ -13,6 +14,7 @@ pub fn get_frame_rate(file_path: &String) -> Result<f64, AppError> {
             "-of", "default=noprint_wrappers=1:nokey=1",
             file_path,
         ])
+        .creation_flags(CREATE_NO_WINDOW)
         .output()
         .map_err(|e| AppError::new(&e.to_string()))?;
 

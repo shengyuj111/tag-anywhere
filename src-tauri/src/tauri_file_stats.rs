@@ -4,6 +4,8 @@ use mime_guess::MimeGuess;
 use serde::Serialize;
 use std::time::{UNIX_EPOCH, SystemTime};
 use regex::Regex;
+use std::os::windows::process::CommandExt;
+const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 use crate::error::AppError;
 
@@ -63,6 +65,7 @@ fn get_image_dimensions(path: &str) -> Option<(u32, u32)> {
     let imagemagick_path = "bin/magick/magick.exe";
     let output = Command::new(imagemagick_path)
         .args(&["identify", "-format", "%wx%h", path])
+        .creation_flags(CREATE_NO_WINDOW)
         .output()
         .ok()?;
     let output_str = String::from_utf8_lossy(&output.stdout);
@@ -87,6 +90,7 @@ fn get_video_metadata(path: &str) -> Result<VideoMetadata, AppError> {
     let ffmpeg_path = "bin/ffmpeg/ffmpeg-win.exe";
     let output = Command::new(ffmpeg_path)
         .args(&["-i", path])
+        .creation_flags(CREATE_NO_WINDOW)
         .output()
         .map_err(AppError::from)?;
     let output_str = String::from_utf8_lossy(&output.stderr);
@@ -141,6 +145,7 @@ fn get_audio_metadata(path: &str) -> Result<AudioMetadata, AppError> {
     let ffmpeg_path = "bin/ffmpeg/ffmpeg-win.exe";
     let output = Command::new(ffmpeg_path)
         .args(&["-i", path])
+        .creation_flags(CREATE_NO_WINDOW)
         .output()
         .map_err(AppError::from)?;
     let output_str = String::from_utf8_lossy(&output.stderr);
