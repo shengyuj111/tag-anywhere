@@ -27,7 +27,7 @@ import { DialogContext } from "@/components/provider/dialog-provider/dialog-serv
 
 import { useNavigate } from "react-router-dom";
 import { AlertDialog } from "@/components/composition/alert-dialog";
-import { useStoreSetupConfigMutation } from "@/api/api/setup-api";
+import { PartialGlobalSettings, useSetGlobalSettingsMutation } from "@/api/api/settings-api";
 
 const setupFormSchema = z.object({
   indexPath: z
@@ -46,7 +46,7 @@ const setupFormSchema = z.object({
 
 export const SetupPage = () => {
   const dialogManager = useContext(DialogContext).manager;
-  const [storeSetupConfig, { isLoading }] = useStoreSetupConfigMutation();
+  const [setSettings, { isLoading }] = useSetGlobalSettingsMutation();
   const navigate = useNavigate();
 
   const setupForm = useForm<z.infer<typeof setupFormSchema>>({
@@ -59,7 +59,10 @@ export const SetupPage = () => {
 
   const onSubmit = async (values: z.infer<typeof setupFormSchema>) => {
     try {
-      await storeSetupConfig(values);
+      await setSettings({
+        indexPath: values.indexPath,
+        storehousePath: values.storehousePath,
+      } as PartialGlobalSettings);
       navigate("/all-files");
     } catch (error) {
       dialogManager.openDialog({

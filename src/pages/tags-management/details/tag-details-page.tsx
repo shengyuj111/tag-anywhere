@@ -42,7 +42,7 @@ export type TagFileContextMenuData = {
 
 export const TagDetailsPage = () => {
   const { tagId } = useParams();
-  const { config } = useStorage()!;
+  const { settings } = useStorage()!;
   const { data: tagResponse } = useGetTagByIdQuery(
     !tagId ? skipToken : { id: Number(tagId) },
   );
@@ -56,7 +56,7 @@ export const TagDetailsPage = () => {
     const selected = await open({
       title: "Select files to add tag",
       multiple: true,
-      defaultPath: config!.storehousePath,
+      defaultPath: settings!.storehousePath!,
       filters: [
         {
           name: "Image & Video",
