@@ -1,4 +1,4 @@
-import { SearchIcon } from "lucide-react";
+import { ArrowDownNarrowWideIcon, SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ReactNode, useState } from "react";
 import { DataProvider } from "@/components/provider/data-provider/data-provider";
@@ -17,6 +17,8 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import Combobox from "@/components/ui/combobox";
+import { Toggle } from "@/components/ui/toggle";
 
 type HomeData = {
   searchName: string;
@@ -25,6 +27,8 @@ type HomeData = {
 
 export const LibraryPage = () => {
   const [searchName, setSearchName] = useState<string>("");
+  const [column, setColumn] = useState<string | undefined>("id");
+  const [isAscending, setIsAscending] = useState(true);
   return (
     <DataProvider
       data={
@@ -44,10 +48,28 @@ export const LibraryPage = () => {
                 <LibrariesSection
                   contextMenuWrapper={LibraryContext}
                   includeInName={searchName === "" ? undefined : searchName}
+                  sortOn={column}
+                  isAscending={isAscending}
                 >
                   <div className="w-full flex items-center gap-4 mb-6">
                     <SearchInput />
                     <div className="flex-1" />
+                    <Combobox 
+                      className="w-fit"
+                      datas={[
+                        { value: "id", label: "Created At" },
+                        { value: "name", label: "Name" },
+                      ]}
+                      selectHint="All"
+                      searchHint="Sort File By..."
+                      noResultsHint="No Results"
+                      canUnselect={false}
+                      value={column}
+                      onChange={setColumn}
+                    />
+                    <Toggle variant="outline" size="sm" pressed={isAscending} onPressedChange={setIsAscending}>
+                      <ArrowDownNarrowWideIcon />
+                    </Toggle>
                   </div>
                 </LibrariesSection>
               </div>

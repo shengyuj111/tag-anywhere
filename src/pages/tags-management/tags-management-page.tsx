@@ -1,4 +1,4 @@
-import { SearchIcon } from "lucide-react";
+import { ArrowDownNarrowWideIcon, SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { TagCommon, useCreateTagMutation } from "@/api/api/tag-api";
@@ -14,6 +14,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "@/components/ui/use-toast";
 import { TagsSection } from "@/components/composition/tags-section";
 import { TagDisplay } from "@/components/composition/tag-display";
+import Combobox from "@/components/ui/combobox";
+import { Toggle } from "@/components/ui/toggle";
 
 type TagsManagementData = {
   searchName: string;
@@ -22,7 +24,8 @@ type TagsManagementData = {
 
 export const TagsManagementPage = () => {
   const [searchName, setSearchName] = useState<string>("");
-
+  const [column, setColumn] = useState<string | undefined>("id");
+  const [isAscending, setIsAscending] = useState(true);
   const [createTag, { isLoading: isCreatingTag }] = useCreateTagMutation();
 
   const form = useForm<z.infer<typeof tagForm>>({
@@ -104,10 +107,28 @@ export const TagsManagementPage = () => {
               <div className="w-full flex-1">
                 <TagsSection
                   includeInName={searchName === "" ? undefined : searchName}
+                  sortOn={column}
+                  isAscending={isAscending}
                 >
-                  <div className="w-full flex items-center gap-4 mb-6">
+                  <div className="w-full flex items-center gap-4">
                     <SearchInput />
                     <div className="flex-1" />
+                    <Combobox 
+                      className="w-fit"
+                      datas={[
+                        { value: "id", label: "Created At" },
+                        { value: "name", label: "Name" },
+                      ]}
+                      selectHint="All"
+                      searchHint="Sort File By..."
+                      noResultsHint="No Results"
+                      canUnselect={false}
+                      value={column}
+                      onChange={setColumn}
+                    />
+                    <Toggle variant="outline" size="sm" pressed={isAscending} onPressedChange={setIsAscending}>
+                      <ArrowDownNarrowWideIcon />
+                    </Toggle>
                   </div>
                 </TagsSection>
               </div>
