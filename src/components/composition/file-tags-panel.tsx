@@ -53,7 +53,7 @@ export const FileTagsPanel = ({ mainFile }: FileDetailProps) => {
 
   return (
     <div className="w-full h-full">
-      <div className="flex flex-col p-6 gap-4 overflow-auto">
+      <div className="flex flex-col p-6 gap-4 h-full">
         <CardHeader className="flex-row items-center p-0">
           <div className="grid gap-2">
             <CardTitle>Tags</CardTitle>
