@@ -97,15 +97,18 @@ export interface GetFilesDatabaseResponse extends FileDetails {
   tagIds: string;
 }
 
+export type FileSortOnType = "id" | "name" | "numOfTags";
+
 export interface GetFilesRequest {
   includeInName?: string;
   includeTagIds?: number[];
   excludeTagIds?: number[];
   includeFileIds?: number[];
   excludeFileIds?: number[];
+  includeType?: FileType;
   pageSize?: number;
   page?: number;
-  sortOn?: string;
+  sortOn?: FileSortOnType;
   isAscending?: boolean;
   ignoreChildren?: boolean;
 }
@@ -186,10 +189,11 @@ export const fileApi = apiSlice.injectEndpoints({
             excludeTagIds,
             includeFileIds,
             excludeFileIds,
+            includeType,
             pageSize,
             page,
             ignoreChildren = true,
-            sortOn,
+            sortOn = "id",
             isAscending = true,
           } = request;
 
@@ -208,6 +212,16 @@ export const fileApi = apiSlice.injectEndpoints({
 
           if (ignoreChildren) {
             conditions.push("FileData.type NOT LIKE 'Child_%'");
+          }
+
+          if (includeType) {
+            if (includeType.startsWith("Composition")) {
+              conditions.push("FileData.type = ?");
+              params.push(includeType);
+            } else {
+              conditions.push("(FileData.type = ? OR FileData.type = ?)");
+              params.push(includeType, `Child_${includeType}`);
+            }
           }
 
           if (includeTagIds && includeTagIds.length > 0) {
@@ -268,13 +282,19 @@ export const fileApi = apiSlice.injectEndpoints({
               FROM Tag
               JOIN FileTag ON Tag.id = FileTag.tag_id
               WHERE FileTag.file_id = FileData.id
-            ), '') as tagIds
+            ), '') as tagIds, 
+            COALESCE((
+              SELECT COUNT(Tag.id)
+              FROM Tag
+              JOIN FileTag ON Tag.id = FileTag.tag_id
+              WHERE FileTag.file_id = FileData.id
+            ), 0) as numOfTags
             ${baseQuery}
             GROUP BY FileData.id
           `;
 
           if (sortOn) {
-            query += ` ORDER BY FileData.${sortOn} ${isAscending ? "ASC" : "DESC"}`;
+            query += ` ORDER BY ${sortOn === "numOfTags" ? "numOfTags" : `FileData.${sortOn}`} ${isAscending ? "ASC" : "DESC"}`;
           }
 
           if (pageSize && page) {

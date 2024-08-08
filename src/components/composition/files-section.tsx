@@ -30,10 +30,12 @@ export interface FilesSectionProps
   ignoreChildren?: boolean;
   sortOn?: string;
   isAscending?: boolean;
+  includeType?: string;
   contextMenuWrapper?: (props: {
     children: ReactNode;
     fileId: number;
   }) => ReactElement;
+  children?: ReactNode;
 }
 
 export const FilesSection = ({
@@ -44,10 +46,12 @@ export const FilesSection = ({
   includeFileIds,
   excludeFileIds,
   includeInName,
+  includeType,
   ignoreChildren,
   sortOn,
   isAscending,
   contextMenuWrapper: ContextMenuWrapper,
+  children,
 }: FilesSectionProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(pageSizeOptions[0]);
@@ -60,6 +64,7 @@ export const FilesSection = ({
     ignoreChildren,
     sortOn,
     isAscending,
+    includeType,
     pageSize,
     page: currentPage,
   } as GetFilesRequest);
@@ -110,6 +115,7 @@ export const FilesSection = ({
         ref={fileContainerRef}
         className="flex flex-wrap justify-start items-start gap-3"
       >
+        {children}
         <Loaders.circular
           size="large"
           layout="area"
