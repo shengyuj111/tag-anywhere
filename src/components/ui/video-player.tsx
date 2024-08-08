@@ -248,7 +248,11 @@ const VideoPlayer = ({
           progress={progress}
           onSetProgress={setPlayerProgress}
         />
-        <VideoPlayerVolume volume={volume} onSetVolume={setPlayerVolume} container={placeholderRef.current ?? undefined} />
+        <VideoPlayerVolume
+          volume={volume}
+          onSetVolume={setPlayerVolume}
+          container={placeholderRef.current ?? undefined}
+        />
         <VideoPlayerFullScreenToggleButton
           isFullscreen={isFullscreen}
           toggleFullscreen={toggleFullscreen}

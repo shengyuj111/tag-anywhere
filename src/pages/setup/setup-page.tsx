@@ -27,7 +27,10 @@ import { DialogContext } from "@/components/provider/dialog-provider/dialog-serv
 
 import { useNavigate } from "react-router-dom";
 import { AlertDialog } from "@/components/composition/alert-dialog";
-import { PartialGlobalSettings, useSetGlobalSettingsMutation } from "@/api/api/settings-api";
+import {
+  PartialGlobalSettings,
+  useSetGlobalSettingsMutation,
+} from "@/api/api/settings-api";
 
 const setupFormSchema = z.object({
   indexPath: z

@@ -1,6 +1,9 @@
 import { useDeleteAllFilesMutation } from "@/api/api/file-api";
 import { useCleanUpUnusedFilesMutation } from "@/api/api/helper-api";
-import { useGetGlobalSettingsQuery, useSetGlobalSettingsMutation } from "@/api/api/settings-api";
+import {
+  useGetGlobalSettingsQuery,
+  useSetGlobalSettingsMutation,
+} from "@/api/api/settings-api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loaders } from "@/components/ui/loaders";
@@ -13,7 +16,8 @@ import { clamp } from "lodash";
 
 export const SettingsPage = () => {
   const { data: settings } = useGetGlobalSettingsQuery();
-  const [setSettings, { isLoading: isSettingsSettings }] = useSetGlobalSettingsMutation();
+  const [setSettings, { isLoading: isSettingsSettings }] =
+    useSetGlobalSettingsMutation();
   const [deleteUsedCover, { isLoading: isDeletingCover }] =
     useCleanUpUnusedFilesMutation();
   const [deleteAllFiles, { isLoading: isDeletingAllFiles }] =
@@ -52,11 +56,11 @@ export const SettingsPage = () => {
       title: "Saved",
       description: "Volume has been saved.",
     });
-  }
+  };
 
   const handleResetVolume = async () => {
     setVolume(settings!.volume * 100);
-  }
+  };
 
   return (
     <div className="w-full flex flex-col gap-4 p-6">
@@ -73,7 +77,11 @@ export const SettingsPage = () => {
           <Muted>Path to store covers and database</Muted>
         </div>
         <div className="flex-grow" />
-        <Input defaultValue={settings!.indexPath ?? ""} className="w-[200px]" disabled />
+        <Input
+          defaultValue={settings!.indexPath ?? ""}
+          className="w-[200px]"
+          disabled
+        />
         <Button size="sm" onClick={() => navigate("/setup")}>
           Reset
         </Button>
@@ -84,7 +92,11 @@ export const SettingsPage = () => {
           <Muted>Path to store files</Muted>
         </div>
         <div className="flex-grow" />
-        <Input defaultValue={settings!.storehousePath ?? ""} className="w-[200px]" disabled />
+        <Input
+          defaultValue={settings!.storehousePath ?? ""}
+          className="w-[200px]"
+          disabled
+        />
         <Button size="sm" onClick={() => navigate("/setup")}>
           Reset
         </Button>
@@ -141,12 +153,32 @@ export const SettingsPage = () => {
           <Muted>Set start volume of your video</Muted>
         </div>
         <div className="flex-grow" />
-        <Input defaultValue={settings!.volume * 100} min={0} max={100} onChange={(e) => setVolume(Number(e.target.value))} className="w-[100px]" type="number" placeholder="0-100" />
-        <Button size="sm" onClick={handleSaveVolume} disabled={isSettingsSettings}>
-          <Loaders.circular className="w-4 h-4 mr-2" loading={isSettingsSettings} />
+        <Input
+          defaultValue={settings!.volume * 100}
+          min={0}
+          max={100}
+          onChange={(e) => setVolume(Number(e.target.value))}
+          className="w-[100px]"
+          type="number"
+          placeholder="0-100"
+        />
+        <Button
+          size="sm"
+          onClick={handleSaveVolume}
+          disabled={isSettingsSettings}
+        >
+          <Loaders.circular
+            className="w-4 h-4 mr-2"
+            loading={isSettingsSettings}
+          />
           Save
         </Button>
-        <Button variant="secondary" size="sm" onClick={handleResetVolume} disabled={isSettingsSettings}>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={handleResetVolume}
+          disabled={isSettingsSettings}
+        >
           Reset
         </Button>
       </div>

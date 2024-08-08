@@ -7,7 +7,7 @@ export type GlobalSettings = {
   storehousePath: string | null;
   // video settings
   volume: number;
-}
+};
 
 export type PartialGlobalSettings = Partial<GlobalSettings>;
 
@@ -26,7 +26,7 @@ export const getSettings = async () => {
   setup = await store.get<GlobalSettings>("global-settings");
   console.log("getSettings", setup);
   return setup!;
-}
+};
 
 export const settingsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -54,4 +54,5 @@ export const settingsApi = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useGetGlobalSettingsQuery, useSetGlobalSettingsMutation } = settingsApi;
+export const { useGetGlobalSettingsQuery, useSetGlobalSettingsMutation } =
+  settingsApi;

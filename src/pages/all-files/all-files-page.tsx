@@ -140,7 +140,7 @@ export const AllFilesPage = () => {
                     </Button>
                   </div>
                   <div className="w-full flex justify-end items-center gap-4 mb-6">
-                    <Combobox 
+                    <Combobox
                       className="w-fit"
                       datas={[
                         { value: "Video", label: "Video" },
@@ -155,7 +155,7 @@ export const AllFilesPage = () => {
                       value={typeFilter}
                       onChange={setTypeFilter}
                     />
-                    <Combobox 
+                    <Combobox
                       className="w-fit"
                       datas={[
                         { value: "id", label: "Created At" },
@@ -169,7 +169,12 @@ export const AllFilesPage = () => {
                       value={column}
                       onChange={setColumn}
                     />
-                    <Toggle variant="outline" size="sm" pressed={isAscending} onPressedChange={setIsAscending}>
+                    <Toggle
+                      variant="outline"
+                      size="sm"
+                      pressed={isAscending}
+                      onPressedChange={setIsAscending}
+                    >
                       <ArrowDownNarrowWideIcon />
                     </Toggle>
                   </div>

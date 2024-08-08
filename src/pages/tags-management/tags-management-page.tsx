@@ -113,7 +113,7 @@ export const TagsManagementPage = () => {
                   <div className="w-full flex items-center gap-4">
                     <SearchInput />
                     <div className="flex-1" />
-                    <Combobox 
+                    <Combobox
                       className="w-fit"
                       datas={[
                         { value: "id", label: "Created At" },
@@ -126,7 +126,12 @@ export const TagsManagementPage = () => {
                       value={column}
                       onChange={setColumn}
                     />
-                    <Toggle variant="outline" size="sm" pressed={isAscending} onPressedChange={setIsAscending}>
+                    <Toggle
+                      variant="outline"
+                      size="sm"
+                      pressed={isAscending}
+                      onPressedChange={setIsAscending}
+                    >
                       <ArrowDownNarrowWideIcon />
                     </Toggle>
                   </div>

@@ -9,7 +9,6 @@ import Database from "tauri-plugin-sql-api";
 import { DatabaseManager } from "../../../api/database/database-manager";
 import { GlobalSettings } from "@/api/api/settings-api";
 
-
 interface StorageData {
   currentDatabase: Database | null;
   settings: GlobalSettings | null;
