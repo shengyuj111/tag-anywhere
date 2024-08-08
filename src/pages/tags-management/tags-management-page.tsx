@@ -120,7 +120,7 @@ export const TagsManagementPage = () => {
                         { value: "name", label: "Name" },
                       ]}
                       selectHint="All"
-                      searchHint="Sort File By..."
+                      searchHint="Sort Tag By..."
                       noResultsHint="No Results"
                       canUnselect={false}
                       value={column}
