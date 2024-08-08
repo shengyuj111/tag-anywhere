@@ -29,6 +29,7 @@ export interface LibrariesSectionProps
     children: ReactNode;
     libraryId: number;
   }) => ReactElement;
+  children?: ReactNode;
 }
 
 export const LibrariesSection = ({
@@ -37,6 +38,7 @@ export const LibrariesSection = ({
   sortOn,
   isAscending,
   contextMenuWrapper: ContextMenuWrapper,
+  children,
 }: LibrariesSectionProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(pageSizeOptions[0]);
@@ -103,6 +105,7 @@ export const LibrariesSection = ({
           layout="area"
           loading={isFetchingLibraries}
         />
+        {children}
         <Visibility isVisible={!isFetchingLibraries}>
           {libraries.map((library) => {
             const LibraryComponent = (

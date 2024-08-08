@@ -28,6 +28,7 @@ export interface TagsSectionProps extends React.HTMLAttributes<HTMLDivElement> {
     children: ReactNode;
     fileId: number;
   }) => ReactElement;
+  children?: ReactNode;
 }
 
 export const TagsSection = ({
@@ -36,6 +37,7 @@ export const TagsSection = ({
   sortOn,
   isAscending,
   contextMenuWrapper: ContextMenuWrapper,
+  children,
 }: TagsSectionProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(pageSizeOptions[0]);
@@ -94,6 +96,7 @@ export const TagsSection = ({
         ref={fileContainerRef}
         className="flex flex-wrap justify-start items-start gap-3"
       >
+        {children}
         <Loaders.circular size="large" layout="area" loading={isFetchingTags} />
         <Visibility isVisible={!isFetchingTags}>
           {tags.map((tag) => {

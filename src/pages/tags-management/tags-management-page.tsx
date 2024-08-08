@@ -66,10 +66,10 @@ export const TagsManagementPage = () => {
       id="tags-management"
     >
       <div className="w-full h-full flex justify-center">
-        <div className="w-[95%] 2xl:w-[80%] h-full flex flex-col items-center gap-4 ">
+        <div className="w-[95%] h-full flex flex-col items-center gap-4 ">
           <H3 className="w-full flex">All Tags</H3>
           <div className="flex gap-4 w-full flex-grow">
-            <Card className="w-[20%] h-full p-6 flex flex-col overflow-hidden">
+            <Card className="w-[40%] 2xl:w-[20%] h-full p-6 flex flex-col overflow-hidden">
               <TagForm
                 form={form}
                 onSubmit={onSubmit}
@@ -100,15 +100,16 @@ export const TagsManagementPage = () => {
                 />
               </div>
             </Card>
-            <Card className="w-[calc(80%-1rem)] h-full p-6 flex flex-col gap-8">
-              <div className="w-full flex items-center gap-4">
-                <SearchInput />
-                <div className="flex-1" />
-              </div>
+            <Card className="w-[calc(60%-1rem)] 2xl:w-[calc(80%-1rem)] h-full p-6 flex flex-col gap-8 overflow-hidden">
               <div className="w-full flex-1">
                 <TagsSection
                   includeInName={searchName === "" ? undefined : searchName}
-                />
+                >
+                  <div className="w-full flex items-center gap-4 mb-6">
+                    <SearchInput />
+                    <div className="flex-1" />
+                  </div>
+                </TagsSection>
               </div>
             </Card>
           </div>

@@ -36,19 +36,20 @@ export const LibraryPage = () => {
       id="home"
     >
       <div className="w-full h-full flex justify-center">
-        <div className="w-[95%] 2xl:w-[80%] h-full flex flex-col items-center gap-4 ">
+        <div className="w-[95%] h-full flex flex-col items-center gap-4 ">
           <H3 className="w-full flex">Libraries</H3>
           <div className="flex gap-4 w-full flex-grow">
             <Card className="w-full h-full p-6 flex flex-col gap-8">
-              <div className="w-full flex items-center gap-4">
-                <SearchInput />
-                <div className="flex-1" />
-              </div>
               <div className="w-full flex-1">
                 <LibrariesSection
                   contextMenuWrapper={LibraryContext}
                   includeInName={searchName === "" ? undefined : searchName}
-                />
+                >
+                  <div className="w-full flex items-center gap-4 mb-6">
+                    <SearchInput />
+                    <div className="flex-1" />
+                  </div>
+                </LibrariesSection>
               </div>
             </Card>
           </div>
