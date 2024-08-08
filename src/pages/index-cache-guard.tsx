@@ -5,19 +5,20 @@ import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 export const IndexCacheGuard = () => {
-  const { data: settings, isFetching } = useGetGlobalSettingsQuery();
+  const { data: settings, isLoading } = useGetGlobalSettingsQuery();
   const navigate = useNavigate();
   const { setSettings } = useStorage()!;
 
   useEffect(() => {
-    if (!isFetching && !settings) navigate("/setup");
+    if (isLoading) return;
+    if (settings === null || settings === undefined) navigate("/setup");
     if (!settings!.indexPath) navigate("/setup");
     if (!settings!.storehousePath) navigate("/setup");
 
     setSettings(settings!);
-  }, [settings, isFetching, navigate, setSettings]);
+  }, [settings, isLoading, navigate, setSettings]);
 
-  return isFetching || !settings ? <LoadingScreen /> : <Outlet />;
+  return isLoading ? <LoadingScreen /> : <Outlet />;
 };
 
 const LoadingScreen = () => {
