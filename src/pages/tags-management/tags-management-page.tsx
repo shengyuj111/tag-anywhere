@@ -1,6 +1,6 @@
 import { ArrowDownNarrowWideIcon, SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { TagCommon, useCreateTagMutation } from "@/api/api/tag-api";
 import { DataProvider } from "@/components/provider/data-provider/data-provider";
 import { useData } from "@/components/provider/data-provider/data-context";
@@ -58,6 +58,25 @@ export const TagsManagementPage = () => {
     }
   };
 
+const name = form.watch("name");
+const coverPath = form.watch("coverPath");
+
+const previewTag = useMemo(() => {
+  return {
+    id: 0,
+    name: name === "" ? "Tag Name" : name,
+    type: "default",
+    color: null,
+    coverPath: coverPath === "" ? undefined : coverPath,
+    description: "",
+  } as TagCommon;
+}, [name, coverPath]);
+
+  
+  
+
+  console.log(previewTag);
+
   return (
     <DataProvider
       data={
@@ -83,22 +102,7 @@ export const TagsManagementPage = () => {
               <div className="w-full flex flex-col mt-8 gap-4">
                 <H4>Preview</H4>
                 <TagDisplay
-                  tagCommon={
-                    {
-                      id: 0,
-                      name:
-                        form.getValues("name") === ""
-                          ? "Tag Name"
-                          : form.getValues("name"),
-                      type: "default",
-                      color: null,
-                      coverPath:
-                        form.getValues("coverPath") === ""
-                          ? undefined
-                          : form.getValues("coverPath"),
-                      description: "",
-                    } as TagCommon
-                  }
+                  tagCommon={previewTag}
                   numOfFiles={9999}
                 />
               </div>
