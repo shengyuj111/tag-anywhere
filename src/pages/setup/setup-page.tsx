@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -20,7 +19,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { exists } from "@tauri-apps/api/fs";
+import { createDir, exists } from "@tauri-apps/api/fs";
+import { open } from "@tauri-apps/api/dialog";
 import { Loaders } from "@/components/ui/loaders";
 import { useContext } from "react";
 import { DialogContext } from "@/components/provider/dialog-provider/dialog-service-provider";
@@ -31,6 +31,8 @@ import {
   PartialGlobalSettings,
   useSetGlobalSettingsMutation,
 } from "@/api/api/settings-api";
+import { cn } from "@/lib/utils";
+import { UploadIcon } from "lucide-react";
 
 const setupFormSchema = z.object({
   indexPath: z
@@ -66,6 +68,11 @@ export const SetupPage = () => {
         indexPath: values.indexPath,
         storehousePath: values.storehousePath,
       } as PartialGlobalSettings);
+      const coverPath = `${values.indexPath}/cover`;
+      const hasCoverPath = await exists(coverPath);
+      if (!hasCoverPath) {
+        await createDir(coverPath);
+      }
       navigate("/all-files");
     } catch (error) {
       dialogManager.openDialog({
@@ -102,13 +109,29 @@ export const SetupPage = () => {
                   <FormItem>
                     <FormLabel>Index Path</FormLabel>
                     <FormControl>
-                      <Input placeholder="Type a path to a folder" {...field} />
+                      <div
+                        className={cn(
+                          "border flex py-2 px-4 rounded-md items-center w-full justify-start",
+                          field.value ? "text-lime-400" : "",
+                        )}
+                        onClick={async () => {
+                          const selected = await open({
+                            title: "Choose an Empty folder",
+                            directory: true,
+                          });
+                          if (selected) {
+                            field.onChange(selected);
+                          }
+                        }}
+                      >
+                        <UploadIcon className="w-4 h-4 mr-2" />
+                        {field.value === "" ? "Choose an Empty folder" : field.value}
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={setupForm.control}
                 name="storehousePath"
@@ -116,7 +139,24 @@ export const SetupPage = () => {
                   <FormItem>
                     <FormLabel>Storehouse Path</FormLabel>
                     <FormControl>
-                      <Input placeholder="Type a path to a folder" {...field} />
+                      <div
+                        className={cn(
+                          "border flex py-2 px-4 rounded-md items-center w-full justify-start",
+                          field.value ? "text-lime-400" : "",
+                        )}
+                        onClick={async () => {
+                          const selected = await open({
+                            title: "Choose an Empty folder",
+                            directory: true,
+                          });
+                          if (selected) {
+                            field.onChange(selected);
+                          }
+                        }}
+                      >
+                        <UploadIcon className="w-4 h-4 mr-2" />
+                        {field.value === "" ? "Choose an Empty folder" : field.value}
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
