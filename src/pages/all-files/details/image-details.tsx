@@ -27,7 +27,6 @@ export const ImageDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
             <ScrollArea className="h-full">
               <FileStatsPanel
                 fileCommon={fileData.file}
-                timeStamp={fileData.timeStamp}
               />
             </ScrollArea>
           </Card>

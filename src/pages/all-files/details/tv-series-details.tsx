@@ -52,6 +52,7 @@ export const TVSeriesDetails = ({
   const [updateFileCover] = useUpdateCoverMutation();
 
   useEffect(() => {
+    if (!video_path) return;
     getVideoFrameRate(video_path).then((frameRate) => {
       setVideoFrameRate(frameRate);
     });
@@ -61,8 +62,7 @@ export const TVSeriesDetails = ({
     await updateFileCover({
       time: videoCurrentTime,
       id: currentVideo.id,
-      filePath: currentVideo.path,
-      coverPath: currentVideo.coverPath,
+      videoFilePath: currentVideo.path,
     } as UpdateCoverRequest);
     toast({
       title: "Cover Updated",
