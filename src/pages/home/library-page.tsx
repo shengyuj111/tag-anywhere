@@ -27,8 +27,19 @@ type HomeData = {
 
 export const LibraryPage = () => {
   const [searchName, setSearchName] = useState<string>("");
-  const [column, setColumn] = useState<string | undefined>("id");
-  const [isAscending, setIsAscending] = useState(false);
+  const [column, setColumn] = useState<string | undefined>(localStorage.getItem("library-management-column") ?? "id");
+  const [isAscending, setIsAscending] = useState(localStorage.getItem("library-management-is-ascending") === "true");
+
+  const handleSetColumn = (column: string | undefined) => {
+    setColumn(column);
+    sessionStorage.setItem("library-management-column", column!);
+  }
+
+  const handleSetIsAscending = (isAscending: boolean) => {
+    setIsAscending(isAscending);
+    sessionStorage.setItem("library-management-is-ascending", isAscending.toString());
+  }
+
   return (
     <DataProvider
       data={
@@ -65,13 +76,13 @@ export const LibraryPage = () => {
                       noResultsHint="No Results"
                       canUnselect={false}
                       value={column}
-                      onChange={setColumn}
+                      onChange={handleSetColumn}
                     />
                     <Toggle
                       variant="outline"
                       size="sm"
                       pressed={isAscending}
-                      onPressedChange={setIsAscending}
+                      onPressedChange={handleSetIsAscending}
                     >
                       <ArrowDownNarrowWideIcon />
                     </Toggle>

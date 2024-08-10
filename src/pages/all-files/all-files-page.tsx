@@ -32,9 +32,9 @@ export const AllFilesPage = () => {
   const { settings } = useStorage()!;
   const [scanFiles, { isLoading: isScanning }] = useScanFilesMutation();
   const [ignoreChildren, setIgnoreChildren] = useState(true);
-  const [isAscending, setIsAscending] = useState(false);
-  const [column, setColumn] = useState<string | undefined>("id");
-  const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
+  const [isAscending, setIsAscending] = useState(sessionStorage.getItem("files-management-is-ascending") === "true");
+  const [column, setColumn] = useState<string | undefined>(sessionStorage.getItem("files-management-column") ?? "id");
+  const [typeFilter, setTypeFilter] = useState<string | undefined>(sessionStorage.getItem("files-management-type-filter") ?? undefined);
   const form = useForm<z.infer<typeof libraryForm>>({
     resolver: zodResolver(libraryForm),
     defaultValues: {
@@ -80,6 +80,25 @@ export const AllFilesPage = () => {
       child: <CreateBookDialog />,
     });
   };
+
+  const handleSetColumn = (column: string | undefined) => {
+    setColumn(column);
+    sessionStorage.setItem("files-management-column", column!);
+  }
+
+  const handleSetIsAscending = (isAscending: boolean) => {
+    setIsAscending(isAscending);
+    sessionStorage.setItem("files-management-is-ascending", isAscending.toString());
+  }
+
+  const handleSetTypeFilter = (typeFilter: string | undefined) => {
+    setTypeFilter(typeFilter);
+    if (typeFilter) {
+      sessionStorage.setItem("files-management-type-filter", typeFilter);
+    } else {
+      sessionStorage.removeItem("files-management-type-filter");
+    }
+  }
 
   return (
     <>
@@ -153,7 +172,7 @@ export const AllFilesPage = () => {
                       searchHint="Filter File Type By..."
                       noResultsHint="No Results"
                       value={typeFilter}
-                      onChange={setTypeFilter}
+                      onChange={handleSetTypeFilter}
                     />
                     <Combobox
                       className="w-fit"
@@ -167,13 +186,13 @@ export const AllFilesPage = () => {
                       noResultsHint="No Results"
                       canUnselect={false}
                       value={column}
-                      onChange={setColumn}
+                      onChange={handleSetColumn}
                     />
                     <Toggle
                       variant="outline"
                       size="sm"
                       pressed={isAscending}
-                      onPressedChange={setIsAscending}
+                      onPressedChange={handleSetIsAscending}
                     >
                       <ArrowDownNarrowWideIcon />
                     </Toggle>
