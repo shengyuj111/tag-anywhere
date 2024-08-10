@@ -24,8 +24,12 @@ type TagsManagementData = {
 
 export const TagsManagementPage = () => {
   const [searchName, setSearchName] = useState<string>("");
-  const [column, setColumn] = useState<string | undefined>(sessionStorage.getItem("tags-management-column") ?? "id");
-  const [isAscending, setIsAscending] = useState(sessionStorage.getItem("tags-management-is-ascending") === "true");
+  const [column, setColumn] = useState<string | undefined>(
+    sessionStorage.getItem("tags-management-column") ?? "id",
+  );
+  const [isAscending, setIsAscending] = useState(
+    sessionStorage.getItem("tags-management-is-ascending") === "true",
+  );
   const [createTag, { isLoading: isCreatingTag }] = useCreateTagMutation();
 
   const form = useForm<z.infer<typeof tagForm>>({
@@ -76,12 +80,15 @@ export const TagsManagementPage = () => {
   const handleSetColumn = (column: string | undefined) => {
     setColumn(column!);
     sessionStorage.setItem("tags-management-column", column!);
-  }
+  };
 
   const handleSetIsAscending = (isAscending: boolean) => {
     setIsAscending(isAscending);
-    sessionStorage.setItem("tags-management-is-ascending", isAscending.toString());
-  }
+    sessionStorage.setItem(
+      "tags-management-is-ascending",
+      isAscending.toString(),
+    );
+  };
 
   return (
     <DataProvider

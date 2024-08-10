@@ -32,9 +32,15 @@ export const AllFilesPage = () => {
   const { settings } = useStorage()!;
   const [scanFiles, { isLoading: isScanning }] = useScanFilesMutation();
   const [ignoreChildren, setIgnoreChildren] = useState(true);
-  const [isAscending, setIsAscending] = useState(sessionStorage.getItem("files-management-is-ascending") === "true");
-  const [column, setColumn] = useState<string | undefined>(sessionStorage.getItem("files-management-column") ?? "id");
-  const [typeFilter, setTypeFilter] = useState<string | undefined>(sessionStorage.getItem("files-management-type-filter") ?? undefined);
+  const [isAscending, setIsAscending] = useState(
+    sessionStorage.getItem("files-management-is-ascending") === "true",
+  );
+  const [column, setColumn] = useState<string | undefined>(
+    sessionStorage.getItem("files-management-column") ?? "id",
+  );
+  const [typeFilter, setTypeFilter] = useState<string | undefined>(
+    sessionStorage.getItem("files-management-type-filter") ?? undefined,
+  );
   const form = useForm<z.infer<typeof libraryForm>>({
     resolver: zodResolver(libraryForm),
     defaultValues: {
@@ -84,12 +90,15 @@ export const AllFilesPage = () => {
   const handleSetColumn = (column: string | undefined) => {
     setColumn(column);
     sessionStorage.setItem("files-management-column", column!);
-  }
+  };
 
   const handleSetIsAscending = (isAscending: boolean) => {
     setIsAscending(isAscending);
-    sessionStorage.setItem("files-management-is-ascending", isAscending.toString());
-  }
+    sessionStorage.setItem(
+      "files-management-is-ascending",
+      isAscending.toString(),
+    );
+  };
 
   const handleSetTypeFilter = (typeFilter: string | undefined) => {
     setTypeFilter(typeFilter);
@@ -98,7 +107,7 @@ export const AllFilesPage = () => {
     } else {
       sessionStorage.removeItem("files-management-type-filter");
     }
-  }
+  };
 
   return (
     <>

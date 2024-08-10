@@ -99,7 +99,7 @@ const router = createBrowserRouter([
         element: <SetupPage />,
       },
     ],
-  }
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

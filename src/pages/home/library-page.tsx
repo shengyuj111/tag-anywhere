@@ -27,18 +27,25 @@ type HomeData = {
 
 export const LibraryPage = () => {
   const [searchName, setSearchName] = useState<string>("");
-  const [column, setColumn] = useState<string | undefined>(localStorage.getItem("library-management-column") ?? "id");
-  const [isAscending, setIsAscending] = useState(localStorage.getItem("library-management-is-ascending") === "true");
+  const [column, setColumn] = useState<string | undefined>(
+    localStorage.getItem("library-management-column") ?? "id",
+  );
+  const [isAscending, setIsAscending] = useState(
+    localStorage.getItem("library-management-is-ascending") === "true",
+  );
 
   const handleSetColumn = (column: string | undefined) => {
     setColumn(column);
     sessionStorage.setItem("library-management-column", column!);
-  }
+  };
 
   const handleSetIsAscending = (isAscending: boolean) => {
     setIsAscending(isAscending);
-    sessionStorage.setItem("library-management-is-ascending", isAscending.toString());
-  }
+    sessionStorage.setItem(
+      "library-management-is-ascending",
+      isAscending.toString(),
+    );
+  };
 
   return (
     <DataProvider

@@ -125,7 +125,9 @@ export const SetupPage = () => {
                         }}
                       >
                         <UploadIcon className="w-4 h-4 mr-2" />
-                        {field.value === "" ? "Choose an Empty folder" : field.value}
+                        {field.value === ""
+                          ? "Choose an Empty folder"
+                          : field.value}
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -155,7 +157,9 @@ export const SetupPage = () => {
                         }}
                       >
                         <UploadIcon className="w-4 h-4 mr-2" />
-                        {field.value === "" ? "Choose an Empty folder" : field.value}
+                        {field.value === ""
+                          ? "Choose an Empty folder"
+                          : field.value}
                       </div>
                     </FormControl>
                     <FormMessage />
