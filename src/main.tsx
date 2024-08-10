@@ -24,75 +24,82 @@ import { TagDetailsPage } from "./pages/tags-management/details/tag-details-page
 import { LibraryDetailsPage } from "./pages/home/library-details/library-details.tsx";
 import { LibraryPage } from "./pages/home/library-page.tsx";
 import { SettingsPage } from "./pages/settings/settings-page.tsx";
+import { RootPage } from "./pages/root.tsx";
 
 const router = createBrowserRouter([
   {
-    path: "",
-    element: <IndexCacheGuard />,
+    path: "/",
+    element: <RootPage />,
     children: [
       {
         path: "",
-        element: <Navbar />,
+        element: <IndexCacheGuard />,
         children: [
           {
             path: "",
-            element: <Navigate to="/library" />,
-          },
-          {
-            path: "",
-            children: [
-              {
-                path: "library",
-                element: <LibraryPage />,
-              },
-              {
-                path: "library/:libraryId",
-                element: <LibraryDetailsPage />,
-              },
-            ],
-          },
-          {
-            path: "all-files",
+            element: <Navbar />,
             children: [
               {
                 path: "",
-                element: <AllFilesPage />,
+                element: <Navigate to="/library" />,
               },
-              {
-                path: "details/:fileId",
-                element: <FileDetailsPage />,
-              },
-            ],
-          },
-          {
-            path: "tags",
-            children: [
               {
                 path: "",
-                element: <TagsManagementPage />,
+                children: [
+                  {
+                    path: "library",
+                    element: <LibraryPage />,
+                  },
+                  {
+                    path: "library/:libraryId",
+                    element: <LibraryDetailsPage />,
+                  },
+                ],
               },
               {
-                path: "details/:tagId",
-                element: <TagDetailsPage />,
+                path: "all-files",
+                children: [
+                  {
+                    path: "",
+                    element: <AllFilesPage />,
+                  },
+                  {
+                    path: "details/:fileId",
+                    element: <FileDetailsPage />,
+                  },
+                ],
+              },
+              {
+                path: "tags",
+                children: [
+                  {
+                    path: "",
+                    element: <TagsManagementPage />,
+                  },
+                  {
+                    path: "details/:tagId",
+                    element: <TagDetailsPage />,
+                  },
+                ],
+              },
+              {
+                path: "settings",
+                element: <SettingsPage />,
+              },
+              {
+                path: "test",
+                element: <TestPage />,
               },
             ],
-          },
-          {
-            path: "settings",
-            element: <SettingsPage />,
-          },
-          {
-            path: "test",
-            element: <TestPage />,
           },
         ],
       },
+      {
+        path: "setup",
+        element: <SetupPage />,
+      },
     ],
-  },
-  {
-    path: "setup",
-    element: <SetupPage />,
-  },
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
