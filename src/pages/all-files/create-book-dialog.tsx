@@ -24,7 +24,7 @@ const CreateBookDialog = () => {
   const form = useForm<z.infer<typeof bookForm>>({
     resolver: zodResolver(bookForm),
     defaultValues: {
-      name: "",
+      bookName: "",
       type: fileTypes[6],
       description: "",
       coverPath: "",
@@ -36,6 +36,7 @@ const CreateBookDialog = () => {
     try {
       await createCompoundFile({
         ...values,
+        name: values.bookName,
       } as CreateCompositeFileRequest);
       toast({
         title: "Book Created",

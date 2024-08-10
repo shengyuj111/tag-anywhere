@@ -72,7 +72,7 @@ export const BookForm = ({
       >
         <FormField
           control={form.control}
-          name="name"
+          name="bookName"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Book Name</FormLabel>

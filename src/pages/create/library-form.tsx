@@ -59,7 +59,7 @@ export const LibraryForm = ({
       >
         <FormField
           control={form.control}
-          name="name"
+          name="libraryName"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Library Name</FormLabel>

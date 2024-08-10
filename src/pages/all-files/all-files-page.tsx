@@ -38,7 +38,7 @@ export const AllFilesPage = () => {
   const form = useForm<z.infer<typeof libraryForm>>({
     resolver: zodResolver(libraryForm),
     defaultValues: {
-      name: "",
+      libraryName: "",
       coverPath: "",
       includeInName: "",
       includeTags: [],
@@ -49,7 +49,7 @@ export const AllFilesPage = () => {
   const onSubmit = async (values: z.infer<typeof libraryForm>) => {
     try {
       await createLibrary({
-        name: values.name,
+        name: values.libraryName,
         includeInName:
           values.includeInName === "" ? null : values.includeInName,
         coverPath: values.coverPath,

@@ -53,7 +53,7 @@ export const TagForm = ({
       >
         <FormField
           control={form.control}
-          name="name"
+          name="tagName"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Tag Name</FormLabel>

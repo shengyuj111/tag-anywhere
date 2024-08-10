@@ -31,7 +31,7 @@ export const TagsManagementPage = () => {
   const form = useForm<z.infer<typeof tagForm>>({
     resolver: zodResolver(tagForm),
     defaultValues: {
-      name: "",
+      tagName: "",
       type: "default",
       description: "",
     },
@@ -41,6 +41,7 @@ export const TagsManagementPage = () => {
     try {
       await createTag({
         ...values,
+        name: values.tagName,
         color: null,
       });
       toast({
@@ -58,7 +59,7 @@ export const TagsManagementPage = () => {
     }
   };
 
-  const name = form.watch("name");
+  const name = form.watch("tagName");
   const coverPath = form.watch("coverPath");
 
   const previewTag = useMemo(() => {

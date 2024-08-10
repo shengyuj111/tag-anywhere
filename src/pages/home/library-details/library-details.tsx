@@ -51,7 +51,7 @@ export const LibraryDetailsPage = () => {
   const form = useForm<z.infer<typeof libraryForm>>({
     resolver: zodResolver(libraryForm),
     defaultValues: {
-      name: "",
+      libraryName: "",
       coverPath: "",
       includeInName: "",
       includeTags: [],
@@ -62,7 +62,7 @@ export const LibraryDetailsPage = () => {
   useEffect(() => {
     if (library && includeTags && excludeTags) {
       form.reset({
-        name: library.name || "",
+        libraryName: library.name || "",
         coverPath: library.coverPath || "",
         includeInName: library.includeInName || "",
         includeTags: includeTags.map((tag) => ({
@@ -81,7 +81,7 @@ export const LibraryDetailsPage = () => {
     try {
       await updateLibrary({
         id: library?.id,
-        name: values.name,
+        name: values.libraryName,
         includeInName:
           values.includeInName === "" ? null : values.includeInName,
         coverPath: values.coverPath,
