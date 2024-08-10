@@ -98,11 +98,8 @@ export const TagDetailsPage = () => {
     try {
       await updateTag({
         id: tag!.id,
-        name: name || tag!.name,
-        type: tag!.type,
-        color: tag!.color,
-        description: description || tag!.description,
-        coverPath: tag!.coverPath,
+        name: name,
+        description: description,
       } as UpdateTagRequest);
       toast({
         title: "Tag updated",
@@ -128,7 +125,9 @@ export const TagDetailsPage = () => {
         />
         <div className="w-full h-full gap-4 grid grid-cols-[30%_1fr] grid-rows-[30%_1fr]">
           <Card className="h-full overflow-hidden">
-            <ImageViewer src={pathToUrl(tag?.coverPath)} />
+            <TagCoverContext tagId={tag?.id}>
+              <ImageViewer src={pathToUrl(tag?.coverPath)} disableZoom />
+            </TagCoverContext>
           </Card>
           <Card className="w-full h-full p-4 flex flex-col gap-4">
             <EditableText
@@ -230,6 +229,57 @@ export const TagPageFileContext = ({
       <ContextMenuTrigger>{children}</ContextMenuTrigger>
       <ContextMenuContent className="w-64">
         <ContextMenuItem onClick={removeTag}>Remove From Tag</ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
+  );
+};
+
+export const TagCoverContext = ({
+  children,
+  tagId,
+}: {
+  tagId?: number;
+  children: ReactNode;
+}) => {
+  const [updateTag] = useUpdateTagMutation();
+
+  const updateTagCover = async () => {
+    try {
+      const selected = await open({
+        title: "Select Cover",
+        filters: [
+          { name: "Image", extensions: ["png", "jpeg", "jpg"] },
+        ],
+      });
+      if (Array.isArray(selected)) {
+        // user selected multiple files
+      } else if (selected === null) {
+        // user cancelled the selection
+      } else {
+        // user selected a single file
+        await updateTag({
+          id: tagId!,
+          coverPath: selected,
+        } as UpdateTagRequest).unwrap();
+        toast({
+          title: "Cover updated",
+          description: "Cover updated successfully",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Failed to update cover",
+        description: (error as Error).message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger>{children}</ContextMenuTrigger>
+      <ContextMenuContent className="w-64">
+        <ContextMenuItem onClick={updateTagCover}>Choose a new Cover</ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
   );

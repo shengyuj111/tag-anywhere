@@ -64,7 +64,7 @@ async function createDatabase(dbPath: string) {
       type TEXT NOT NULL,
       description TEXT,
       color TEXT,
-      coverPath TEXT
+      coverPath TEXT NOT NULL
     );
   `);
 
@@ -76,7 +76,7 @@ async function createDatabase(dbPath: string) {
         rsa TEXT,
         description TEXT NOT NULL,
         type TEXT NOT NULL,
-        coverPath TEXT
+        coverPath TEXT NOT NULL
       );
   `);
 

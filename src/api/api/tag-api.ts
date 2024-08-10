@@ -6,13 +6,18 @@ import { getCoverAndStoreSetUp, getUniqueNameInFolder } from "./helper";
 export const tagTypes = ["default", "composite"] as const;
 export type TagType = (typeof tagTypes)[number];
 
-export interface TagCommon {
-  id: number;
+export interface TagCommon extends TagDetailsWithId {}
+
+export interface TagDetails {
   name: string;
   type: TagType;
   color: string | null;
   description: string;
   coverPath: string;
+}
+
+export interface TagDetailsWithId extends TagDetails {
+  id: number;
 }
 
 export interface GetTagsRequest {
@@ -45,7 +50,9 @@ export interface GetTagByNameRequest {
 
 export interface CreateTagRequest extends Omit<TagCommon, "id"> {}
 
-export interface UpdateTagRequest extends TagCommon {}
+export interface UpdateTagRequest extends Partial<TagDetails> {
+  id: number;
+}
 
 export interface DeleteTagRequest {
   id: number;
@@ -211,7 +218,6 @@ export const tagApi = apiSlice.injectEndpoints({
           const { coverPath: cover_dir_path } = await getCoverAndStoreSetUp();
 
           const uniqueName = await getUniqueNameInFolder(cover_dir_path);
-          console.log("uniqueName", uniqueName);
           const thumbnailPath = await createThumbnail(
             uniqueName,
             coverPath,
@@ -247,14 +253,53 @@ export const tagApi = apiSlice.injectEndpoints({
         try {
           const { id, name, type, color, coverPath, description } = request;
           const db = await DatabaseManager.getInstance().getDbInstance();
-          await db.execute(
-            `
-              UPDATE Tag
-              SET name = ?, type = ?, color = ?, coverPath = ?, description = ?
-              WHERE id = ?
-            `,
-            [name, type, color, coverPath, description, id],
-          );
+    
+          const updates: string[] = [];
+          const params: (string | number | null)[] = [];
+    
+          if (name !== undefined) {
+            updates.push("name = ?");
+            params.push(name);
+          }
+    
+          if (type !== undefined) {
+            updates.push("type = ?");
+            params.push(type);
+          }
+    
+          if (color !== undefined) {
+            updates.push("color = ?");
+            params.push(color);
+          }
+    
+          if (description !== undefined) {
+            updates.push("description = ?");
+            params.push(description);
+          }
+    
+          if (coverPath !== undefined) {
+            const { coverPath: cover_dir_path } = await getCoverAndStoreSetUp();
+            const uniqueName = await getUniqueNameInFolder(cover_dir_path);
+            const thumbnailPath = await createThumbnail(
+              uniqueName,
+              coverPath,
+              cover_dir_path,
+              1,
+              null,
+            );
+            updates.push("coverPath = ?");
+            params.push(thumbnailPath);
+          }
+    
+          if (updates.length === 0) {
+            throw new Error("No fields provided to update");
+          }
+    
+          params.push(id);
+          const query = `UPDATE Tag SET ${updates.join(", ")} WHERE id = ?`;
+    
+          await db.execute(query, params);
+    
           return { data: null };
         } catch (error: unknown) {
           if (
@@ -269,7 +314,7 @@ export const tagApi = apiSlice.injectEndpoints({
         }
       },
       invalidatesTags: (_result, _error, { id }) => [{ type: "TAG", id }],
-    }),
+    }),    
     deleteTag: builder.mutation<null, DeleteTagRequest>({
       queryFn: async (request) => {
         try {

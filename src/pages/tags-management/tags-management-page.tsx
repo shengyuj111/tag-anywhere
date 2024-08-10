@@ -25,7 +25,7 @@ type TagsManagementData = {
 export const TagsManagementPage = () => {
   const [searchName, setSearchName] = useState<string>("");
   const [column, setColumn] = useState<string | undefined>("id");
-  const [isAscending, setIsAscending] = useState(true);
+  const [isAscending, setIsAscending] = useState(false);
   const [createTag, { isLoading: isCreatingTag }] = useCreateTagMutation();
 
   const form = useForm<z.infer<typeof tagForm>>({
@@ -71,11 +71,6 @@ const previewTag = useMemo(() => {
     description: "",
   } as TagCommon;
 }, [name, coverPath]);
-
-  
-  
-
-  console.log(previewTag);
 
   return (
     <DataProvider

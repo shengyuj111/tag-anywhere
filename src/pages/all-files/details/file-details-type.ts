@@ -1,6 +1,6 @@
-import { CreateFileResponse } from "@/api/api/file-api";
+import { GetFileByIdResponse } from "@/api/api/file-api";
 
 export type FileDetailProps = {
-  fileData: CreateFileResponse;
+  fileData: GetFileByIdResponse;
   onUpdateName: (name: string) => void;
 };

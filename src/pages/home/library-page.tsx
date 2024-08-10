@@ -28,7 +28,7 @@ type HomeData = {
 export const LibraryPage = () => {
   const [searchName, setSearchName] = useState<string>("");
   const [column, setColumn] = useState<string | undefined>("id");
-  const [isAscending, setIsAscending] = useState(true);
+  const [isAscending, setIsAscending] = useState(false);
   return (
     <DataProvider
       data={

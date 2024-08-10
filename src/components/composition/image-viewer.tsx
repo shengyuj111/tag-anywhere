@@ -10,10 +10,11 @@ import { Visibility } from "../ui/visibility";
 
 interface ImageViewerProps extends React.HTMLAttributes<HTMLDivElement> {
   src?: string;
+  disableZoom?: boolean;
   className?: string;
 }
 
-export const ImageViewer = ({ src, className, ...props }: ImageViewerProps) => {
+export const ImageViewer = ({ src, className, disableZoom=false, ...props }: ImageViewerProps) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const handle = useFullScreenHandle();
 
@@ -46,19 +47,21 @@ export const ImageViewer = ({ src, className, ...props }: ImageViewerProps) => {
             className="object-contain w-full h-full rounded-none"
           />
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-white absolute top-4 right-4"
-          onClick={toggleFullscreen}
-        >
-          <Visibility isVisible={!isFullscreen}>
-            <MaximizeIcon className="w-6 h-6" />
-          </Visibility>
-          <Visibility isVisible={isFullscreen}>
-            <MinimizeIcon className="w-6 h-6" />
-          </Visibility>
-        </Button>
+        <Visibility isVisible={!disableZoom}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-white absolute top-4 right-4"
+            onClick={toggleFullscreen}
+          >
+            <Visibility isVisible={!isFullscreen}>
+              <MaximizeIcon className="w-6 h-6" />
+            </Visibility>
+            <Visibility isVisible={isFullscreen}>
+              <MinimizeIcon className="w-6 h-6" />
+            </Visibility>
+          </Button>
+        </Visibility>
       </div>
     </FullScreen>
   );

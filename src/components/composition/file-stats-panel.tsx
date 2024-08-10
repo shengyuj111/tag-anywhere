@@ -28,21 +28,19 @@ import { pathToUrl } from "@/api/api/helper";
 
 interface FileStatsPanelProps {
   fileCommon: FileCommon;
-  timeStamp: number;
 }
 
 export const FileStatsPanel = ({
   fileCommon,
-  timeStamp,
 }: FileStatsPanelProps) => {
   const [stats, setStats] = useState<fileStatsResult | undefined>(undefined);
   const coverPath = useMemo(
-    () => pathToUrl(fileCommon.coverPath!),
+    () => pathToUrl(fileCommon.coverPath),
     [fileCommon.coverPath],
   );
 
   useEffect(() => {
-    getFileStats(fileCommon.path).then((stats) => setStats(stats));
+    getFileStats(fileCommon.path!).then((stats) => setStats(stats));
   }, [fileCommon.path]);
 
   const statsData: {
@@ -95,7 +93,7 @@ export const FileStatsPanel = ({
         <Visibility isVisible={!!stats}>
           <div className="flex flex-col gap-4">
             <H4>Cover</H4>
-            <Image src={`${coverPath}?${timeStamp}`} alt="Image" />
+            <Image src={coverPath} alt="Image" />
             <Separator className="w-full mt-4" />
             <H4>File Stats</H4>
             {statsData.map(({ label, value, icon }) => (

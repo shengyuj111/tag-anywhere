@@ -3,13 +3,11 @@ import apiSlice from "../api-slice";
 import { createThumbnail, FileAndTypeInfo, getFilesAndTypes } from "./rust-api";
 import {
   getCoverAndStoreSetUp,
-  getCoverPath,
   getExistingFilePaths,
   getUniqueNameInFolder,
   getUniqueNamesInFolder,
 } from "./helper";
 import { removeDuplicates } from "@/lib/collection-utils";
-import { extractFilenameAndExtension } from "@/lib/path-utils";
 import { selectOne, selectOneOrNull } from "./database-helper";
 
 export const fileTypes = [
@@ -68,13 +66,16 @@ export const fileTypeMap = {
 };
 
 interface FileDetails {
-  id: number;
   name: string;
-  path: string;
+  path: string | null;
   type: FileType;
   rsa: string | null;
   description: string;
-  coverPath: string | null;
+  coverPath: string;
+}
+
+interface FileDetailsWithId extends FileDetails {
+  id: number;
 }
 
 export const isFileComposition = (file: FileCommon): boolean => {
@@ -89,11 +90,11 @@ export const getFileDisplayType = (file: FileCommon): string => {
   return fileTypeMap[file.type].displayType;
 };
 
-export interface FileCommon extends FileDetails {
+export interface FileCommon extends FileDetailsWithId {
   tagIds: number[];
 }
 
-export interface GetFilesDatabaseResponse extends FileDetails {
+export interface GetFilesDatabaseResponse extends FileDetailsWithId {
   tagIds: string;
 }
 
@@ -116,16 +117,16 @@ export interface GetFilesRequest {
 export interface GetFilesResponse {
   files: FileCommon[];
   totalPages: number;
-  timeStamp: number;
 }
 
-export interface UpdateFileRequest extends FileDetails {}
+export interface UpdateFileRequest extends Partial<FileDetails> {
+  id: number;
+}
 
 export interface UpdateCoverRequest {
   time: number;
   id: number;
-  coverPath: string;
-  filePath: string;
+  videoFilePath: string;
 }
 
 export interface DeleteFileRequest {
@@ -167,10 +168,9 @@ export interface GetFileByIdRequest {
   fileId: number;
 }
 
-export interface CreateFileResponse {
+export interface GetFileByIdResponse {
   file: FileCommon;
   fileChildren: FileCommon[];
-  timeStamp: number;
 }
 
 export interface TagFileRequest {
@@ -339,7 +339,7 @@ export const fileApi = apiSlice.injectEndpoints({
               { type: "TAG", id: "LIST" },
             ],
     }),
-    getFileById: builder.query<CreateFileResponse, GetFileByIdRequest>({
+    getFileById: builder.query<GetFileByIdResponse, GetFileByIdRequest>({
       queryFn: async (request: GetFileByIdRequest) => {
         try {
           const { fileId } = request;
@@ -395,10 +395,9 @@ export const fileApi = apiSlice.injectEndpoints({
             }));
           }
 
-          const response: CreateFileResponse = {
+          const response: GetFileByIdResponse = {
             file: result,
             fileChildren: children,
-            timeStamp: Date.now(),
           };
           return { data: response };
         } catch (error: unknown) {
@@ -437,7 +436,7 @@ export const fileApi = apiSlice.injectEndpoints({
           );
 
           const failedFiles: FileAndTypeInfo[] = [];
-          const newFileData: FileDetails[] = [];
+          const newFileData: FileDetailsWithId[] = [];
           const uniqueNames = await getUniqueNamesInFolder(
             cover_dir_path,
             newFiles.length,
@@ -513,18 +512,63 @@ export const fileApi = apiSlice.injectEndpoints({
         try {
           const { id, name, path, rsa, description, type, coverPath } = request;
           const db = await DatabaseManager.getInstance().getDbInstance();
-          await db.execute(
-            `
-              UPDATE FileData
-              SET name = ?, path = ?, type = ?, coverPath = ?, description = ?, rsa = ?
-              WHERE id = ?
-            `,
-            [name, path, type, coverPath, description, rsa, id],
-          );
+    
+          // Dynamically build the SQL query based on the provided fields
+          const updates: string[] = [];
+          const params: (string | number | null)[] = [];
+    
+          if (name !== undefined) {
+            updates.push("name = ?");
+            params.push(name);
+          }
+    
+          if (path !== undefined) {
+            updates.push("path = ?");
+            params.push(path);
+          }
+    
+          if (rsa !== undefined) {
+            updates.push("rsa = ?");
+            params.push(rsa);
+          }
+    
+          if (description !== undefined) {
+            updates.push("description = ?");
+            params.push(description);
+          }
+    
+          if (type !== undefined) {
+            updates.push("type = ?");
+            params.push(type);
+          }
+    
+          if (coverPath !== undefined) {
+            const { coverPath: cover_dir_path } = await getCoverAndStoreSetUp();
+            const uniqueName = await getUniqueNameInFolder(cover_dir_path);
+            const thumbnailPath = await createThumbnail(
+              uniqueName,
+              coverPath,
+              cover_dir_path,
+              1,
+              null,
+            );
+            updates.push("coverPath = ?");
+            params.push(thumbnailPath);
+          }
+    
+          if (updates.length === 0) {
+            throw new Error("No fields provided to update");
+          }
+    
+          params.push(id);
+          const query = `UPDATE FileData SET ${updates.join(", ")} WHERE id = ?`;
+    
+          await db.execute(query, params);
+    
           return { data: null };
         } catch (error: unknown) {
           return Promise.reject({
-            message: (error as Error).message || "Failed to get files",
+            message: (error as Error).message || "Failed to update file",
           });
         }
       },
@@ -533,21 +577,33 @@ export const fileApi = apiSlice.injectEndpoints({
     updateCover: builder.mutation<null, UpdateCoverRequest>({
       queryFn: async (request) => {
         try {
-          const { coverPath, filePath, time } = request;
-          const [coverName] = extractFilenameAndExtension(coverPath);
-          const cover_dir_path = await getCoverPath();
-
-          await createThumbnail(
-            coverName,
-            filePath,
+          const { id, videoFilePath, time } = request;
+          const { coverPath: cover_dir_path } = await getCoverAndStoreSetUp();
+          const uniqueName = await getUniqueNameInFolder(cover_dir_path);
+          const thumbnailPath = await createThumbnail(
+            uniqueName,
+            videoFilePath,
             cover_dir_path,
             null,
             time,
           );
+    
+          // Update the file's coverPath in the database
+          const db = await DatabaseManager.getInstance().getDbInstance();
+          await db.execute(
+            `
+              UPDATE FileData
+              SET coverPath = ?
+              WHERE id = ?
+            `,
+            [thumbnailPath, id]
+          );
+    
           return { data: null };
         } catch (error: unknown) {
+          console.log("error", error);
           return Promise.reject({
-            message: (error as Error).message || "Failed to get files",
+            message: (error as Error).message || "Failed to update cover",
           });
         }
       },

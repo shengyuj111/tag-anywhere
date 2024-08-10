@@ -8,7 +8,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { useUpdateCoverMutation, UpdateCoverRequest } from "@/api/api/file-api";
+import { UpdateCoverRequest, useUpdateCoverMutation } from "@/api/api/file-api";
 import { BackableHeader } from "@/components/composition/backable-header";
 import { FileStatsPanel } from "@/components/composition/file-stats-panel";
 import { FileTagsPanel } from "@/components/composition/file-tags-panel";
@@ -30,6 +30,7 @@ export const VideoDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
   const { settings } = useStorage()!;
 
   useEffect(() => {
+    if (!video_path) return;
     getVideoFrameRate(video_path).then((frameRate) => {
       setVideoFrameRate(frameRate);
     });
@@ -39,8 +40,7 @@ export const VideoDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
     await updateFileCover({
       time: videoCurrentTime,
       id: mainFile.id,
-      filePath: mainFile.path,
-      coverPath: mainFile.coverPath,
+      videoFilePath: mainFile.path!,
     } as UpdateCoverRequest);
     toast({
       title: "Cover Updated",
@@ -78,7 +78,6 @@ export const VideoDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
             <ScrollArea className="h-full">
               <FileStatsPanel
                 fileCommon={fileData.file}
-                timeStamp={fileData.timeStamp}
               />
             </ScrollArea>
           </Card>

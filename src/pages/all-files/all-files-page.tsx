@@ -32,7 +32,7 @@ export const AllFilesPage = () => {
   const { settings } = useStorage()!;
   const [scanFiles, { isLoading: isScanning }] = useScanFilesMutation();
   const [ignoreChildren, setIgnoreChildren] = useState(true);
-  const [isAscending, setIsAscending] = useState(true);
+  const [isAscending, setIsAscending] = useState(false);
   const [column, setColumn] = useState<string | undefined>("id");
   const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
   const form = useForm<z.infer<typeof libraryForm>>({
