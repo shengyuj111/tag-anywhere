@@ -253,30 +253,30 @@ export const tagApi = apiSlice.injectEndpoints({
         try {
           const { id, name, type, color, coverPath, description } = request;
           const db = await DatabaseManager.getInstance().getDbInstance();
-    
+
           const updates: string[] = [];
           const params: (string | number | null)[] = [];
-    
+
           if (name !== undefined) {
             updates.push("name = ?");
             params.push(name);
           }
-    
+
           if (type !== undefined) {
             updates.push("type = ?");
             params.push(type);
           }
-    
+
           if (color !== undefined) {
             updates.push("color = ?");
             params.push(color);
           }
-    
+
           if (description !== undefined) {
             updates.push("description = ?");
             params.push(description);
           }
-    
+
           if (coverPath !== undefined) {
             const { coverPath: cover_dir_path } = await getCoverAndStoreSetUp();
             const uniqueName = await getUniqueNameInFolder(cover_dir_path);
@@ -290,16 +290,16 @@ export const tagApi = apiSlice.injectEndpoints({
             updates.push("coverPath = ?");
             params.push(thumbnailPath);
           }
-    
+
           if (updates.length === 0) {
             throw new Error("No fields provided to update");
           }
-    
+
           params.push(id);
           const query = `UPDATE Tag SET ${updates.join(", ")} WHERE id = ?`;
-    
+
           await db.execute(query, params);
-    
+
           return { data: null };
         } catch (error: unknown) {
           if (
@@ -314,7 +314,7 @@ export const tagApi = apiSlice.injectEndpoints({
         }
       },
       invalidatesTags: (_result, _error, { id }) => [{ type: "TAG", id }],
-    }),    
+    }),
     deleteTag: builder.mutation<null, DeleteTagRequest>({
       queryFn: async (request) => {
         try {

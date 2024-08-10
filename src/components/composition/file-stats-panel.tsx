@@ -30,9 +30,7 @@ interface FileStatsPanelProps {
   fileCommon: FileCommon;
 }
 
-export const FileStatsPanel = ({
-  fileCommon,
-}: FileStatsPanelProps) => {
+export const FileStatsPanel = ({ fileCommon }: FileStatsPanelProps) => {
   const [stats, setStats] = useState<fileStatsResult | undefined>(undefined);
   const coverPath = useMemo(
     () => pathToUrl(fileCommon.coverPath),

@@ -14,7 +14,12 @@ interface ImageViewerProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
-export const ImageViewer = ({ src, className, disableZoom=false, ...props }: ImageViewerProps) => {
+export const ImageViewer = ({
+  src,
+  className,
+  disableZoom = false,
+  ...props
+}: ImageViewerProps) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const handle = useFullScreenHandle();
 

@@ -76,9 +76,7 @@ export const VideoDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
           </Card>
           <Card className="row-span-2">
             <ScrollArea className="h-full">
-              <FileStatsPanel
-                fileCommon={fileData.file}
-              />
+              <FileStatsPanel fileCommon={fileData.file} />
             </ScrollArea>
           </Card>
           <Card className="overflow-auto">

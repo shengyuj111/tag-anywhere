@@ -512,36 +512,36 @@ export const fileApi = apiSlice.injectEndpoints({
         try {
           const { id, name, path, rsa, description, type, coverPath } = request;
           const db = await DatabaseManager.getInstance().getDbInstance();
-    
+
           // Dynamically build the SQL query based on the provided fields
           const updates: string[] = [];
           const params: (string | number | null)[] = [];
-    
+
           if (name !== undefined) {
             updates.push("name = ?");
             params.push(name);
           }
-    
+
           if (path !== undefined) {
             updates.push("path = ?");
             params.push(path);
           }
-    
+
           if (rsa !== undefined) {
             updates.push("rsa = ?");
             params.push(rsa);
           }
-    
+
           if (description !== undefined) {
             updates.push("description = ?");
             params.push(description);
           }
-    
+
           if (type !== undefined) {
             updates.push("type = ?");
             params.push(type);
           }
-    
+
           if (coverPath !== undefined) {
             const { coverPath: cover_dir_path } = await getCoverAndStoreSetUp();
             const uniqueName = await getUniqueNameInFolder(cover_dir_path);
@@ -555,16 +555,16 @@ export const fileApi = apiSlice.injectEndpoints({
             updates.push("coverPath = ?");
             params.push(thumbnailPath);
           }
-    
+
           if (updates.length === 0) {
             throw new Error("No fields provided to update");
           }
-    
+
           params.push(id);
           const query = `UPDATE FileData SET ${updates.join(", ")} WHERE id = ?`;
-    
+
           await db.execute(query, params);
-    
+
           return { data: null };
         } catch (error: unknown) {
           return Promise.reject({
@@ -587,7 +587,7 @@ export const fileApi = apiSlice.injectEndpoints({
             null,
             time,
           );
-    
+
           // Update the file's coverPath in the database
           const db = await DatabaseManager.getInstance().getDbInstance();
           await db.execute(
@@ -596,9 +596,9 @@ export const fileApi = apiSlice.injectEndpoints({
               SET coverPath = ?
               WHERE id = ?
             `,
-            [thumbnailPath, id]
+            [thumbnailPath, id],
           );
-    
+
           return { data: null };
         } catch (error: unknown) {
           console.log("error", error);

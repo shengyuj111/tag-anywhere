@@ -247,9 +247,7 @@ export const TagCoverContext = ({
     try {
       const selected = await open({
         title: "Select Cover",
-        filters: [
-          { name: "Image", extensions: ["png", "jpeg", "jpg"] },
-        ],
+        filters: [{ name: "Image", extensions: ["png", "jpeg", "jpg"] }],
       });
       if (Array.isArray(selected)) {
         // user selected multiple files
@@ -279,7 +277,9 @@ export const TagCoverContext = ({
     <ContextMenu>
       <ContextMenuTrigger>{children}</ContextMenuTrigger>
       <ContextMenuContent className="w-64">
-        <ContextMenuItem onClick={updateTagCover}>Choose a new Cover</ContextMenuItem>
+        <ContextMenuItem onClick={updateTagCover}>
+          Choose a new Cover
+        </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
   );

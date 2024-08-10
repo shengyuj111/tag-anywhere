@@ -58,19 +58,19 @@ export const TagsManagementPage = () => {
     }
   };
 
-const name = form.watch("name");
-const coverPath = form.watch("coverPath");
+  const name = form.watch("name");
+  const coverPath = form.watch("coverPath");
 
-const previewTag = useMemo(() => {
-  return {
-    id: 0,
-    name: name === "" ? "Tag Name" : name,
-    type: "default",
-    color: null,
-    coverPath: coverPath === "" ? undefined : coverPath,
-    description: "",
-  } as TagCommon;
-}, [name, coverPath]);
+  const previewTag = useMemo(() => {
+    return {
+      id: 0,
+      name: name === "" ? "Tag Name" : name,
+      type: "default",
+      color: null,
+      coverPath: coverPath === "" ? undefined : coverPath,
+      description: "",
+    } as TagCommon;
+  }, [name, coverPath]);
 
   return (
     <DataProvider
@@ -96,10 +96,7 @@ const previewTag = useMemo(() => {
               />
               <div className="w-full flex flex-col mt-8 gap-4">
                 <H4>Preview</H4>
-                <TagDisplay
-                  tagCommon={previewTag}
-                  numOfFiles={9999}
-                />
+                <TagDisplay tagCommon={previewTag} numOfFiles={9999} />
               </div>
             </Card>
             <Card className="w-[calc(60%-1rem)] 2xl:w-[calc(80%-1rem)] h-full p-6 flex flex-col gap-8 overflow-hidden">

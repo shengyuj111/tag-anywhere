@@ -23,7 +23,6 @@ export const FileTagsPanel = ({ mainFile }: FileDetailProps) => {
   const { data: tagsResponse } = useGetAllTagsQuery({});
   const tags = useMemo(() => tagsResponse?.tags ?? [], [tagsResponse?.tags]);
   const tagOptions = useMemo(() => {
-
     const sortedTags = [...tags].sort((a, b) => a.name.localeCompare(b.name));
     return sortedTags.map((tag) => ({
       label: tag.name,
