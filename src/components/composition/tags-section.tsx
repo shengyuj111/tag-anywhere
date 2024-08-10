@@ -49,7 +49,6 @@ export const TagsSection = ({
     page: currentPage,
   } as GetFilesRequest);
   const tags = useMemo(() => tagsData?.tags ?? [], [tagsData?.tags]);
-  console.log(tags);
   const totalPages = tagsData?.totalPages ?? 0;
 
   const sectionContainerRef = useRef<HTMLDivElement>(null);

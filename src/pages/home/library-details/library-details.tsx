@@ -59,11 +59,8 @@ export const LibraryDetailsPage = () => {
     },
   });
 
-  console.log(library);
-
   useEffect(() => {
     if (library && includeTags && excludeTags) {
-      console.log(library);
       form.reset({
         name: library.name || "",
         coverPath: library.coverPath || "",

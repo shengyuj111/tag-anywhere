@@ -312,8 +312,6 @@ export const fileApi = apiSlice.injectEndpoints({
             tagIds: file.tagIds ? file.tagIds.split(",").map(Number) : [],
           }));
 
-          console.log("result", result);
-
           return {
             data: {
               files: result,
@@ -601,7 +599,6 @@ export const fileApi = apiSlice.injectEndpoints({
 
           return { data: null };
         } catch (error: unknown) {
-          console.log("error", error);
           return Promise.reject({
             message: (error as Error).message || "Failed to update cover",
           });

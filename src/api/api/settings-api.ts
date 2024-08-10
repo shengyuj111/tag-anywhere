@@ -24,7 +24,6 @@ export const getSettings = async () => {
     await store.set("global-settings", DEFAULT_SETTINGS);
   }
   setup = await store.get<GlobalSettings>("global-settings");
-  console.log("getSettings", setup);
   return setup!;
 };
 
@@ -45,7 +44,6 @@ export const settingsApi = apiSlice.injectEndpoints({
           ...existingSettings,
           ...setupBody,
         };
-        console.log(updatedSettings);
         await store.set("global-settings", updatedSettings);
         return { data: null };
       },

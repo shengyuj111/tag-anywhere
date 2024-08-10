@@ -48,7 +48,6 @@ export const SettingsPage = () => {
   };
 
   const handleSaveVolume = async () => {
-    console.log(volume);
     await setSettings({
       volume: clamp(volume, 0, 100) / 100,
     });
