@@ -11,11 +11,11 @@ import {
 import { UploadIcon } from "lucide-react";
 import { open } from "@tauri-apps/api/dialog";
 import { cn } from "@/lib/utils";
-import { tagForm } from "./forms";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loaders } from "@/components/ui/loaders";
+import { tagForm } from "./form";
 
 interface TagFormProps {
   form: ReturnType<typeof useForm<z.infer<typeof tagForm>>>;

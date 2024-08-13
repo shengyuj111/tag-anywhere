@@ -4,18 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Loaders } from "@/components/ui/loaders";
 import { ArrowDownNarrowWideIcon, BookAIcon, ScanTextIcon } from "lucide-react";
-import { LibraryForm } from "../create/library-form";
-import {
-  CreateLibraryRequest,
-  useCreateLibraryMutation,
-} from "@/api/api/library-api";
-import { libraryForm } from "../create/forms";
-import { z } from "zod";
-import { toast } from "@/components/ui/use-toast";
+import { LibraryForm } from "../create/library-form/library-form";
 import { FilesSection } from "@/components/composition/files-section";
 import { FileCoverAspectRatio } from "@/lib/file-enum";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { H3 } from "@/components/ui/typography";
 import { useContext, useState } from "react";
 import { DialogContext } from "@/components/provider/dialog-provider/dialog-service-provider";
@@ -24,89 +15,29 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Toggle } from "@/components/ui/toggle";
 import Combobox from "@/components/ui/combobox";
+import { useCreateLibraryForm } from "../create/library-form/form";
+import { useSectionHook } from "@/components/composition/section-hook";
 
 export const AllFilesPage = () => {
   const dialogManager = useContext(DialogContext).manager;
-  const [createLibrary, { isLoading: isCreatingLibrary }] =
-    useCreateLibraryMutation();
+  const { form, onSubmit, isCreatingLibrary } = useCreateLibraryForm();
   const { settings } = useStorage()!;
   const [scanFiles, { isLoading: isScanning }] = useScanFilesMutation();
   const [ignoreChildren, setIgnoreChildren] = useState(true);
-  const [isAscending, setIsAscending] = useState(
-    sessionStorage.getItem("files-management-is-ascending") === "true",
-  );
-  const [column, setColumn] = useState<string | undefined>(
-    sessionStorage.getItem("files-management-column") ?? "id",
-  );
-  const [typeFilter, setTypeFilter] = useState<string | undefined>(
-    sessionStorage.getItem("files-management-type-filter") ?? undefined,
-  );
-  const form = useForm<z.infer<typeof libraryForm>>({
-    resolver: zodResolver(libraryForm),
-    defaultValues: {
-      libraryName: "",
-      coverPath: "",
-      includeInName: "",
-      includeTags: [],
-      excludeTags: [],
-    },
-  });
-
-  const onSubmit = async (values: z.infer<typeof libraryForm>) => {
-    try {
-      await createLibrary({
-        name: values.libraryName,
-        includeInName:
-          values.includeInName === "" ? null : values.includeInName,
-        coverPath: values.coverPath,
-        includeTagIds:
-          values.includeTags?.map((tag) => Number(tag.value)) ?? [],
-        excludeTagIds:
-          values.excludeTags?.map((tag) => Number(tag.value)) ?? [],
-        includeFileIds: [],
-        excludeFileIds: [],
-      } as CreateLibraryRequest);
-      toast({
-        title: "Library Created",
-        description: "Library has been created",
-      });
-      return true;
-    } catch (error) {
-      toast({
-        title: "Failed to create library",
-        description: (error as Error).message,
-        variant: "destructive",
-      });
-      return false;
-    }
-  };
+  const {
+    typeFilter,
+    handleSetTypeFilter,
+    column,
+    handleSetColumn,
+    isAscending,
+    handleSetIsAscending,
+    ...sectionProps 
+  } = useSectionHook("files-management");
 
   const openCreateBookDialog = () => {
     dialogManager.openDialog({
       child: <CreateBookDialog />,
     });
-  };
-
-  const handleSetColumn = (column: string | undefined) => {
-    setColumn(column);
-    sessionStorage.setItem("files-management-column", column!);
-  };
-
-  const handleSetIsAscending = (isAscending: boolean) => {
-    setIsAscending(isAscending);
-    sessionStorage.setItem(
-      "files-management-is-ascending",
-      isAscending.toString(),
-    );
-  };
-
-  const handleSetTypeFilter = (typeFilter: string | undefined) => {
-    setTypeFilter(typeFilter);
-    if (typeFilter) {
-      sessionStorage.setItem("files-management-type-filter", typeFilter);
-    } else {
-      sessionStorage.removeItem("files-management-type-filter");
-    }
   };
 
   return (
@@ -139,6 +70,7 @@ export const AllFilesPage = () => {
                   includeType={typeFilter}
                   sortOn={column}
                   isAscending={isAscending}
+                  { ...sectionProps }
                 >
                   <div className="w-full flex items-center gap-4">
                     <div className="flex items-center space-x-2">

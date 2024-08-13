@@ -2,7 +2,6 @@ import { GetFilesRequest, useGetAllFilesQuery } from "@/api/api/file-api";
 import { FileCoverAspectRatio } from "@/lib/file-enum";
 import {
   useEffect,
-  useState,
   useRef,
   ReactNode,
   ReactElement,
@@ -15,8 +14,7 @@ import { Loaders } from "../ui/loaders";
 import { Visibility } from "../ui/visibility";
 import { H1 } from "../ui/typography";
 import PaginationControl from "./pagination-control";
-
-const pageSizeOptions = [10, 20, 40, 80];
+import { pageSizeOptions } from "./section-hook";
 
 export interface FilesSectionProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -35,6 +33,10 @@ export interface FilesSectionProps
     children: ReactNode;
     fileId: number;
   }) => ReactElement;
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
+  pageSize: number;
+  setPageSize: (size: number) => void;
   children?: ReactNode;
 }
 
@@ -52,9 +54,11 @@ export const FilesSection = ({
   isAscending,
   contextMenuWrapper: ContextMenuWrapper,
   children,
+  currentPage,
+  setCurrentPage,
+  pageSize, 
+  setPageSize,
 }: FilesSectionProps) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(pageSizeOptions[0]);
   const { data: filesDate, isLoading: isFetchingFiles } = useGetAllFilesQuery({
     includeTagIds,
     excludeTagIds,
@@ -105,6 +109,12 @@ export const FilesSection = ({
   useEffect(() => {
     updateFittedWidth();
   }, [currentPage, pageSize, files, updateFittedWidth]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, setCurrentPage, currentPage]);
 
   return (
     <div

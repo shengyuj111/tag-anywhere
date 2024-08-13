@@ -1,21 +1,18 @@
 import { ArrowDownNarrowWideIcon, SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useMemo, useState } from "react";
-import { TagCommon, useCreateTagMutation } from "@/api/api/tag-api";
+import { useMemo } from "react";
+import { TagCommon } from "@/api/api/tag-api";
 import { DataProvider } from "@/components/provider/data-provider/data-provider";
 import { useData } from "@/components/provider/data-provider/data-context";
 import { H3, H4 } from "@/components/ui/typography";
 import { Card } from "@/components/ui/card";
-import { TagForm } from "../create/tag-form";
-import { tagForm } from "../create/forms";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { toast } from "@/components/ui/use-toast";
 import { TagsSection } from "@/components/composition/tags-section";
 import { TagDisplay } from "@/components/composition/tag-display";
 import Combobox from "@/components/ui/combobox";
 import { Toggle } from "@/components/ui/toggle";
+import { useSectionHook } from "@/components/composition/section-hook";
+import { useCreateTagForm } from "../create/tag-form/form";
+import { TagForm } from "../create/tag-form/tag-form";
 
 type TagsManagementData = {
   searchName: string;
@@ -23,45 +20,16 @@ type TagsManagementData = {
 };
 
 export const TagsManagementPage = () => {
-  const [searchName, setSearchName] = useState<string>("");
-  const [column, setColumn] = useState<string | undefined>(
-    sessionStorage.getItem("tags-management-column") ?? "id",
-  );
-  const [isAscending, setIsAscending] = useState(
-    sessionStorage.getItem("tags-management-is-ascending") === "true",
-  );
-  const [createTag, { isLoading: isCreatingTag }] = useCreateTagMutation();
-
-  const form = useForm<z.infer<typeof tagForm>>({
-    resolver: zodResolver(tagForm),
-    defaultValues: {
-      tagName: "",
-      type: "default",
-      description: "",
-    },
-  });
-
-  const onSubmit = async (values: z.infer<typeof tagForm>) => {
-    try {
-      await createTag({
-        ...values,
-        name: values.tagName,
-        color: null,
-      });
-      toast({
-        title: "Tag Created",
-        description: "Tag has been created",
-      });
-      return true;
-    } catch (error) {
-      toast({
-        title: "Failed to create tag",
-        description: (error as Error).message,
-        variant: "destructive",
-      });
-      return false;
-    }
-  };
+  const { 
+    searchName,
+    setSearchName,
+    column,
+    handleSetColumn,
+    isAscending,
+    handleSetIsAscending,
+    ...sectionProps 
+  } = useSectionHook("tags-management");
+  const { form, onSubmit, isCreatingTag } = useCreateTagForm();
 
   const name = form.watch("tagName");
   const coverPath = form.watch("coverPath");
@@ -76,19 +44,6 @@ export const TagsManagementPage = () => {
       description: "",
     } as TagCommon;
   }, [name, coverPath]);
-
-  const handleSetColumn = (column: string | undefined) => {
-    setColumn(column!);
-    sessionStorage.setItem("tags-management-column", column!);
-  };
-
-  const handleSetIsAscending = (isAscending: boolean) => {
-    setIsAscending(isAscending);
-    sessionStorage.setItem(
-      "tags-management-is-ascending",
-      isAscending.toString(),
-    );
-  };
 
   return (
     <DataProvider
@@ -123,6 +78,7 @@ export const TagsManagementPage = () => {
                   includeInName={searchName === "" ? undefined : searchName}
                   sortOn={column}
                   isAscending={isAscending}
+                  {...sectionProps}
                 >
                   <div className="w-full flex items-center gap-4">
                     <SearchInput />

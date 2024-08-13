@@ -1,6 +1,6 @@
 import { ArrowDownNarrowWideIcon, SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import { DataProvider } from "@/components/provider/data-provider/data-provider";
 import { useData } from "@/components/provider/data-provider/data-context";
 import { H3 } from "@/components/ui/typography";
@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/context-menu";
 import Combobox from "@/components/ui/combobox";
 import { Toggle } from "@/components/ui/toggle";
+import { useSectionHook } from "@/components/composition/section-hook";
 
 type HomeData = {
   searchName: string;
@@ -26,26 +27,15 @@ type HomeData = {
 };
 
 export const LibraryPage = () => {
-  const [searchName, setSearchName] = useState<string>("");
-  const [column, setColumn] = useState<string | undefined>(
-    localStorage.getItem("library-management-column") ?? "id",
-  );
-  const [isAscending, setIsAscending] = useState(
-    localStorage.getItem("library-management-is-ascending") === "true",
-  );
-
-  const handleSetColumn = (column: string | undefined) => {
-    setColumn(column);
-    sessionStorage.setItem("library-management-column", column!);
-  };
-
-  const handleSetIsAscending = (isAscending: boolean) => {
-    setIsAscending(isAscending);
-    sessionStorage.setItem(
-      "library-management-is-ascending",
-      isAscending.toString(),
-    );
-  };
+  const {
+    searchName,
+    setSearchName,
+    column,
+    handleSetColumn,
+    isAscending,
+    handleSetIsAscending,
+    ...sectionProps
+  } = useSectionHook("library-management");
 
   return (
     <DataProvider
@@ -68,6 +58,7 @@ export const LibraryPage = () => {
                   includeInName={searchName === "" ? undefined : searchName}
                   sortOn={column}
                   isAscending={isAscending}
+                  {...sectionProps}
                 >
                   <div className="w-full flex items-center gap-4 mb-6">
                     <SearchInput />

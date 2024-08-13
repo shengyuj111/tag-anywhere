@@ -1,112 +1,25 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { skipToken } from "@reduxjs/toolkit/query";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Card } from "@/components/ui/card";
 import { FilesSection } from "@/components/composition/files-section";
 import { FileCoverAspectRatio } from "@/lib/file-enum";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import {
-  GetLibraryByIdRequest,
-  UpdateLibraryRequest,
-  useGetLibraryByIdQuery,
-  useUpdateLibraryMutation,
-} from "@/api/api/library-api";
 import { BackableHeader } from "@/components/composition/backable-header";
-import { useGetAllTagsQuery } from "@/api/api/tag-api";
-import { LibraryForm } from "@/pages/create/library-form";
-import { libraryForm } from "@/pages/create/forms";
-import { toast } from "@/components/ui/use-toast";
+import { useUpdateLibraryForm } from "@/pages/create/library-form/form";
+import { useSectionHook } from "@/components/composition/section-hook";
+import { LibraryForm } from "@/pages/create/library-form/library-form";
 
 export const LibraryDetailsPage = () => {
   const [ignoreChildren, setIgnoreChildren] = useState(true);
   const { libraryId } = useParams();
-  const [updateLibrary, { isLoading: isUpdatingLibrary }] =
-    useUpdateLibraryMutation();
-  const { data: library } = useGetLibraryByIdQuery(
-    !libraryId
-      ? skipToken
-      : ({ libraryId: Number(libraryId) } as GetLibraryByIdRequest),
-  );
-  const { data: tagsResponse } = useGetAllTagsQuery({});
-  const tags = useMemo(() => tagsResponse?.tags ?? [], [tagsResponse?.tags]);
-  const includeTags = useMemo(
-    () =>
-      library?.includeTagIds
-        ?.map((tagId) => tags.find((tag) => tag.id === tagId))
-        .filter((tag) => tag !== undefined) ?? [],
-    [library, tags],
-  );
-  const excludeTags = useMemo(
-    () =>
-      library?.excludeTagIds
-        ?.map((tagId) => tags.find((tag) => tag.id === tagId))
-        .filter((tag) => tag !== undefined) ?? [],
-    [library, tags],
-  );
-
-  const form = useForm<z.infer<typeof libraryForm>>({
-    resolver: zodResolver(libraryForm),
-    defaultValues: {
-      libraryName: "",
-      coverPath: "",
-      includeInName: "",
-      includeTags: [],
-      excludeTags: [],
-    },
-  });
-
-  useEffect(() => {
-    if (library && includeTags && excludeTags) {
-      form.reset({
-        libraryName: library.name || "",
-        coverPath: library.coverPath || "",
-        includeInName: library.includeInName || "",
-        includeTags: includeTags.map((tag) => ({
-          label: tag.name,
-          value: tag.id.toString(),
-        })),
-        excludeTags: excludeTags.map((tag) => ({
-          label: tag.name,
-          value: tag.id.toString(),
-        })),
-      });
-    }
-  }, [library, includeTags, excludeTags, form]);
-
-  const onSubmit = async (values: z.infer<typeof libraryForm>) => {
-    try {
-      await updateLibrary({
-        id: library?.id,
-        name: values.libraryName,
-        includeInName:
-          values.includeInName === "" ? null : values.includeInName,
-        coverPath: values.coverPath,
-        includeTagIds:
-          values.includeTags?.map((tag) => Number(tag.value)) ?? [],
-        excludeTagIds:
-          values.excludeTags?.map((tag) => Number(tag.value)) ?? [],
-        includeFileIds: [],
-        excludeFileIds: [],
-      } as UpdateLibraryRequest);
-      toast({
-        title: "Library Updated",
-        description: "Library has been updated",
-      });
-      return true;
-    } catch (error) {
-      toast({
-        title: "Failed to update library",
-        description: (error as Error).message,
-        variant: "destructive",
-      });
-      return false;
-    }
-  };
-
+  const { form, onSubmit, isUpdatingLibrary } = useUpdateLibraryForm(libraryId!);
+  const {
+    currentPage, 
+    setCurrentPage,
+    pageSize,
+    setPageSize,
+  } = useSectionHook("library-details");
   return (
     <>
       <div className="w-full h-full flex justify-center">
@@ -144,6 +57,10 @@ export const LibraryDetailsPage = () => {
                   excludeTagIds={(form.getValues().excludeTags || []).map(
                     (tag) => Number(tag.value),
                   )}
+                  currentPage={currentPage}
+                  pageSize={pageSize}
+                  setCurrentPage={setCurrentPage}
+                  setPageSize={setPageSize}
                 />
               </div>
             </Card>

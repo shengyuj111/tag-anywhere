@@ -1,7 +1,6 @@
 import { GetFilesRequest } from "@/api/api/file-api";
 import {
   useEffect,
-  useState,
   useRef,
   ReactNode,
   ReactElement,
@@ -15,8 +14,7 @@ import { H1 } from "../ui/typography";
 import PaginationControl from "./pagination-control";
 import { useGetAllTagsQuery } from "@/api/api/tag-api";
 import { TagDisplay } from "./tag-display";
-
-const pageSizeOptions = [10, 20, 40, 80];
+import { pageSizeOptions } from "./section-hook";
 
 export interface TagsSectionProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
@@ -29,6 +27,10 @@ export interface TagsSectionProps extends React.HTMLAttributes<HTMLDivElement> {
     fileId: number;
   }) => ReactElement;
   children?: ReactNode;
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
+  pageSize: number;
+  setPageSize: (size: number) => void;
 }
 
 export const TagsSection = ({
@@ -38,9 +40,11 @@ export const TagsSection = ({
   isAscending,
   contextMenuWrapper: ContextMenuWrapper,
   children,
+  currentPage,
+  setCurrentPage,
+  pageSize,
+  setPageSize,
 }: TagsSectionProps) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(pageSizeOptions[0]);
   const { data: tagsData, isLoading: isFetchingTags } = useGetAllTagsQuery({
     includeInName,
     pageSize,
@@ -49,7 +53,7 @@ export const TagsSection = ({
     page: currentPage,
   } as GetFilesRequest);
   const tags = useMemo(() => tagsData?.tags ?? [], [tagsData?.tags]);
-  const totalPages = tagsData?.totalPages ?? 0;
+  const totalPages = useMemo(() => tagsData?.totalPages ?? 0, [tagsData?.totalPages]);
 
   const sectionContainerRef = useRef<HTMLDivElement>(null);
   const fileContainerRef = useRef<HTMLDivElement>(null);
@@ -85,6 +89,12 @@ export const TagsSection = ({
   useEffect(() => {
     updateFittedWidth();
   }, [currentPage, pageSize, tags, updateFittedWidth]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, setCurrentPage, currentPage]);
 
   return (
     <div

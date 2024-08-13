@@ -1,5 +1,4 @@
 import { useGetAllTagsQuery } from "@/api/api/tag-api";
-import { libraryForm } from "./forms";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -20,6 +19,7 @@ import { UploadIcon } from "lucide-react";
 import { open } from "@tauri-apps/api/dialog";
 import MultipleSelector from "@/components/ui/multi-selector";
 import { Visibility } from "@/components/ui/visibility";
+import { libraryForm } from "./form";
 
 interface LibraryFormProps {
   form: ReturnType<typeof useForm<z.infer<typeof libraryForm>>>;

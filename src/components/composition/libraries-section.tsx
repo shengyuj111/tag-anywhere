@@ -1,7 +1,6 @@
 import { GetFilesRequest } from "@/api/api/file-api";
 import {
   useEffect,
-  useState,
   useRef,
   ReactNode,
   ReactElement,
@@ -15,8 +14,7 @@ import { H1 } from "../ui/typography";
 import PaginationControl from "./pagination-control";
 import { useGetAllLibrariesQuery } from "@/api/api/library-api";
 import { LibraryDisplay } from "./library-display";
-
-const pageSizeOptions = [10, 20, 40, 80];
+import { pageSizeOptions } from "./section-hook";
 
 export interface LibrariesSectionProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -30,6 +28,10 @@ export interface LibrariesSectionProps
     libraryId: number;
   }) => ReactElement;
   children?: ReactNode;
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
+  pageSize: number;
+  setPageSize: (size: number) => void;
 }
 
 export const LibrariesSection = ({
@@ -39,9 +41,11 @@ export const LibrariesSection = ({
   isAscending,
   contextMenuWrapper: ContextMenuWrapper,
   children,
+  currentPage,
+  setCurrentPage,
+  pageSize,
+  setPageSize,
 }: LibrariesSectionProps) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(pageSizeOptions[0]);
   const { data: librariesData, isLoading: isFetchingLibraries } =
     useGetAllLibrariesQuery({
       includeInName,
@@ -90,6 +94,12 @@ export const LibrariesSection = ({
   useEffect(() => {
     updateFittedWidth();
   }, [currentPage, pageSize, libraries, updateFittedWidth]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, setCurrentPage, currentPage]);
 
   return (
     <div

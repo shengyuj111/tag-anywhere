@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { UploadIcon } from "lucide-react";
 import { open } from "@tauri-apps/api/dialog";
 import { cn } from "@/lib/utils";
-import { bookForm } from "./forms";
+import { bookForm } from "../book-form/form";
 import { fileTypeMap, fileTypes } from "@/api/api/file-api";
 import { useStorage } from "@/components/provider/storage-provider/storage-provider";
 import {
