@@ -14,8 +14,18 @@ export const useSectionHook = (id: "tags-management" | "files-management" | "lib
     const [typeFilter, setTypeFilter] = useState<string | undefined>(
         sessionStorage.getItem(`${id}-type-filter`) ?? undefined,
     );
-    const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(pageSizeOptions[0]);
+    const [currentPage, setCurrentPage] = useState(sessionStorage.getItem(`${id}-page`) ? Number(sessionStorage.getItem(`${id}-page`)) : 1);
+    const [pageSize, setPageSize] = useState(sessionStorage.getItem(`${id}-page-size`) ? Number(sessionStorage.getItem(`${id}-page-size`)) : pageSizeOptions[0]);
+
+    const handleSetPageSize = (size: number) => {
+        setPageSize(size);
+        sessionStorage.setItem(`${id}-page-size`, size.toString());
+      }
+
+      const handleSetCurrentPage = (page: number) => {
+        setCurrentPage(page);
+        sessionStorage.setItem(`${id}-page`, page.toString());
+      }
 
     const handleSetColumn = (column: string | undefined) => {
         setColumn(column!);
@@ -42,9 +52,9 @@ export const useSectionHook = (id: "tags-management" | "files-management" | "lib
   
     return { 
         currentPage, 
-        setCurrentPage, 
+        setCurrentPage: handleSetCurrentPage, 
         pageSize, 
-        setPageSize, 
+        setPageSize: handleSetPageSize, 
         searchName,
         setSearchName,
         column,
