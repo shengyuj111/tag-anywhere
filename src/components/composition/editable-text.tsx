@@ -63,6 +63,7 @@ export const EditableText = ({
           <Visibility isVisible={!useTextField}>
             <Input
               value={value}
+              autoFocus
               onChange={(e) => setValue(e.target.value)}
               onKeyDown={handleKeyDown}
             />
@@ -70,6 +71,7 @@ export const EditableText = ({
           <Visibility isVisible={useTextField}>
             <Textarea
               className="h-full"
+              autoFocus
               value={value}
               onChange={(e) => setValue(e.target.value)}
               onKeyDown={handleKeyDown}
