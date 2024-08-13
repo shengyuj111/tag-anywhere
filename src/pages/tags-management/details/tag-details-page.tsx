@@ -35,6 +35,7 @@ import { toast } from "@/components/ui/use-toast";
 import { ImageViewer } from "@/components/composition/image-viewer";
 import { pathToUrl } from "@/api/api/helper";
 import { EditableText } from "@/components/composition/editable-text";
+import { useSectionHook } from "@/components/composition/section-hook";
 
 export type TagFileContextMenuData = {
   tagId: number | null;
@@ -50,6 +51,12 @@ export const TagDetailsPage = () => {
   const [tagFiles, { isLoading }] = useTagFilesMutation();
   const [updateTag] = useUpdateTagMutation();
   const includeTagIds = useMemo(() => (tag ? [tag.id] : []), [tag]);
+  const {
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    setPageSize,
+  } = useSectionHook("tag-details");
 
   const addTagToFiles = async () => {
     // Open file picker
@@ -185,6 +192,10 @@ export const TagDetailsPage = () => {
                 fileCoverAspectRatio={FileCoverAspectRatio.Book}
                 includeTagIds={includeTagIds}
                 contextMenuWrapper={TagPageFileContext}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                pageSize={pageSize}
+                setPageSize={setPageSize}
               />
             </DataProvider>
           </Card>

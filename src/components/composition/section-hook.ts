@@ -3,7 +3,7 @@ import { useState } from "react";
 export const pageSizeOptions = [10, 20, 40, 80];
 
 
-export const useSectionHook = (id: "tags-management" | "files-management" | "library-details" | "library-management") => {
+export const useSectionHook = (id: "tags-management" | "files-management" | "library-details" | "library-management" | "tag-details") => {
     const [searchName, setSearchName] = useState<string>("");
     const [column, setColumn] = useState<string | undefined>(
         sessionStorage.getItem(`${id}-column`) ?? "id",

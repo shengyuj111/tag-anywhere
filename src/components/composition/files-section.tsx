@@ -111,7 +111,7 @@ export const FilesSection = ({
   }, [currentPage, pageSize, files, updateFittedWidth]);
 
   useEffect(() => {
-    if (currentPage > totalPages) {
+    if (totalPages !== 0 && currentPage > totalPages) {
       setCurrentPage(totalPages);
     }
   }, [totalPages, setCurrentPage, currentPage]);
