@@ -127,10 +127,8 @@ export const TVSeriesDetails = ({
               </div>
             </ScrollArea>
           </Card>
-          <Card className="overflow-auto">
-            <ScrollArea className="h-full">
-              <FileTagsPanel mainFile={mainFile} />
-            </ScrollArea>
+          <Card className="overflow-show">
+            <FileTagsPanel mainFile={mainFile} />
           </Card>
         </div>
       </div>

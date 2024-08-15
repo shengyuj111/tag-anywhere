@@ -39,7 +39,7 @@ export const ManageDetails = ({ fileData, onUpdateName }: FileDetailProps) => {
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-        <Card className="w-full">
+        <Card className="w-full overflow-show">
           <FileTagsPanel mainFile={mainFile} />
         </Card>
         <div className="w-full flex flex-col gap-1">
