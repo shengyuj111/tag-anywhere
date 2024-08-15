@@ -318,6 +318,14 @@ const MultipleSelector = React.forwardRef<
       [options, selected],
     );
 
+    useEffect(() => {
+      const commandListElement = inputRef.current?.closest('.cmdk-list');
+      if (commandListElement) {
+        commandListElement.scrollTop = 0;
+      }
+    }, [options, selectables]);
+    
+
     const commandFilter = React.useCallback(() => {
       if (commandProps?.filter) {
         return commandProps.filter;
@@ -455,7 +463,14 @@ const MultipleSelector = React.forwardRef<
         </div>
         <div className="relative">
           {open && (
-            <CommandList className="absolute top-1 z-10 w-full rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
+            <CommandList 
+              className="fixed z-10 w-full rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in"
+              style={{ 
+                top: `${inputRef.current?.getBoundingClientRect().bottom}px`, 
+                // left: `${inputRef.current?.getBoundingClientRect().left}px`, 
+                width: `${inputRef.current?.offsetWidth}px` 
+              }}
+            >
               {isLoading ? (
                 <>{loadingIndicator}</>
               ) : (
