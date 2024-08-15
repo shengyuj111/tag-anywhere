@@ -12,7 +12,7 @@ import { Loaders } from "../ui/loaders";
 import { Visibility } from "../ui/visibility";
 import { H1 } from "../ui/typography";
 import PaginationControl from "./pagination-control";
-import { useGetAllTagsQuery } from "@/api/api/tag-api";
+import { TagCommon, useGetAllTagsQuery } from "@/api/api/tag-api";
 import { TagDisplay } from "./tag-display";
 import { pageSizeOptions } from "./section-hook";
 
@@ -24,7 +24,7 @@ export interface TagsSectionProps extends React.HTMLAttributes<HTMLDivElement> {
   isAscending?: boolean;
   contextMenuWrapper?: (props: {
     children: ReactNode;
-    fileId: number;
+    tagCommon: TagCommon;
   }) => ReactElement;
   children?: ReactNode;
   currentPage: number;
@@ -112,7 +112,7 @@ export const TagsSection = ({
             const TagComponent = <TagDisplay key={tag.id} tagCommon={tag} />;
 
             return ContextMenuWrapper ? (
-              <ContextMenuWrapper key={tag.id} fileId={tag.id}>
+              <ContextMenuWrapper key={tag.id} tagCommon={tag}>
                 {TagComponent}
               </ContextMenuWrapper>
             ) : (

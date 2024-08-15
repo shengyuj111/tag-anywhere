@@ -1,7 +1,7 @@
 import { ArrowDownNarrowWideIcon, SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useMemo } from "react";
-import { TagCommon } from "@/api/api/tag-api";
+import { ReactNode, useMemo } from "react";
+import { TagCommon, useDeleteTagMutation } from "@/api/api/tag-api";
 import { DataProvider } from "@/components/provider/data-provider/data-provider";
 import { useData } from "@/components/provider/data-provider/data-context";
 import { H3, H4 } from "@/components/ui/typography";
@@ -13,6 +13,9 @@ import { Toggle } from "@/components/ui/toggle";
 import { useSectionHook } from "@/components/composition/section-hook";
 import { useCreateTagForm } from "../create/tag-form/form";
 import { TagForm } from "../create/tag-form/tag-form";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from "@/components/ui/context-menu";
+import { copyToClipboard } from "@/lib/system-utils";
+import { toast } from "@/components/ui/use-toast";
 
 type TagsManagementData = {
   searchName: string;
@@ -78,6 +81,7 @@ export const TagsManagementPage = () => {
                   includeInName={searchName === "" ? undefined : searchName}
                   sortOn={column}
                   isAscending={isAscending}
+                  contextMenuWrapper={TagContext}
                   {...sectionProps}
                 >
                   <div className="w-full flex items-center gap-4">
@@ -131,3 +135,53 @@ export const SearchInput = () => {
     </div>
   );
 };
+
+const TagContext = ({ children, tagCommon }: { children: ReactNode; tagCommon: TagCommon; }) => {
+  const [deleteTag] = useDeleteTagMutation();
+
+  const copyTagName = () => {
+    if (!tagCommon) return;
+    copyToClipboard(tagCommon.name, (success: boolean) => {
+      if (success) {
+        toast({
+          description: "The tag name has been copied",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          description: "The tag name could not be copied",
+        });
+      }
+    });
+  };
+
+  const handleDeleteTag = async () => {
+    if (!tagCommon) return;
+    await deleteTag({ id: tagCommon.id });
+    toast({
+      title: "Tag Deleted",
+      description: "The tag has been deleted",
+    });
+  };
+
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger disabled={!tagCommon}>
+        {children}
+      </ContextMenuTrigger>
+      <ContextMenuContent className="w-64">
+        <ContextMenuItem inset onClick={copyTagName}>
+          Copy Tag Name
+        </ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem
+          className="text-destructive"
+          inset
+          onClick={handleDeleteTag}
+        >
+          Delete Tag
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
+  );
+}
