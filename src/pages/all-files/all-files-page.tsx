@@ -191,8 +191,8 @@ const FileContext = ({
     if (!fileCommon) return;
     await deleteFile({ id: fileCommon.id });
     toast({
-      title: "Tag Deleted",
-      description: "The tag has been deleted",
+      title: "File Deleted",
+      description: "The file has been deleted",
     });
   };
 
