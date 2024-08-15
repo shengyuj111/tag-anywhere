@@ -1,4 +1,4 @@
-import { useScanFilesMutation } from "@/api/api/file-api";
+import { FileCommon, useDeleteFileMutation, useScanFilesMutation } from "@/api/api/file-api";
 import { useStorage } from "@/components/provider/storage-provider/storage-provider";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -8,7 +8,7 @@ import { LibraryForm } from "../create/library-form/library-form";
 import { FilesSection } from "@/components/composition/files-section";
 import { FileCoverAspectRatio } from "@/lib/file-enum";
 import { H3 } from "@/components/ui/typography";
-import { useContext, useState } from "react";
+import { ReactNode, useContext, useState } from "react";
 import { DialogContext } from "@/components/provider/dialog-provider/dialog-service-provider";
 import CreateBookDialog from "./create-book-dialog";
 import { Label } from "@/components/ui/label";
@@ -17,6 +17,9 @@ import { Toggle } from "@/components/ui/toggle";
 import Combobox from "@/components/ui/combobox";
 import { useCreateLibraryForm } from "../create/library-form/form";
 import { useSectionHook } from "@/components/composition/section-hook";
+import { copyToClipboard } from "@/lib/system-utils";
+import { toast } from "@/components/ui/use-toast";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from "@/components/ui/context-menu";
 
 export const AllFilesPage = () => {
   const dialogManager = useContext(DialogContext).manager;
@@ -70,6 +73,7 @@ export const AllFilesPage = () => {
                   includeType={typeFilter}
                   sortOn={column}
                   isAscending={isAscending}
+                  contextMenuWrapper={FileContext}
                   { ...sectionProps }
                 >
                   <div className="w-full flex items-center gap-4">
@@ -147,3 +151,53 @@ export const AllFilesPage = () => {
     </>
   );
 };
+
+const FileContext = ({ children, fileCommon }: { children: ReactNode; fileCommon: FileCommon; }) => {
+  const [deleteFile] = useDeleteFileMutation();
+
+  const copyFilePath = () => {
+    if (!fileCommon) return;
+    copyToClipboard(fileCommon.path ?? "", (success: boolean) => {
+      if (success) {
+        toast({
+          description: "The path has been copied",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          description: "The path could not be copied",
+        });
+      }
+    });
+  };
+
+  const handleDeleteFile = async () => {
+    if (!fileCommon) return;
+    await deleteFile({ id: fileCommon.id });
+    toast({
+      title: "Tag Deleted",
+      description: "The tag has been deleted",
+    });
+  };
+
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger disabled={!fileCommon}>
+        {children}
+      </ContextMenuTrigger>
+      <ContextMenuContent className="w-64">
+        <ContextMenuItem inset onClick={copyFilePath}>
+          Copy File Path
+        </ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem
+          className="text-destructive"
+          inset
+          onClick={handleDeleteFile}
+        >
+          Delete File
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
+  );
+}

@@ -16,6 +16,7 @@ import { H3, Large } from "@/components/ui/typography";
 import { Button } from "@/components/ui/button";
 import { TagIcon } from "lucide-react";
 import {
+  FileCommon,
   RemoveTagsFromFileRequest,
   TagFileRequest,
   useRemoveTagFromFileMutation,
@@ -207,10 +208,10 @@ export const TagDetailsPage = () => {
 
 export const TagPageFileContext = ({
   children,
-  fileId,
+  fileCommon,
 }: {
   children: ReactNode;
-  fileId: number;
+  fileCommon: FileCommon;
 }) => {
   const { tagId } = useData<TagFileContextMenuData>(
     "tag-files-section-context-menu",
@@ -219,7 +220,7 @@ export const TagPageFileContext = ({
   const removeTag = async () => {
     try {
       await removeTagsFromFile({
-        fileId,
+        fileId: fileCommon.id,
         tagIds: tagId ? [tagId] : [],
       } as RemoveTagsFromFileRequest).unwrap();
       toast({

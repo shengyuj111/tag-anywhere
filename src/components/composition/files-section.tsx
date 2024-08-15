@@ -1,4 +1,4 @@
-import { GetFilesRequest, useGetAllFilesQuery } from "@/api/api/file-api";
+import { FileCommon, GetFilesRequest, useGetAllFilesQuery } from "@/api/api/file-api";
 import { FileCoverAspectRatio } from "@/lib/file-enum";
 import {
   useEffect,
@@ -31,7 +31,7 @@ export interface FilesSectionProps
   includeType?: string;
   contextMenuWrapper?: (props: {
     children: ReactNode;
-    fileId: number;
+    fileCommon: FileCommon;
   }) => ReactElement;
   currentPage: number;
   setCurrentPage: (page: number) => void;
@@ -142,7 +142,7 @@ export const FilesSection = ({
             );
 
             return ContextMenuWrapper ? (
-              <ContextMenuWrapper key={file.id} fileId={file.id}>
+              <ContextMenuWrapper key={file.id} fileCommon={file}>
                 {FileComponent}
               </ContextMenuWrapper>
             ) : (
