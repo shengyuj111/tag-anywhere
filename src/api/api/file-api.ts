@@ -612,28 +612,35 @@ export const fileApi = apiSlice.injectEndpoints({
         try {
           const { id } = request;
           const db = await DatabaseManager.getInstance().getDbInstance();
-    
+
           const [file]: { filePath: string | null }[] = await db.select(
             `SELECT path FROM FileData WHERE id = ?`,
-            [id]
+            [id],
           );
-    
+
           if (!file) {
             return Promise.reject({ message: "File not found" });
           }
-    
+
           const { filePath } = file;
           if (filePath) {
             await removeFile(filePath);
           }
-    
+
           // Continue with the database deletions
-          await db.execute(`DELETE FROM LibraryIncludeFile WHERE file_id = ?`, [id]);
-          await db.execute(`DELETE FROM LibraryExcludeFile WHERE file_id = ?`, [id]);
+          await db.execute(`DELETE FROM LibraryIncludeFile WHERE file_id = ?`, [
+            id,
+          ]);
+          await db.execute(`DELETE FROM LibraryExcludeFile WHERE file_id = ?`, [
+            id,
+          ]);
           await db.execute(`DELETE FROM FileTag WHERE file_id = ?`, [id]);
-          await db.execute(`DELETE FROM FileComposition WHERE composite_file_id = ?`, [id]);
+          await db.execute(
+            `DELETE FROM FileComposition WHERE composite_file_id = ?`,
+            [id],
+          );
           await db.execute(`DELETE FROM FileData WHERE id = ?`, [id]);
-    
+
           return { data: null };
         } catch (error: unknown) {
           return Promise.reject({

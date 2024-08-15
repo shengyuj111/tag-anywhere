@@ -1,10 +1,7 @@
 import { FileCoverAspectRatio } from "@/lib/file-enum";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { H4, Small } from "../ui/typography";
-import {
-  TagCommon,
-  useGetTagFileNumberQuery,
-} from "@/api/api/tag-api";
+import { TagCommon, useGetTagFileNumberQuery } from "@/api/api/tag-api";
 import Image from "../ui/image";
 import { useNavigate } from "react-router-dom";
 import { pathToUrl } from "@/api/api/helper";

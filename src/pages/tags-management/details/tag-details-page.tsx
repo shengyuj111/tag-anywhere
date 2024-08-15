@@ -52,12 +52,8 @@ export const TagDetailsPage = () => {
   const [tagFiles, { isLoading }] = useTagFilesMutation();
   const [updateTag] = useUpdateTagMutation();
   const includeTagIds = useMemo(() => (tag ? [tag.id] : []), [tag]);
-  const {
-    currentPage,
-    setCurrentPage,
-    pageSize,
-    setPageSize,
-  } = useSectionHook("tag-details");
+  const { currentPage, setCurrentPage, pageSize, setPageSize } =
+    useSectionHook("tag-details");
 
   const addTagToFiles = async () => {
     // Open file picker

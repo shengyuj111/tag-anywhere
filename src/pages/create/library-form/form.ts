@@ -1,4 +1,11 @@
-import { useCreateLibraryMutation, CreateLibraryRequest, useUpdateLibraryMutation, useGetLibraryByIdQuery, GetLibraryByIdRequest, UpdateLibraryRequest } from "@/api/api/library-api";
+import {
+  useCreateLibraryMutation,
+  CreateLibraryRequest,
+  useUpdateLibraryMutation,
+  useGetLibraryByIdQuery,
+  GetLibraryByIdRequest,
+  UpdateLibraryRequest,
+} from "@/api/api/library-api";
 import { useGetAllTagsQuery } from "@/api/api/tag-api";
 import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,74 +15,74 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const OptionSchema = z.object({
-    value: z.string(),
-    label: z.string(),
+  value: z.string(),
+  label: z.string(),
+});
+
+export const libraryForm = z.object({
+  libraryName: z.string().min(2).max(50),
+  coverPath: z.string().min(1),
+  includeInName: z.string().optional(),
+  includeTags: z.array(OptionSchema).optional(),
+  excludeTags: z.array(OptionSchema).optional(),
+});
+
+export const useCreateLibraryForm = () => {
+  const [createLibrary, { isLoading: isCreatingLibrary }] =
+    useCreateLibraryMutation();
+
+  const form = useForm<z.infer<typeof libraryForm>>({
+    resolver: zodResolver(libraryForm),
+    defaultValues: {
+      libraryName: "",
+      coverPath: "",
+      includeInName: "",
+      includeTags: [],
+      excludeTags: [],
+    },
   });
-  
-  export const libraryForm = z.object({
-    libraryName: z.string().min(2).max(50),
-    coverPath: z.string().min(1),
-    includeInName: z.string().optional(),
-    includeTags: z.array(OptionSchema).optional(),
-    excludeTags: z.array(OptionSchema).optional(),
-  });
-  
-  export const useCreateLibraryForm = () => {
-    const [createLibrary, { isLoading: isCreatingLibrary }] =
-      useCreateLibraryMutation();
-  
-    const form = useForm<z.infer<typeof libraryForm>>({
-      resolver: zodResolver(libraryForm),
-      defaultValues: {
-        libraryName: "",
-        coverPath: "",
-        includeInName: "",
-        includeTags: [],
-        excludeTags: [],
-      },
-    });
-  
-    const onSubmit = async (values: z.infer<typeof libraryForm>) => {
-      try {
-        await createLibrary({
-          name: values.libraryName,
-          includeInName:
-            values.includeInName === "" ? null : values.includeInName,
-          coverPath: values.coverPath,
-          includeTagIds:
-            values.includeTags?.map((tag) => Number(tag.value)) ?? [],
-          excludeTagIds:
-            values.excludeTags?.map((tag) => Number(tag.value)) ?? [],
-          includeFileIds: [],
-          excludeFileIds: [],
-        } as CreateLibraryRequest);
-        toast({
-          title: "Library Created",
-          description: "Library has been created",
-        });
-        return true;
-      } catch (error) {
-        toast({
-          title: "Failed to create library",
-          description: (error as Error).message,
-          variant: "destructive",
-        });
-        return false;
-      }
-    };
-  
-    return { form, onSubmit, isCreatingLibrary };
+
+  const onSubmit = async (values: z.infer<typeof libraryForm>) => {
+    try {
+      await createLibrary({
+        name: values.libraryName,
+        includeInName:
+          values.includeInName === "" ? null : values.includeInName,
+        coverPath: values.coverPath,
+        includeTagIds:
+          values.includeTags?.map((tag) => Number(tag.value)) ?? [],
+        excludeTagIds:
+          values.excludeTags?.map((tag) => Number(tag.value)) ?? [],
+        includeFileIds: [],
+        excludeFileIds: [],
+      } as CreateLibraryRequest);
+      toast({
+        title: "Library Created",
+        description: "Library has been created",
+      });
+      return true;
+    } catch (error) {
+      toast({
+        title: "Failed to create library",
+        description: (error as Error).message,
+        variant: "destructive",
+      });
+      return false;
+    }
   };
 
-  export const useUpdateLibraryForm = (libraryId: string) => {
-    const { data: library } = useGetLibraryByIdQuery(
-        !libraryId
-          ? skipToken
-          : ({ libraryId: Number(libraryId) } as GetLibraryByIdRequest),
-      );
-    const [updateLibrary, { isLoading: isUpdatingLibrary }] =
+  return { form, onSubmit, isCreatingLibrary };
+};
+
+export const useUpdateLibraryForm = (libraryId: string) => {
+  const { data: library } = useGetLibraryByIdQuery(
+    !libraryId
+      ? skipToken
+      : ({ libraryId: Number(libraryId) } as GetLibraryByIdRequest),
+  );
+  const [updateLibrary, { isLoading: isUpdatingLibrary }] =
     useUpdateLibraryMutation();
-    const { data: tagsResponse } = useGetAllTagsQuery({});
+  const { data: tagsResponse } = useGetAllTagsQuery({});
   const tags = useMemo(() => tagsResponse?.tags ?? [], [tagsResponse?.tags]);
   const includeTags = useMemo(
     () =>
@@ -152,4 +159,4 @@ const OptionSchema = z.object({
   };
 
   return { form, onSubmit, isUpdatingLibrary };
-}
+};

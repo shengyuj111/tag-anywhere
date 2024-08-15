@@ -1,4 +1,8 @@
-import { CreateCompositeFileRequest, fileTypes, useCreateCompositeFileMutation } from "@/api/api/file-api";
+import {
+  CreateCompositeFileRequest,
+  fileTypes,
+  useCreateCompositeFileMutation,
+} from "@/api/api/file-api";
 import { getSettings } from "@/api/api/settings-api";
 import { DialogContext } from "@/components/provider/dialog-provider/dialog-service-provider";
 import { toast } from "@/components/ui/use-toast";
@@ -7,10 +11,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
-
-
-
 
 export const bookForm = z.object({
   bookName: z.string().min(2).max(50),
@@ -34,7 +34,6 @@ export const bookForm = z.object({
       { message: "Only files in the store path are allowed" },
     ),
 });
-
 
 export const useCreateBookForm = () => {
   const [createCompoundFile, { isLoading }] = useCreateCompositeFileMutation();
@@ -72,4 +71,4 @@ export const useCreateBookForm = () => {
     }
   };
   return { form, onSubmit, isLoading };
-}
+};

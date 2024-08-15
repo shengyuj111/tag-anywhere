@@ -13,7 +13,13 @@ import { Toggle } from "@/components/ui/toggle";
 import { useSectionHook } from "@/components/composition/section-hook";
 import { useCreateTagForm } from "../create/tag-form/form";
 import { TagForm } from "../create/tag-form/tag-form";
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from "@/components/ui/context-menu";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { copyToClipboard } from "@/lib/system-utils";
 import { toast } from "@/components/ui/use-toast";
 
@@ -23,14 +29,14 @@ type TagsManagementData = {
 };
 
 export const TagsManagementPage = () => {
-  const { 
+  const {
     searchName,
     setSearchName,
     column,
     handleSetColumn,
     isAscending,
     handleSetIsAscending,
-    ...sectionProps 
+    ...sectionProps
   } = useSectionHook("tags-management");
   const { form, onSubmit, isCreatingTag } = useCreateTagForm();
 
@@ -136,7 +142,13 @@ export const SearchInput = () => {
   );
 };
 
-const TagContext = ({ children, tagCommon }: { children: ReactNode; tagCommon: TagCommon; }) => {
+const TagContext = ({
+  children,
+  tagCommon,
+}: {
+  children: ReactNode;
+  tagCommon: TagCommon;
+}) => {
   const [deleteTag] = useDeleteTagMutation();
 
   const copyTagName = () => {
@@ -166,9 +178,7 @@ const TagContext = ({ children, tagCommon }: { children: ReactNode; tagCommon: T
 
   return (
     <ContextMenu>
-      <ContextMenuTrigger disabled={!tagCommon}>
-        {children}
-      </ContextMenuTrigger>
+      <ContextMenuTrigger disabled={!tagCommon}>{children}</ContextMenuTrigger>
       <ContextMenuContent className="w-64">
         <ContextMenuItem inset onClick={copyTagName}>
           Copy Tag Name
@@ -184,4 +194,4 @@ const TagContext = ({ children, tagCommon }: { children: ReactNode; tagCommon: T
       </ContextMenuContent>
     </ContextMenu>
   );
-}
+};

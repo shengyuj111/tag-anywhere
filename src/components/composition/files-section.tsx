@@ -1,4 +1,8 @@
-import { FileCommon, GetFilesRequest, useGetAllFilesQuery } from "@/api/api/file-api";
+import {
+  FileCommon,
+  GetFilesRequest,
+  useGetAllFilesQuery,
+} from "@/api/api/file-api";
 import { FileCoverAspectRatio } from "@/lib/file-enum";
 import {
   useEffect,
@@ -56,7 +60,7 @@ export const FilesSection = ({
   children,
   currentPage,
   setCurrentPage,
-  pageSize, 
+  pageSize,
   setPageSize,
 }: FilesSectionProps) => {
   const { data: filesDate, isLoading: isFetchingFiles } = useGetAllFilesQuery({

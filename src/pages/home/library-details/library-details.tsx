@@ -13,13 +13,11 @@ import { LibraryForm } from "@/pages/create/library-form/library-form";
 export const LibraryDetailsPage = () => {
   const [ignoreChildren, setIgnoreChildren] = useState(true);
   const { libraryId } = useParams();
-  const { form, onSubmit, isUpdatingLibrary } = useUpdateLibraryForm(libraryId!);
-  const {
-    currentPage, 
-    setCurrentPage,
-    pageSize,
-    setPageSize,
-  } = useSectionHook("library-details");
+  const { form, onSubmit, isUpdatingLibrary } = useUpdateLibraryForm(
+    libraryId!,
+  );
+  const { currentPage, setCurrentPage, pageSize, setPageSize } =
+    useSectionHook("library-details");
   return (
     <>
       <div className="w-full h-full flex justify-center">

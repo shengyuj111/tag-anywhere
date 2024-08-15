@@ -1,4 +1,8 @@
-import { FileCommon, useDeleteFileMutation, useScanFilesMutation } from "@/api/api/file-api";
+import {
+  FileCommon,
+  useDeleteFileMutation,
+  useScanFilesMutation,
+} from "@/api/api/file-api";
 import { useStorage } from "@/components/provider/storage-provider/storage-provider";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -19,7 +23,13 @@ import { useCreateLibraryForm } from "../create/library-form/form";
 import { useSectionHook } from "@/components/composition/section-hook";
 import { copyToClipboard } from "@/lib/system-utils";
 import { toast } from "@/components/ui/use-toast";
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from "@/components/ui/context-menu";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 
 export const AllFilesPage = () => {
   const dialogManager = useContext(DialogContext).manager;
@@ -34,7 +44,7 @@ export const AllFilesPage = () => {
     handleSetColumn,
     isAscending,
     handleSetIsAscending,
-    ...sectionProps 
+    ...sectionProps
   } = useSectionHook("files-management");
 
   const openCreateBookDialog = () => {
@@ -74,7 +84,7 @@ export const AllFilesPage = () => {
                   sortOn={column}
                   isAscending={isAscending}
                   contextMenuWrapper={FileContext}
-                  { ...sectionProps }
+                  {...sectionProps}
                 >
                   <div className="w-full flex items-center gap-4">
                     <div className="flex items-center space-x-2">
@@ -152,7 +162,13 @@ export const AllFilesPage = () => {
   );
 };
 
-const FileContext = ({ children, fileCommon }: { children: ReactNode; fileCommon: FileCommon; }) => {
+const FileContext = ({
+  children,
+  fileCommon,
+}: {
+  children: ReactNode;
+  fileCommon: FileCommon;
+}) => {
   const [deleteFile] = useDeleteFileMutation();
 
   const copyFilePath = () => {
@@ -182,9 +198,7 @@ const FileContext = ({ children, fileCommon }: { children: ReactNode; fileCommon
 
   return (
     <ContextMenu>
-      <ContextMenuTrigger disabled={!fileCommon}>
-        {children}
-      </ContextMenuTrigger>
+      <ContextMenuTrigger disabled={!fileCommon}>{children}</ContextMenuTrigger>
       <ContextMenuContent className="w-64">
         <ContextMenuItem inset onClick={copyFilePath}>
           Copy File Path
@@ -200,4 +214,4 @@ const FileContext = ({ children, fileCommon }: { children: ReactNode; fileCommon
       </ContextMenuContent>
     </ContextMenu>
   );
-}
+};

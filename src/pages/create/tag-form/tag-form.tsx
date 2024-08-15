@@ -80,7 +80,10 @@ export const TagForm = ({
                     const selected = await open({
                       title: "Select Cover",
                       filters: [
-                        { name: "Image", extensions: ["png", "jpeg", "jpg", "webp"] },
+                        {
+                          name: "Image",
+                          extensions: ["png", "jpeg", "jpg", "webp"],
+                        },
                       ],
                     });
                     if (selected) {
