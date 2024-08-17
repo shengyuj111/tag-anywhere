@@ -27,7 +27,7 @@ export const tagForm = z.object({
   tagName: z
     .string()
     .min(2)
-    .max(50)
+    .max(200)
     .refine(
       async (name) => {
         const isDuplicate = await checkDuplicateTagName(name);
