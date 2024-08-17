@@ -613,7 +613,7 @@ export const fileApi = apiSlice.injectEndpoints({
           const { id } = request;
           const db = await DatabaseManager.getInstance().getDbInstance();
 
-          const [file]: { filePath: string | null }[] = await db.select(
+          const [file]: { path: string | null }[] = await db.select(
             `SELECT path FROM FileData WHERE id = ?`,
             [id],
           );
@@ -622,9 +622,10 @@ export const fileApi = apiSlice.injectEndpoints({
             return Promise.reject({ message: "File not found" });
           }
 
-          const { filePath } = file;
-          if (filePath) {
-            await removeFile(filePath);
+          const { path } = file;
+          if (path) {
+            console.log("Deleting file:", path);
+            await removeFile(path);
           }
 
           // Continue with the database deletions
