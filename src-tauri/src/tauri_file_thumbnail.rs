@@ -54,15 +54,58 @@ fn extract_frame_with_ffmpeg_by_time(ffmpeg_path: &str, file_path: &str, time: f
     Ok(())
 }
 
-fn compress_image_with_imagemagick(imagemagick_path: &str, input_path: &str, output_path: &str) -> Result<(), AppError> {
-    let magick_output = Command::new(imagemagick_path)
+fn compress_image_with_imagemagick(
+    imagemagick_path: &str,
+    input_path: &str,
+    output_path: &str,
+) -> Result<(), AppError> {
+    // Get image dimensions
+    let dimensions_output = Command::new(imagemagick_path)
         .args(&[
             input_path,
-            "-resize", "50%",
-            "-quality", "85",
-            output_path
+            "-format", "%wx%h",
+            "info:",
         ])
-        .creation_flags(CREATE_NO_WINDOW)
+        .output()
+        .map_err(|e| AppError::new(&e.to_string()))?;
+
+    if !dimensions_output.status.success() {
+        return Err(AppError::new(&format!(
+            "Failed to get image dimensions using ImageMagick:\nstdout: {:?}\nstderr: {:?}",
+            String::from_utf8_lossy(&dimensions_output.stdout),
+            String::from_utf8_lossy(&dimensions_output.stderr)
+        )));
+    }
+
+    let dimensions_str = String::from_utf8_lossy(&dimensions_output.stdout);
+    let dimensions: Vec<&str> = dimensions_str.trim().split('x').collect();
+    if dimensions.len() != 2 {
+        return Err(AppError::new("Invalid dimensions format"));
+    }
+
+    let width: u32 = dimensions[0].parse::<u32>().map_err(|e: std::num::ParseIntError| AppError::new(&e.to_string()))?;
+    let height: u32 = dimensions[1].parse::<u32>().map_err(|e: std::num::ParseIntError| AppError::new(&e.to_string()))?;
+    let smallest_side = width.min(height);
+
+    // Determine the resize and quality settings based on the smallest side
+    let (resize_percentage, quality) = if smallest_side < 1024 {
+        (None, "85")
+    } else if smallest_side < 2048 {
+        (Some("65%"), "85")
+    } else {
+        (Some("50%"), "85")
+    };
+
+    // Build ImageMagick command
+    let mut command = Command::new(imagemagick_path);
+    command.arg(input_path);
+    if let Some(resize) = resize_percentage {
+        command.args(&["-resize", resize]);
+    }
+    command.args(&["-quality", quality, output_path]);
+
+    // Run the command
+    let magick_output = command.creation_flags(CREATE_NO_WINDOW)
         .output()
         .map_err(|e| AppError::new(&e.to_string()))?;
 
