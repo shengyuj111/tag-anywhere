@@ -66,6 +66,7 @@ fn compress_image_with_imagemagick(
             "-format", "%wx%h",
             "info:",
         ])
+        .creation_flags(CREATE_NO_WINDOW)
         .output()
         .map_err(|e| AppError::new(&e.to_string()))?;
 
