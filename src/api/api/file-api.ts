@@ -9,7 +9,7 @@ import {
 } from "./helper";
 import { removeDuplicates } from "@/lib/collection-utils";
 import { selectOne, selectOneOrNull } from "./database-helper";
-import { removeFile } from "@tauri-apps/api/fs";
+import { exists, removeFile } from "@tauri-apps/api/fs";
 
 export const fileTypes = [
   "Audio",
@@ -624,8 +624,10 @@ export const fileApi = apiSlice.injectEndpoints({
 
           const { path } = file;
           if (path) {
-            console.log("Deleting file:", path);
-            await removeFile(path);
+            const existsPath = await exists(path);
+            if (existsPath) {
+              await removeFile(path);
+            }
           }
 
           // Continue with the database deletions
@@ -644,6 +646,7 @@ export const fileApi = apiSlice.injectEndpoints({
 
           return { data: null };
         } catch (error: unknown) {
+          console.log(error);
           return Promise.reject({
             message: (error as Error).message || "Failed to delete file",
           });
