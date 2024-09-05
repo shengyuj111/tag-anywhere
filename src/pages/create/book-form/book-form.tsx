@@ -47,7 +47,7 @@ export const BookForm = ({
     if (type === "Composition_Manga") {
       return ["png", "jpeg", "jpg"];
     } else if (type === "Composition_TvSeries") {
-      return ["mp4", "mkv", "avi", "webm", "mov", "flv", "wmv"];
+      return ["mp4", "m4v", "mkv", "webm", "mov", "flv", "wmv"];
     }
     return [];
   };
