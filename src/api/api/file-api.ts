@@ -802,9 +802,9 @@ export const fileApi = apiSlice.injectEndpoints({
           });
         }
       },
-      invalidatesTags: (_result, _error, { fileIds, tagIds }) => [
-        ...fileIds.map((id) => ({ type: "FILE", id })),
-        ...(tagIds || []).map((id) => ({ type: "TAG", id }) as const),
+      invalidatesTags: [
+        { type: "FILE", id: "LIST" },
+        { type: "TAG", id: "LIST" },
       ],
     }),
     createCompositeFile: builder.mutation<null, CreateCompositeFileRequest>({
