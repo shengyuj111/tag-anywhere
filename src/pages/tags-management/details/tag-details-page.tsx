@@ -70,7 +70,6 @@ export const TagDetailsPage = () => {
             "jpg",
             "mp4",
             "mkv",
-            "avi",
             "webm",
             "mov",
             "flv",

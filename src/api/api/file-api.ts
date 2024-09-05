@@ -802,9 +802,9 @@ export const fileApi = apiSlice.injectEndpoints({
           });
         }
       },
-      invalidatesTags: [
-        { type: "FILE", id: "LIST" },
-        { type: "TAG", id: "LIST" },
+      invalidatesTags: (_result, _error, { fileIds, tagIds }) => [
+        ...fileIds.map((id) => ({ type: "FILE", id }) as const),
+        ...(tagIds || []).map((id) => ({ type: "TAG", id }) as const),
       ],
     }),
     createCompositeFile: builder.mutation<null, CreateCompositeFileRequest>({
@@ -875,7 +875,7 @@ export const fileApi = apiSlice.injectEndpoints({
       },
       invalidatesTags: [{ type: "FILE", id: "LIST" }],
     }),
-    tagFiles: builder.mutation<null, TagFileRequest>({
+    tagFiles: builder.mutation<number[], TagFileRequest>({
       queryFn: async (request) => {
         try {
           const { tagId, filePaths } = request;
@@ -894,6 +894,8 @@ export const fileApi = apiSlice.injectEndpoints({
           );
 
           // Prepare and execute individual queries for adding tags to files
+          const updatedFileIds: number[] = [];
+
           const queries = filePaths.map(async (filePath) => {
             const file: { id: number } | null = await selectOneOrNull(
               db,
@@ -905,6 +907,7 @@ export const fileApi = apiSlice.injectEndpoints({
               },
             );
             if (file) {
+              updatedFileIds.push(file.id);
               await db.execute(
                 `
                   INSERT INTO FileTag (file_id, tag_id)
@@ -921,15 +924,15 @@ export const fileApi = apiSlice.injectEndpoints({
           // Execute all queries asynchronously
           await Promise.all(queries);
 
-          return { data: null };
+          return { data: updatedFileIds };
         } catch (error: unknown) {
           return Promise.reject({
             message: (error as Error).message || "Failed to tag files",
           });
         }
       },
-      invalidatesTags: (_result, _error, { tagId }) => [
-        { type: "FILE", id: "LIST" },
+      invalidatesTags: (result, _error, { tagId }) => [
+        ...(result || []).map((id) => ({ type: "FILE", id }) as const),
         { type: "TAG", id: tagId },
       ],
     }),
