@@ -932,6 +932,7 @@ export const fileApi = apiSlice.injectEndpoints({
         }
       },
       invalidatesTags: (result, _error, { tagId }) => [
+        { type: "FILE", id: "LIST" },
         ...(result || []).map((id) => ({ type: "FILE", id }) as const),
         { type: "TAG", id: tagId },
       ],
